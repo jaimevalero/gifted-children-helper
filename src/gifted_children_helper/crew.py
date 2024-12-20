@@ -163,6 +163,7 @@ class GiftedChildrenHelper():
         # Generate filename for the output file logs/report-yyyy-mm-dd-hh-mm.md
         if "logs" not in os.listdir():
             os.mkdir("logs")
+        filename = f"logs/report-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.md"
         # Remove if exists logs/last_report.md
         if os.path.exists("logs/last_report.md"):
             os.remove("logs/last_report.md")
@@ -176,7 +177,8 @@ class GiftedChildrenHelper():
                 self.educational_psychology_assessment(),
                 self.family_therapy_assessment(),
                 self.activity_planning_assessment()],
-            callback=copy_report
+            callback=copy_report,
+            output_file=filename
         )
     
         return task
