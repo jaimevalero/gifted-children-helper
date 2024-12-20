@@ -97,6 +97,7 @@ activity_planning_assessment:
 
 integration_planning:
   description: >
+    Resumir los analisis anteriores (5 bullet points por cada assessment).
     Integrar todas las evaluaciones realizadas.
     Crear plan de intervención coordinado.
     Establecer prioridades de intervención.
