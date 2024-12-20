@@ -13,14 +13,14 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 # Replace with inputs you want to test with, it will automatically
 # interpolate any tasks and agents information
 def get_case():
-    case = """
-<case>
-Tengo un niño de altas capacidades de 8 años que en la escuela se porta muy mal, a decir de los profesores. Es alborotador y muy inquieto.
-El niño dice que se aburre en la escuela porque le repiten muchas veces las cosas y el lo entiendo a la primera. No tiene adaptación curricular.
-Sus padres le hicieron las pruebas para TDAH hace dos años y salió negativo. Si, dió positivo en altas capacidades.
-De aficiones, le gusta la geología y la historia, y hacer experimentos en casa, pero los fines de semana los pasa en casa de su abuela, que no tiene movilidad para ir a sitios, y solo una vez al mes va con sus padres de excursión.
-</case>
-"""
+    """ Read file (filename case.lst) and return the case as a string
+     ignore empty lines and lines starting with # """
+    with open("case.lst") as f:
+        lines = f.readlines()
+    # Ignore empty lines and lines starting with #
+    case = "".join([line for line in lines if line.strip() and not line.startswith("#")])
+    case = "<case>" + case + "</case>"
+    logger.info(f"Case: {case}")
     return case
 
 def run():

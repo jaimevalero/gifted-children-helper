@@ -3,7 +3,7 @@ initial_case_evaluation:
     Evaluación inicial del caso y determinación de especialistas necesarios.
     Analizar la información disponible y decidir qué especialistas deben intervenir.
     Establecer prioridades de evaluación.
-  expected_output: Plan de intervención con especialistas asignados y prioridades
+  expected_output: Plan de intervención con especialistas asignados y prioridades en markdown
   agent: coordinator
   output_file: "logs/initial_case_evaluation.md"
 
@@ -14,7 +14,7 @@ clinical_psychology_assessment:
     Evaluar posibles comorbilidades.
     Proponer estrategias de intervención psicológica aplicables en el entorno familiar.
   expected_output: >
-    Informe psicológico detallado incluyendo:
+    Informe psicológico detallado en markdown incluyendo:
     - Análisis de la situación actual
     - Diagnóstico si procede
     - Recomendaciones específicas para familia
@@ -30,7 +30,7 @@ neurological_assessment:
     Valorar maduración cerebral y desarrollo neurológico.
     Identificar posibles alteraciones que requieran seguimiento.
   expected_output: >
-    Informe neurológico incluyendo:
+    Informe neurológico en markdown incluyendo:
     - Evaluación del desarrollo neurológico
     - Valoración de patrones conductuales desde perspectiva neurológica
     - Recomendaciones de actividades para estimulación neurológica en casa
@@ -45,7 +45,7 @@ occupational_therapy_assessment:
     Analizar patrones de comportamiento y autorregulación.
     Diseñar estrategias de intervención aplicables en casa.
   expected_output: >
-    Informe de terapia ocupacional incluyendo:
+    Informe de terapia ocupacional en markdown incluyendo:
     - Evaluación de integración sensorial
     - Análisis de patrones conductuales
     - Plan de actividades de autorregulación para casa
@@ -61,7 +61,7 @@ educational_psychology_assessment:
     Diseñar propuestas de adaptación curricular.
     Desarrollar estrategias de apoyo educativo en casa.
   expected_output: >
-    Informe psicopedagógico incluyendo:
+    Informe psicopedagógico en markdown incluyendo:
     - Evaluación de necesidades educativas
     - Propuesta de adaptaciones curriculares
     - Estrategias de apoyo al estudio en casa
@@ -77,7 +77,7 @@ family_therapy_assessment:
     Identificar áreas de mejora en el entorno familiar.
     Diseñar estrategias de intervención familiar.
   expected_output: >
-    Informe de terapia familiar incluyendo:
+    Informe de terapia familiar en markdown incluyendo:
     - Análisis de la dinámica familiar
     - Patrones de interacción identificados
     - Estrategias de mejora para implementar en casa
@@ -93,7 +93,7 @@ activity_planning_assessment:
     Diseñar plan de actividades personalizado.
     Proponer actividades específicas realizables.
   expected_output: >
-    Plan de actividades incluyendo:
+    Plan de actividades en markdown incluyendo:
     - Análisis de intereses y capacidades
     - Propuesta de actividades específicas
     - Recursos y materiales necesarios
@@ -103,7 +103,7 @@ activity_planning_assessment:
 
 integration_planning:
   description: >
-    Resumir los analisis anteriores (5 bullet points por cada assessment).
+    Resumir los analisis anteriores.
     Integrar todas las evaluaciones realizadas.
     Crear plan de intervención coordinado.
     Establecer prioridades de intervención.
