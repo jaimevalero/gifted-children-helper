@@ -4,6 +4,7 @@ from crewai.project import CrewBase, agent, crew, task
 from loguru import logger
 import os 
 from crewai import Agent, LLM
+from src.gifted_children_helper.utils.reports import copy_report # type: ignore
 
 def get_model(model_name=None):
     # Get the model from the environment variable or use a default value
@@ -124,16 +125,13 @@ class GiftedChildrenHelper():
         # Remove if exists logs/last_report.md
         if os.path.exists("logs/last_report.md"):
             os.remove("logs/last_report.md")
-
+        
         task = Task(
-            config=self.tasks_config['generate_report']
+            config=self.tasks_config['generate_report'],
+#            context=[self.research_candidates_task(), self.match_and_score_candidates_task(), self.outreach_strategy_task()],
+            callback=copy_report
         )
-        # Copy the last report in logs/last_report.md to logs/report-yyyy-mm-dd-hh-mm.md
-        filename = "logs/report-" + datetime.now().strftime("%Y-%m-%d-%H-%M") + ".md"
-        if os.path.exists("logs/last_report.md"):
-            with open("logs/last_report.md", "r") as src:
-                with open(filename, "w") as dst:
-                    dst.write(src.read())        
+    
         return task
     
     @crew
@@ -151,8 +149,6 @@ class GiftedChildrenHelper():
                 }    
             },        
             process=Process.hierarchical,
-            #process=Process.sequential,
-
             manager_agent=self.agents[-1], # The aforementioned manager
             planning=False            
         )

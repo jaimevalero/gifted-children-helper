@@ -8,8 +8,9 @@ case_evaluation:
 sensory_assessment:
   description: > 
     Evaluar si existen necesidades de integración sensorial.
-  expected_output: Informe de evaluación sensorial
+  expected_output: Informe de evaluación sensorial con actividades específicas para el caso {case}
   agent: sensory_specialist
+  human_input: True
 
 intervention_planning:
   description: > 
@@ -24,12 +25,7 @@ intervention_planning:
 generate_report:
   description: > 
     Generación de informe final del caso, en formato markdown.
-  expected_output: Informe final detallado con recomendaciones y resultados
+  expected_output: Informe final detallado con recomendaciones y resultados para el caso {case}
   agent: coordinator
-  # context:
-  #   - sensory_specialist
-  #   - social_skills_coach
-  #   - parent_advisor
-  #   - researcher
   output_file: "logs/last_report.md"
 
