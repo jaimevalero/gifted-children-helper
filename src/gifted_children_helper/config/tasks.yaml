@@ -1,0 +1,35 @@
+case_evaluation:
+  description: >
+    Evaluación inicial del caso y determinación de especialistas necesarios.
+    Evaluar el caso y decidir qué especialistas deben intervenir
+  expected_output: Plan de intervención con especialistas asignados
+  agent: coordinator
+
+sensory_assessment:
+  description: > 
+    Evaluar si existen necesidades de integración sensorial.
+  expected_output: Informe de evaluación sensorial
+  agent: sensory_specialist
+
+intervention_planning:
+  description: > 
+    Planificación de la intervención basada en evaluaciones
+    Crear plan de intervención basado en todas las evaluaciones
+  expected_output: Plan detallado de intervención
+  agent: coordinator
+  # context:
+  #   - case_evaluation
+  #   - sensory_assessment  # Solo si fue necesaria
+
+generate_report:
+  description: > 
+    Generación de informe final del caso, en formato markdown.
+  expected_output: Informe final detallado con recomendaciones y resultados
+  agent: coordinator
+  # context:
+  #   - sensory_specialist
+  #   - social_skills_coach
+  #   - parent_advisor
+  #   - researcher
+  output_file: "logs/last_report.md"
+

@@ -1,0 +1,20 @@
+[project]
+name = "gifted_children_helper"
+version = "0.1.0"
+description = "gifted-childer-helper using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<=3.13"
+dependencies = [
+    "crewai[tools]>=0.86.0,<1.0.0"
+]
+
+[project.scripts]
+gifted_children_helper = "gifted_children_helper.main:run"
+run_crew = "gifted_children_helper.main:run"
+train = "gifted_children_helper.main:train"
+replay = "gifted_children_helper.main:replay"
+test = "gifted_children_helper.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
