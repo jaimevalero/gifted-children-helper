@@ -169,7 +169,13 @@ class GiftedChildrenHelper():
         
         task = Task(
             config=self.tasks_config['integration_planning'],
-#            context=[self.research_candidates_task(), self.match_and_score_candidates_task(), self.outreach_strategy_task()],
+            context=[
+                self.clinical_psychology_assessment(),
+                self.neurological_assessment(),
+                self.occupational_therapy_assessment(),
+                self.educational_psychology_assessment(),
+                self.family_therapy_assessment(),
+                self.activity_planning_assessment()],
             callback=copy_report
         )
     
