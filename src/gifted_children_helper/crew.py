@@ -25,10 +25,10 @@ class GiftedChildrenHelper():
     tasks_config = 'config/tasks.yaml'
 
     @agent
-    def psychologist(self) -> Agent:
+    def clinical_psychologist(self) -> Agent:
         logger.info("Initializing psychologist agent")
         return Agent(
-            config=self.agents_config['psychologist'],
+            config=self.agents_config['clinical_psychologist'],
             verbose=True
         )
 
@@ -50,41 +50,8 @@ class GiftedChildrenHelper():
             verbose=True
         )
 
-    @agent
-    def social_skills_coach(self) -> Agent:
-        logger.info("Initializing social skills coach agent")
-        return Agent(
-            config=self.agents_config['social_skills_coach'],
-            model=get_model(),
-            verbose=True
-        )
 
-    @agent
-    def parent_advisor(self) -> Agent:
-        logger.info("Initializing parent advisor agent")
-        return Agent(
-            config=self.agents_config['parent_advisor'],
-            model=get_model(),
-            verbose=True
-        )
 
-    # @agent
-    # def researcher(self) -> Agent:
-    #     logger.info("Initializing researcher agent")
-    #     return Agent(
-    #         config=self.agents_config['researcher'],
-    #         model=get_model(),
-    #         verbose=True
-    #     )
-
-    @agent
-    def sensory_specialist(self) -> Agent:
-        logger.info("Initializing sensory specialist agent")
-        return Agent(
-            config=self.agents_config['sensory_specialist'],
-            model=get_model(),
-            verbose=True
-        )
 
     @agent
     def coordinator(self) -> Agent:
@@ -95,30 +62,104 @@ class GiftedChildrenHelper():
             verbose=True
         )
 
-    @task
-    def case_evaluation(self) -> Task:
-        logger.info("Initializing case evaluation task")
-        return Task(
-            config=self.tasks_config['case_evaluation'],
+    @agent
+    def clinical_psychologist(self) -> Agent:
+        logger.info("Initializing clinical psychologist agent")
+        return Agent(
+            config=self.agents_config['clinical_psychologist'],
+            model=get_model(),
+            verbose=True
+        )
+
+    @agent
+    def neurologist(self) -> Agent:
+        logger.info("Initializing neurologist agent")
+        return Agent(
+            config=self.agents_config['neurologist'],
+            model=get_model(),
+            verbose=True
+        )
+
+    @agent
+    def occupational_therapist(self) -> Agent:
+        logger.info("Initializing occupational therapist agent")
+        return Agent(
+            config=self.agents_config['occupational_therapist'],
+            model=get_model(),
+            verbose=True
+        )
+
+    @agent
+    def educational_psychologist(self) -> Agent:
+        logger.info("Initializing educational psychologist agent")
+        return Agent(
+            config=self.agents_config['educational_psychologist'],
+            model=get_model(),
+            verbose=True
+        )
+
+    @agent
+    def family_therapist(self) -> Agent:
+        logger.info("Initializing family therapist agent")
+        return Agent(
+            config=self.agents_config['family_therapist'],
+            model=get_model(),
+            verbose=True
         )
 
     @task
-    def sensory_assessment(self) -> Task:
-        logger.info("Initializing sensory assessment task")
+    def initial_case_evaluation(self) -> Task:
+        logger.info("Initializing initial case evaluation task")
         return Task(
-            config=self.tasks_config['sensory_assessment'],
+            config=self.tasks_config['initial_case_evaluation'],
         )
 
     @task
-    def intervention_planning(self) -> Task:
-        logger.info("Initializing intervention planning task")
+    def clinical_psychology_assessment(self) -> Task:
+        logger.info("Initializing clinical psychology assessment task")
         return Task(
-            config=self.tasks_config['intervention_planning'],
+            config=self.tasks_config['clinical_psychology_assessment'],
         )
 
     @task
-    def generate_report(self) -> Task:
-        logger.info("Task: generate_report")
+    def neurological_assessment(self) -> Task:
+        logger.info("Initializing neurological assessment task")
+        return Task(
+            config=self.tasks_config['neurological_assessment'],
+        )
+
+    @task
+    def occupational_therapy_assessment(self) -> Task:
+        logger.info("Initializing occupational therapy assessment task")
+        return Task(
+            config=self.tasks_config['occupational_therapy_assessment'],
+        )
+
+    @task
+    def educational_psychology_assessment(self) -> Task:
+        logger.info("Initializing educational psychology assessment task")
+        return Task(
+            config=self.tasks_config['educational_psychology_assessment'],
+        )
+
+    @task
+    def family_therapy_assessment(self) -> Task:
+        logger.info("Initializing family therapy assessment task")
+        return Task(
+            config=self.tasks_config['family_therapy_assessment'],
+        )
+
+    @task
+    def activity_planning_assessment(self) -> Task:
+        logger.info("Initializing activity planning assessment task")
+        return Task(
+            config=self.tasks_config['activity_planning_assessment'],
+        )
+
+
+    @task
+    def integration_planning(self) -> Task:
+        logger.info("Task: integration_planning")
         # Generate filename for the output file logs/report-yyyy-mm-dd-hh-mm.md
         if "logs" not in os.listdir():
             os.mkdir("logs")
@@ -127,13 +168,13 @@ class GiftedChildrenHelper():
             os.remove("logs/last_report.md")
         
         task = Task(
-            config=self.tasks_config['generate_report'],
+            config=self.tasks_config['integration_planning'],
 #            context=[self.research_candidates_task(), self.match_and_score_candidates_task(), self.outreach_strategy_task()],
             callback=copy_report
         )
     
         return task
-    
+        
     @crew
     def crew(self) -> Crew:
         """Creates the GiftedChildrenHelper crew"""

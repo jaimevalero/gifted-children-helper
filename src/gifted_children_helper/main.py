@@ -14,10 +14,12 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 # interpolate any tasks and agents information
 def get_case():
     case = """
+<case>
 Tengo un niño de altas capacidades de 8 años que en la escuela se porta muy mal, a decir de los profesores. Es alborotador y muy inquieto.
 El niño dice que se aburre en la escuela porque le repiten muchas veces las cosas y el lo entiendo a la primera. No tiene adaptación curricular.
 Sus padres le hicieron las pruebas para TDAH hace dos años y salió negativo. Si, dió positivo en altas capacidades.
 De aficiones, le gusta la geología y la historia, y hacer experimentos en casa, pero los fines de semana los pasa en casa de su abuela, que no tiene movilidad para ir a sitios, y solo una vez al mes va con sus padres de excursión.
+</case>
 """
     return case
 

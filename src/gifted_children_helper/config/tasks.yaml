@@ -1,31 +1,133 @@
-case_evaluation:
+
+initial_case_evaluation:
   description: >
     Evaluación inicial del caso y determinación de especialistas necesarios.
-    Evaluar el caso y decidir qué especialistas deben intervenir
-  expected_output: Plan de intervención con especialistas asignados
+    Analizar la información disponible y decidir qué especialistas deben intervenir.
+    Establecer prioridades de evaluación.
+  expected_output: Plan de intervención con especialistas asignados y prioridades
   agent: coordinator
 
-sensory_assessment:
-  description: > 
-    Evaluar si existen necesidades de integración sensorial.
-  expected_output: Informe de evaluación sensorial con actividades específicas para el caso {case}
-  agent: sensory_specialist
-  human_input: True
+clinical_psychology_assessment:
+  description: >
+    Realizar evaluación psicológica completa del caso {case}.
+    Analizar aspectos emocionales y conductuales.
+    Evaluar posibles comorbilidades.
+    Proponer estrategias de intervención psicológica aplicables en el entorno familiar.
+  expected_output: >
+    Informe psicológico detallado incluyendo:
+    - Análisis de la situación actual
+    - Diagnóstico si procede
+    - Recomendaciones específicas para familia
+    - Propuestas de intervención domiciliaria
+  agent: clinical_psychologist
+  human_input: true
 
-intervention_planning:
-  description: > 
-    Planificación de la intervención basada en evaluaciones
-    Crear plan de intervención basado en todas las evaluaciones
-  expected_output: Plan detallado de intervención
-  agent: coordinator
-  # context:
-  #   - case_evaluation
-  #   - sensory_assessment  # Solo si fue necesaria
+neurological_assessment:
+  description: >
+    Realizar evaluación neurológica del caso {case}.
+    Analizar posibles factores neurológicos.
+    Valorar maduración cerebral y desarrollo neurológico.
+    Identificar posibles alteraciones que requieran seguimiento.
+  expected_output: >
+    Informe neurológico incluyendo:
+    - Evaluación del desarrollo neurológico
+    - Valoración de patrones conductuales desde perspectiva neurológica
+    - Recomendaciones de actividades para estimulación neurológica en casa
+    - Sugerencias de pruebas complementarias si fueran necesarias
+  agent: neurologist
+  human_input: true
 
-generate_report:
-  description: > 
-    Generación de informe final del caso, en formato markdown.
-  expected_output: Informe final detallado con recomendaciones y resultados para el caso {case}
+occupational_therapy_assessment:
+  description: >
+    Evaluar aspectos de integración sensorial y regulación conductual.
+    Analizar patrones de comportamiento y autorregulación.
+    Diseñar estrategias de intervención aplicables en casa.
+  expected_output: >
+    Informe de terapia ocupacional incluyendo:
+    - Evaluación de integración sensorial
+    - Análisis de patrones conductuales
+    - Plan de actividades de autorregulación para casa
+    - Recomendaciones de adaptación del entorno doméstico
+  agent: occupational_therapist
+  human_input: true
+
+educational_psychology_assessment:
+  description: >
+    Realizar evaluación psicopedagógica completa.
+    Analizar necesidades educativas específicas.
+    Diseñar propuestas de adaptación curricular.
+    Desarrollar estrategias de apoyo educativo en casa.
+  expected_output: >
+    Informe psicopedagógico incluyendo:
+    - Evaluación de necesidades educativas
+    - Propuesta de adaptaciones curriculares
+    - Estrategias de apoyo al estudio en casa
+    - Recomendaciones para padres sobre apoyo académico
+  agent: educational_psychologist
+  human_input: true
+
+family_therapy_assessment:
+  description: >
+    Evaluar dinámica familiar y su impacto.
+    Analizar patrones de interacción familiar.
+    Identificar áreas de mejora en el entorno familiar.
+    Diseñar estrategias de intervención familiar.
+  expected_output: >
+    Informe de terapia familiar incluyendo:
+    - Análisis de la dinámica familiar
+    - Patrones de interacción identificados
+    - Estrategias de mejora para implementar en casa
+    - Recomendaciones para fortalecer vínculos familiares
+  agent: family_therapist
+  human_input: true
+
+activity_planning_assessment:
+  description: >
+    Evaluar intereses y necesidades de actividades.
+    Analizar recursos disponibles en el entorno.
+    Diseñar plan de actividades personalizado.
+    Proponer actividades específicas realizables.
+  expected_output: >
+    Plan de actividades incluyendo:
+    - Análisis de intereses y capacidades
+    - Propuesta de actividades específicas
+    - Recursos y materiales necesarios
+    - Cronograma sugerido de implementación
+  agent: activity_coordinator
+
+integration_planning:
+  description: >
+    Integrar todas las evaluaciones realizadas.
+    Crear plan de intervención coordinado.
+    Establecer prioridades de intervención.
+    Definir objetivos a corto y medio plazo.
+  expected_output: Plan integral de intervención coordinada
   agent: coordinator
   output_file: "logs/last_report.md"
+
+  # dependencies:
+  #   - clinical_psychology_assessment
+  #   - neurological_assessment
+  #   - occupational_therapy_assessment
+  #   - educational_psychology_assessment
+  #   - family_therapy_assessment
+  #   - activity_planning_assessment
+
+# generate_final_report:
+#   description: >
+#     Generar informe final integrando todas las evaluaciones y recomendaciones.
+#     Incluir plan de acción detallado para la familia.
+#     Establecer calendario de seguimiento.
+#   expected_output: Informe final detallado con todas las recomendaciones y plan de acción
+#   agent: coordinator
+#   output_file: "logs/case_{case}_report.md"
+  # dependencies:
+  #   - integration_planning
+
+# generate_report:
+#   description: > 
+#     Generación de informe final del caso, en formato markdown.
+#   expected_output: Informe final detallado con recomendaciones y resultados para el caso {case}
+#   agent: coordinator
+#   output_file: "logs/last_report.md"
 
