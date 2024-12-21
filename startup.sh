@@ -7,3 +7,7 @@
 conda create --name gifted-children-helper python=3.10
 conda activate gifted-children-helper
 pip install -r requirements.txt
+
+# reset memories
+crewai reset-memories -a
+rm ./db/chroma.sqlite3

@@ -4,12 +4,17 @@ from crewai.project import CrewBase, agent, crew, task
 from loguru import logger
 import os 
 from crewai import Agent, LLM
+from gifted_children_helper.tools.custom_pdf_search_tool import get_custom_pdf_search_tool
 from src.gifted_children_helper.utils.reports import copy_report # type: ignore
+from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
+
+
 
 def get_model(model_name=None):
     # Get the model from the environment variable or use a default value
     model_name = model_name or os.getenv("MODEL_NAME")
     if not model_name:
+        logger.warning("No model name provided, using default model")
         model_name = "ollama/llama3.1:8b"
     base_url = os.getenv("API_BASE","http://127.0.0.1:11434/")
     return LLM(
@@ -110,10 +115,12 @@ class GiftedChildrenHelper():
     @task
     def initial_case_evaluation(self) -> Task:
         logger.info("Initializing initial case evaluation task")
+        #tools = [get_custom_pdf_search_tool("external_docs/books/Altas capacidades en niños y niñas.pdf") ]
         return Task(
             config=self.tasks_config['initial_case_evaluation'],
+           # tools=tools,
         )
-
+    
     @task
     def clinical_psychology_assessment(self) -> Task:
         logger.info("Initializing clinical psychology assessment task")
@@ -170,13 +177,13 @@ class GiftedChildrenHelper():
         
         task = Task(
             config=self.tasks_config['integration_planning'],
-            context=[
-                self.clinical_psychology_assessment(),
-                self.neurological_assessment(),
-                self.occupational_therapy_assessment(),
-                self.educational_psychology_assessment(),
-                self.family_therapy_assessment(),
-                self.activity_planning_assessment()],
+            # context=[
+            #     self.clinical_psychology_assessment(),
+            #     self.neurological_assessment(),
+            #     self.occupational_therapy_assessment(),
+            #     self.educational_psychology_assessment(),
+            #     self.family_therapy_assessment(),
+            #     self.activity_planning_assessment()],
             callback=copy_report,
             output_file=filename
         )
@@ -187,9 +194,15 @@ class GiftedChildrenHelper():
     def crew(self) -> Crew:
         """Creates the GiftedChildrenHelper crew"""
         logger.info("Creating the GiftedChildrenHelper crew")
-        return Crew(
+        knowledge_source =  [ 
+            PDFKnowledgeSource(
+                file_path="external_docs/books/Altas capacidades en niños y niñas.pdf"
+            )]
+        
+        crew = Crew(
             agents=self.agents[:-1], # All but last agent, which is the manager
             tasks=self.tasks,
+            knowledge_source=knowledge_source,
             verbose=True,
             embedder= {
                 "provider": "ollama",
@@ -199,5 +212,9 @@ class GiftedChildrenHelper():
             },        
             process=Process.hierarchical,
             manager_agent=self.agents[-1], # The aforementioned manager
-            planning=False            
+            planning=False,
+            language="es"
+                        
         )
+        logger.info("GiftedChildrenHelper crew created successfully")
+        return crew
