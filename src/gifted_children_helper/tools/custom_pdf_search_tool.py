@@ -41,7 +41,7 @@ def query_pdf(question, pdf_path):
         pdf_path (str): The path to the PDF document.
 
     Returns:
-        None
+        str: The response text from the query.
     """
     try:
         # Ensure the tmp directory exists
@@ -76,22 +76,32 @@ def query_pdf(question, pdf_path):
 
         response = query_engine.query(question)
         response.print_response_stream()
+        return response.response_txt
     except Exception as e:
         logger.exception(e)
         if "openai" in str(e).lower():
             logger.error("It seems you have exceeded your OpenAI quota, but you are using Ollama. Please check your configuration.")
+        return "An error occurred while querying the PDF document."
 
-# Define the PDF file path
-pdf_path = "/home/jaimevalero/git/gifted-children-helper/knowledge/external_docs/books/Altas capacidades en niños.pdf"
+def test_query_pdf():
+    """
+    Test the query_pdf function with a predefined PDF and question.
+    """
+    # Define the PDF file path
+    pdf_path = "/home/jaimevalero/git/gifted-children-helper/knowledge/external_docs/books/Altas capacidades en niños.pdf"
 
-# Define the question
-question = """
-Dime falsas creencias sobre el alumnado de altas capacidades. Show statements in bullet form 
-"""
+    # Define the question
+    question = """
+    Dime falsas creencias sobre el alumnado de altas capacidades. Show statements in bullet form 
+    """
 
-# Query the PDF
-logger.info("Inicio Querying PDF...")
-query_pdf(question, pdf_path)
-logger.info("Finish Querying PDF...")
+    # Query the PDF
+    logger.info("Inicio Querying PDF...")
+    response = query_pdf(question, pdf_path)
+    logger.info("Finish Querying PDF...")
+    logger.info("Response: {}", response)
+
+# Uncomment the following line to run the test
+# test_query_pdf()
 
 
