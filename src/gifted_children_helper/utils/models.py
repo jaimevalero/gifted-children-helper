@@ -19,7 +19,7 @@ def get_base_url():
     Returns:
         str: The base URL for ollama
     """
-    return os.getenv("API_BASE", "http://127.0.0.1:11434")
+    return os.getenv("API_BASE")
 
 def get_embed_model():
     embed_model_name = get_embed_model_name()

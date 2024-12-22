@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import warnings
-
+import os
 from loguru import logger
 
 from gifted_children_helper.crew import GiftedChildrenHelper
@@ -30,8 +30,23 @@ def run():
     inputs = {
         'case' : get_case()
     }
-    GiftedChildrenHelper().crew().kickoff(inputs=inputs)
+    ensure_dirs_exist()
 
+    helper = GiftedChildrenHelper()
+    crew = helper.crew()
+    crew.kickoff(inputs=inputs)
+    # por cada una de las crew.tasks, añadirlo todo a un solo string.
+    # Despues , formatearlo para darle uniformidad
+    helper.generate_consolidated_report()
+    a = 0
+
+def ensure_dirs_exist():
+    dirs = ["logs", "tmp"]
+    # Ensure the directories exist in the current working directory
+    for dir in dirs:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+            logger.info(f"Created directory {dir}")
 
 def train():
     """

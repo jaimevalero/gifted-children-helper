@@ -104,7 +104,7 @@ coordinator:
   verbose: true
   context: Coordinar la intervención integral del caso {case}
   llm: ollama/exaone3.5:7.8b
-
+  allow_delegation: true
 # psychologist:
 #   role: Psicólogo especializado en altas capacidades
 #   goal: >

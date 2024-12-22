@@ -1,7 +1,6 @@
 initial_case_evaluation:
   description: >
-    Evaluación inicial del caso y determinación de especialistas necesarios.
-    Analizar la información disponible y decidir qué especialistas deben intervenir.
+    Analizar la información disponible y realizar la evaluación inicial del caso {case}.
     Establecer prioridades de evaluación.
   expected_output: Plan de intervención muy profesional en markdown, en español, con especialistas asignados y prioridades en markdown. Importante, responde en español.
   agent: coordinator
@@ -107,38 +106,21 @@ activity_planning_assessment:
   agent: activity_coordinator
   output_file: "logs/activity_planning_assessment.md"
 
-integration_planning:
-  description: >
-    Integrar en un solo informe todos los analisis anteriores, los cuales sirver para resolver el case {case}.
-  expected_output:  >
-    Plan integral de intervención coordinada en formato markdown, en español.
-    El documento debe tener un aspecto profesional con formato uniforme, separando los epigrafes por especialidad, y dentro de cada una lo que dice el especialista y lo que pueden hacer los adres.
-    Importante, responde en español.
-  agent: coordinator
-  output_file: "logs/report-YYYY-MM-DD-hh-mm.md"
-  context:
-    - clinical_psychology_assessment
-    - neurological_assessment
-    - occupational_therapy_assessment
-    - educational_psychology_assessment
-    - family_therapy_assessment
-    - activity_planning_assessment
-
-# generate_final_report:
+# integration_planning:
 #   description: >
-#     Generar informe final integrando todas las evaluaciones y recomendaciones.
-#     Incluir plan de acción detallado para la familia.
-#     Establecer calendario de seguimiento.
-#   expected_output: Informe final detallado con todas las recomendaciones y plan de acción
+#     Integrar en un solo informe todos los analisis anteriores, los cuales sirver para resolver el case {case}.
+#   expected_output:  >
+#     Plan integral de intervención coordinada en formato markdown, en español.
+#     El documento debe tener un aspecto profesional con formato uniforme, separando los epigrafes por especialidad, y dentro de cada una lo que dice el especialista y lo que pueden hacer los adres.
+#     Importante, responde en español.
 #   agent: coordinator
-#   output_file: "logs/case_{case}_report.md"
-  # dependencies:
-  #   - integration_planning
+#   output_file: "logs/report-YYYY-MM-DD-hh-mm.md"
+#   context:
+#     - clinical_psychology_assessment
+#     - neurological_assessment
+#     - occupational_therapy_assessment
+#     - educational_psychology_assessment
+#     - family_therapy_assessment
+#     - activity_planning_assessment
 
-# generate_report:
-#   description: > 
-#     Generación de informe final del caso, en formato markdown.
-#   expected_output: Informe final detallado con recomendaciones y resultados para el caso {case}
-#   agent: coordinator
-#   output_file: "logs/last_report.md"
 
