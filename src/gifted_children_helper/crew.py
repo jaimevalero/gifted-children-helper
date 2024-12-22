@@ -1,26 +1,12 @@
 from datetime import datetime
+import os
+from loguru import logger
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from loguru import logger
-import os 
-from crewai import Agent, LLM
-from gifted_children_helper.tools.custom_pdf_search_tool import get_custom_pdf_search_tool
-from src.gifted_children_helper.utils.reports import copy_report # type: ignore
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
-
-
-
-def get_model(model_name=None):
-    # Get the model from the environment variable or use a default value
-    model_name = model_name or os.getenv("MODEL_NAME")
-    if not model_name:
-        logger.warning("No model name provided, using default model")
-        model_name = "ollama/llama3.1:8b"
-    base_url = os.getenv("API_BASE","http://127.0.0.1:11434/")
-    return LLM(
-        base_url=base_url,
-        model=model_name,
-    )
+from gifted_children_helper.tools.custom_pdf_search_tool import get_custom_pdf_search_tool
+from src.gifted_children_helper.utils.reports import copy_report  # type: ignore
+from gifted_children_helper.utils.models import get_embed_model_name, get_model
 
 @CrewBase
 class GiftedChildrenHelper():
@@ -54,9 +40,6 @@ class GiftedChildrenHelper():
             model=get_model(),
             verbose=True
         )
-
-
-
 
     @agent
     def coordinator(self) -> Agent:
@@ -198,7 +181,7 @@ class GiftedChildrenHelper():
             PDFKnowledgeSource(
                 file_path="external_docs/books/Altas capacidades en niños y niñas.pdf"
             )]
-        
+        embed_model_name = get_embed_model_name()
         crew = Crew(
             agents=self.agents[:-1], # All but last agent, which is the manager
             tasks=self.tasks,
@@ -207,7 +190,7 @@ class GiftedChildrenHelper():
             embedder= {
                 "provider": "ollama",
                 "config": {
-                    "model": "mxbai-embed-large"
+                    "model": embed_model_name
                 }    
             },        
             process=Process.hierarchical,

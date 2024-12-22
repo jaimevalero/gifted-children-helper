@@ -8,7 +8,7 @@ clinical_psychologist:
     Diseñar intervenciones terapéuticas
     Evaluar estado emocional y conductual
     Todo ello específicamente para el caso {case}
-  backstory: Doctor en psicología clínica con especialización en altas capacidades y trastornos del neurodesarrollo
+  backstory: Doctor en psicología clínica con especialización en altas capacidades y trastornos del neurodesarrollo. 
   verbose: true
   context: Evaluar aspectos clínicos del caso {case}
   llm: ollama/exaone3.5:7.8b

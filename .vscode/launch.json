@@ -16,12 +16,19 @@
             "envFile": "${workspaceFolder}/.env",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
-
-            },
-
-
+            }
         },
- 
-        
+        {
+            "name": "PDFs custom_pdf_search_tool",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/gifted_children_helper/tools/custom_pdf_search_tool.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        }
     ]
 }

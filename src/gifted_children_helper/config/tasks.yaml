@@ -3,7 +3,7 @@ initial_case_evaluation:
     Evaluación inicial del caso y determinación de especialistas necesarios.
     Analizar la información disponible y decidir qué especialistas deben intervenir.
     Establecer prioridades de evaluación.
-  expected_output: Plan de intervención muy profesional en markdown, en español, con especialistas asignados y prioridades en markdown. Escribe en español
+  expected_output: Plan de intervención muy profesional en markdown, en español, con especialistas asignados y prioridades en markdown. Importante, responde en español.
   agent: coordinator
   output_file: "logs/initial_case_evaluation.md"
 
@@ -14,11 +14,12 @@ clinical_psychology_assessment:
     Evaluar posibles comorbilidades.
     Proponer estrategias de intervención psicológica aplicables en el entorno familiar.
   expected_output: >
-    Informe psicológico detallado muy profesional en markdown, en español, incluyendo:
+    Informe psicológico detallado muy profesional en markdown,incluyendo:
     - Análisis de la situación actual
     - Diagnóstico si procede
     - Recomendaciones específicas para familia
     - Propuestas de intervención domiciliaria
+    Importante, responde en español.
   agent: clinical_psychologist
   human_input: false
   output_file: "logs/clinical_psychology_assessment.md"
@@ -30,11 +31,12 @@ neurological_assessment:
     Valorar maduración cerebral y desarrollo neurológico.
     Identificar posibles alteraciones que requieran seguimiento.
   expected_output: >
-    Informe neurológico muy profesional en markdown, en español, incluyendo:
+    Informe neurológico muy profesional en markdown, incluyendo:
     - Evaluación del desarrollo neurológico
     - Valoración de patrones conductuales desde perspectiva neurológica
     - Recomendaciones de actividades para estimulación neurológica en casa
     - Sugerencias de pruebas complementarias si fueran necesarias
+    Importante, responde en español.
   agent: neurologist
   human_input: false
   output_file: "logs/neurological_assessment.md"
@@ -45,11 +47,12 @@ occupational_therapy_assessment:
     Analizar patrones de comportamiento y autorregulación.
     Diseñar estrategias de intervención aplicables en casa.
   expected_output: >
-    Informe de terapia ocupacional muy profesional en markdown, en español, incluyendo:
+    Informe de terapia ocupacional muy profesional en markdown, incluyendo:
     - Evaluación de integración sensorial
     - Análisis de patrones conductuales
     - Plan de actividades de autorregulación para casa
     - Recomendaciones de adaptación del entorno doméstico
+    Importante, responde en español.
   agent: occupational_therapist
   human_input: false
   output_file: "logs/occupational_therapy_assessment.md"
@@ -61,11 +64,12 @@ educational_psychology_assessment:
     Diseñar propuestas de adaptación curricular.
     Desarrollar estrategias de apoyo educativo en casa.
   expected_output: >
-    Informe psicopedagógico muy profesional en markdown, en español, incluyendo:
+    Informe psicopedagógico muy profesional en markdown, incluyendo:
     - Evaluación de necesidades educativas
     - Propuesta de adaptaciones curriculares
     - Estrategias de apoyo al estudio en casa
-    - Recomendaciones para padres sobre apoyo académico
+    - Recomendaciones para padres sobre apoyo académico.
+    Importante, responde en español.
   agent: educational_psychologist
   human_input: false
   output_file: "logs/educational_psychology_assessment.md"
@@ -77,11 +81,12 @@ family_therapy_assessment:
     Identificar áreas de mejora en el entorno familiar.
     Diseñar estrategias de intervención familiar.
   expected_output: >
-    Informe de terapia familiar muy profesional en markdown, en español, incluyendo:
+    Informe de terapia familiar muy profesional en markdown,incluyendo:
     - Análisis de la dinámica familiar
     - Patrones de interacción identificados
     - Estrategias de mejora para implementar en casa
     - Recomendaciones para fortalecer vínculos familiares
+    Importante, responde en español.
   agent: family_therapist
   human_input: false
   output_file: "logs/family_therapy_assessment.md"
@@ -93,11 +98,12 @@ activity_planning_assessment:
     Diseñar plan de actividades personalizado.
     Proponer actividades específicas realizables.
   expected_output: >
-    Plan de actividades muy profesional en markdown, en español, incluyendo:
+    Plan de actividades muy profesional en markdown, incluyendo:
     - Análisis de intereses y capacidades
     - Propuesta de actividades específicas
     - Recursos y materiales necesarios
     - Cronograma sugerido de implementación
+    Importante, responde en español.
   agent: activity_coordinator
   output_file: "logs/activity_planning_assessment.md"
 
@@ -107,6 +113,7 @@ integration_planning:
   expected_output:  >
     Plan integral de intervención coordinada en formato markdown, en español.
     El documento debe tener un aspecto profesional con formato uniforme, separando los epigrafes por especialidad, y dentro de cada una lo que dice el especialista y lo que pueden hacer los adres.
+    Importante, responde en español.
   agent: coordinator
   output_file: "logs/report-YYYY-MM-DD-hh-mm.md"
   context:
