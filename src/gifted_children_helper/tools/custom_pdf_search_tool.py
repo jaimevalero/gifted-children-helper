@@ -9,7 +9,7 @@ import pickle
 from crewai.tools import tool
 import uuid  # Importamos uuid para generar identificadores únicos
 
-def save_index(index, file_path):
+def save_index_file(index, file_path):
     """
     Save the index to a file.
 
@@ -113,7 +113,7 @@ def query_file(question, file_path, save_index=True):
             logger.info(f"File data loaded successfully {file_path=}")
             index = VectorStoreIndex.from_documents(data, show_progress=True)
             if save_index:
-                save_index(index, index_path)
+                save_index_file(index, index_path)
         
         query_engine = index.as_query_engine(streaming=True, similarity_top_k=3)
 
