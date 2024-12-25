@@ -4,9 +4,12 @@ from loguru import logger
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
-from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_modelos_adaptacion_curricular, ask_normativa_adaptacion_curricular_madrid
-from src.gifted_children_helper.utils.reports import copy_report  # type: ignore
-from gifted_children_helper.utils.models import get_embed_model_name, get_model
+from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_integracion_sensorial, ask_manual_necesidades_especificas,  ask_terapia_cognitivo_conductual
+#from src.gifted_children_helper.utils.reports import copy_report  # type: ignore
+from gifted_children_helper.utils.models import get_embed_model_name, get_model, get_model_name
+
+import inspect
+
 
 @CrewBase
 class GiftedChildrenHelper():
@@ -15,108 +18,143 @@ class GiftedChildrenHelper():
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
-    MAX_EXECUTION_TIMEOUT=900
+    MAX_EXECUTION_TIMEOUT=1200
+    model_name = get_model_name()
 
     @agent
     def clinical_psychologist(self) -> Agent:
-        logger.info("Initializing psychologist agent")
+
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            config=self.agents_config['clinical_psychologist'],
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos]
+            config=config,
+            model = get_model() ,
+            tools=[ask_altas_capacidades_en_ninos,
+                   ask_terapia_cognitivo_conductual]
 
         )
 
     @agent
     def educational_advisor(self) -> Agent:
-        logger.info("Initializing educational advisor agent")
-        return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,
-            config=self.agents_config['educational_advisor'],
-            model=get_model(),
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos,
-                   ask_modelos_adaptacion_curricular]
-        )
 
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
+        return Agent(
+            config=config,
+            model = get_model() ,
+            tools=[
+                    ask_barreras_entorno_escolar_alumnos_altas_capacidades,
+                    ask_altas_capacidades_en_ninos,
+                    ask_manual_necesidades_especificas,
+                   ] )
+    
+ 
     @agent
     def activity_coordinator(self) -> Agent:
-        logger.info("Initializing activity coordinator agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            config=self.agents_config['activity_coordinator'],
-            model=get_model(),
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos]
-        )
+            config=config,
+            model = get_model() ,
+            tools=[
+                    ask_barreras_entorno_escolar_alumnos_altas_capacidades,
+                    ask_altas_capacidades_en_ninos,
+                    ask_manual_necesidades_especificas,
+                   ]    )
+
 
     @agent
     def coordinator(self) -> Agent:
-        logger.info("Initializing coordinator agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,
-            config=self.agents_config['coordinator'],
-            model=get_model(),
-            verbose=True
-        )
+            config=config,
+            model = get_model() )
 
     @agent
     def clinical_psychologist(self) -> Agent:
-        logger.info("Initializing clinical psychologist agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,
-            config=self.agents_config['clinical_psychologist'],
-            model=get_model(),
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos]
-        )
+            config=config,
+            model = get_model() ,
+            tools=[ask_altas_capacidades_en_ninos,
+                   ask_terapia_cognitivo_conductual] )
 
     @agent
     def neurologist(self) -> Agent:
-        logger.info("Initializing neurologist agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,            
-            config=self.agents_config['neurologist'],
-            model=get_model(),
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos]
-        )
+            config=config,
+            model = get_model() ,
+            tools=[ask_altas_capacidades_en_ninos,
+                   ] )
 
     @agent
     def occupational_therapist(self) -> Agent:
-        logger.info("Initializing occupational therapist agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,            
-            config=self.agents_config['occupational_therapist'],
-            model=get_model(),
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos]
-        )
+            config=config,
+            model = get_model() ,
+            tools=[ask_integracion_sensorial] )
+            
+  
 
     @agent
     def educational_psychologist(self) -> Agent:
-        logger.info("Initializing educational psychologist agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,            
-            config=self.agents_config['educational_psychologist'],
-            model=get_model(),
-            verbose=True,
+            config=config,
+            model = get_model() ,
             tools=[
                 ask_altas_capacidades_en_ninos,
-                ask_normativa_adaptacion_curricular_madrid,
+                ask_manual_necesidades_especificas,
                 ask_barreras_entorno_escolar_alumnos_altas_capacidades,
-                ask_modelos_adaptacion_curricular
                 ]
         )
 
     @agent
     def family_therapist(self) -> Agent:
-        logger.info("Initializing family therapist agent")
+        agent_name = inspect.currentframe().f_code.co_name
+        logger.info(f"Initializing {agent_name} agent")
+        config = self.agents_config[agent_name]
+        config["llm"] = self.model_name
+
         return Agent(
-            max_execution_time = self.MAX_EXECUTION_TIMEOUT,            
-            config=self.agents_config['family_therapist'],
-            model=get_model(),
-            verbose=True,
-            tools=[ask_altas_capacidades_en_ninos]
+            config=config,
+            model = get_model() ,
+            tools=[
+                ask_altas_capacidades_en_ninos,
+                ask_barreras_entorno_escolar_alumnos_altas_capacidades,
+                ask_terapia_cognitivo_conductual
+            ]
         )
 
     @task
@@ -196,7 +234,7 @@ class GiftedChildrenHelper():
         
     def generate_consolidated_report(self):
         """
-        Generate a consolidated report from all task outputs and save it to last_reports.md.
+        Generate a consolidated report from all task outputs and save it to last_report.md.
         """
         logger.info("Generating consolidated report")
 
@@ -204,27 +242,36 @@ class GiftedChildrenHelper():
         report_content = ""
 
         # Iterate over the tasks and collect their outputs
-        for task in self.crew.tasks[1:-1]:  # Exclude the first and last tasks
-            task_name = task.config['name']
+        for i,task in enumerate(self.tasks[1:-1],start=1):
+            task_name = task.name
             task_output = task.output.raw
-            report_content += f"# Informe {task_name.replace('_', ' ').title()}\n\n{task_output}\n\n"
-
-        # Instructions for the LLM
-        instructions = """
-        Asegúrate de que todo el informe esté en español.
-        Por cada tarea, añade un título de primer nivel con el nombre de la tarea.
-        Formatea el informe en Markdown.
+            report_content += f"# {i} Informe: {task_name.replace('_', ' ').title()}\n\n{task_output}\n\n"
+        report_content = report_content.replace("```markdown","").replace("```","")
+            # Instructions for the LLM
+        instructions = f"""
+        Eres un maquetista documentador de informes de evaluación psicológicos.
+        Para el informe que te paso al final debes
+        1) Asegúrate de que todo el informe esté en español.
+        2) Por cada tarea, añade un título de primer nivel con el nombre de la tarea.
+        3) Formatea el informe en Markdown para que quede cohesivo. 
+        4) Importante, no quites nada. 
+        5) Responde solo con el informe formateado. El informe es {report_content}:
         """
 
         # Use the LLM to generate the final report
-        llm = get_model()
-        final_report = llm.generate(f"{instructions}\n\n{report_content}", language="es")
+        try :
+            llm = get_model()
+            contenido_final = llm.complete(f"{instructions}")
+        except Exception as e:
+            contenido_final = report_content
+        # Save the final report to last_report.md
+        # delte the last report if exists
+        if os.path.exists("logs/last_report.md"):
+            os.remove("logs/last_report.md")
+        with open("logs/last_report.md", "w") as report_file:
+            report_file.write(contenido_final)
 
-        # Save the final report to last_reports.md
-        with open("logs/last_reports.md", "w") as report_file:
-            report_file.write(final_report)
-
-        logger.info("Consolidated report generated and saved to logs/last_reports.md")
+        logger.info("Consolidated report generated and saved to logs/last_report.md")
 
     @crew
     def crew(self) -> Crew:
@@ -239,14 +286,14 @@ class GiftedChildrenHelper():
         crew = Crew(
             agents=non_manager_agents,
             tasks=self.tasks,
-            verbose=True,
+            
             embedder= {
                 "provider": "ollama",
                 "config": {
                     "model": embed_model_name
                 }    
             },        
-            process=Process.hierarchical,
+            process=Process.sequential,
             manager_agent=manager_agent,
             planning=False,
             language="es"
