@@ -25,27 +25,32 @@ def get_case():
     return case
 
 
-def run():
+def run(case: str = None, callback: callable = None,session_id: str = None):
     """
     Run the crew.
     """
+    if not case:
+        case = get_case()
     inputs = {
-        'case' : get_case()
+        'case': case
     }
     load_dotenv()
     ensure_dirs_exist()
     
-    try :
-        helper = GiftedChildrenHelper()
+    try:
+        helper = GiftedChildrenHelper(task_callback=callback)
         crew = helper.crew()
         crew.kickoff(inputs=inputs)
         # por cada una de las crew.tasks, añadirlo todo a un solo string.
         # Despues , formatearlo para darle uniformidad
-        helper.generate_consolidated_report()
-        a = 0
+        pdf_filename = helper.generate_consolidated_report(session_id)
+        return pdf_filename
+        
     except Exception as e:
         logger.error(f"An error occurred while running the crew: {e}")
-        
+        logger.exception(e)
+        raise Exception(f"An error occurred while running the crew: {e}")
+    
 def ensure_dirs_exist():
     dirs = ["logs", "tmp"]
     # Ensure the directories exist in the current working directory

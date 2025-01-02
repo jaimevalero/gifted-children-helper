@@ -4,25 +4,41 @@ from loguru import logger
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
-from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_integracion_sensorial, ask_manual_necesidades_especificas,  ask_terapia_cognitivo_conductual
-#from src.gifted_children_helper.utils.reports import copy_report  # type: ignore
+from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_integracion_sensorial, ask_manual_necesidades_especificas, ask_terapia_cognitivo_conductual
 from gifted_children_helper.utils.models import get_embed_model_name, get_model, get_model_name
 from gifted_children_helper.utils.connection_webui import communicate_task_gui
-
 import inspect
-
 from gifted_children_helper.utils.reports import convert_markdown_to_pdf
+
+
 
 
 @CrewBase
 class GiftedChildrenHelper():
     """GiftedChildrenHelper crew"""
 
+    def __init__(self, task_callback: callable = None):
+        self.task_callback = task_callback
+        super().__init__()
+
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
+    tasks_done = 1
 
     MAX_EXECUTION_TIMEOUT=1200
     model_name = get_model_name()
+
+    def callback_function(self,output):
+        self.tasks_done += 1
+        total_tasks = len(self.tasks)
+        percentage_progress = self.tasks_done / total_tasks
+
+        progress_message = f"""
+({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}.\n
+{output.raw}
+        """
+        logger.info(progress_message)
+        self.task_callback(progress_message, percentage_progress)
 
     @agent
     def clinical_psychologist(self) -> Agent:
@@ -172,7 +188,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing clinical psychology assessment task")
         return Task(
             config=self.tasks_config['clinical_psychology_assessment'],
-            callback=communicate_task_gui
+            callback=self.callback_function,
         )
 
     @task
@@ -180,7 +196,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing neurological assessment task")
         return Task(
             config=self.tasks_config['neurological_assessment'],
-            callback=communicate_task_gui
+            callback=self.callback_function,
         )
 
     @task
@@ -188,7 +204,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing occupational therapy assessment task")
         return Task(
             config=self.tasks_config['occupational_therapy_assessment'],
-            callback=communicate_task_gui
+            callback=self.callback_function,
         )
 
     @task
@@ -196,7 +212,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing educational psychology assessment task")
         return Task(
             config=self.tasks_config['educational_psychology_assessment'],
-            callback=communicate_task_gui
+            callback=self.callback_function,
         )
 
     @task
@@ -204,8 +220,9 @@ class GiftedChildrenHelper():
         logger.info("Initializing family therapy assessment task")
         return Task(
             config=self.tasks_config['family_therapy_assessment'],
-            callback=communicate_task_gui
+            callback=self.callback_function,
         )
+
 
     @task
     def activity_planning_assessment(self) -> Task:
@@ -219,7 +236,7 @@ class GiftedChildrenHelper():
                 self.educational_psychology_assessment(),
                 self.family_therapy_assessment(),
             ],
-            callback=communicate_task_gui
+            callback=self.callback_function,
         )
 
     # @task
@@ -241,7 +258,7 @@ class GiftedChildrenHelper():
     #         #     self.occupational_therapy_assessment(),
     #         #     self.educational_psychology_assessment(),
         
-    def generate_consolidated_report(self):
+    def generate_consolidated_report(self,session_id):
         """
         Generate a consolidated report from all task outputs and save it to last_report.md.
         """
@@ -256,34 +273,26 @@ class GiftedChildrenHelper():
             task_output = task.output.raw
             report_content += f"# {i} Informe: {task_name.replace('_', ' ').title()}\n\n{task_output}\n\n"
         report_content = report_content.replace("```markdown","").replace("```","")
-            # Instructions for the LLM
-        instructions = f"""
-        Eres un maquetista documentador de informes de evaluación psicológicos.
-        Para el informe que te paso al final debes
-        1) Asegúrate de que todo el informe esté en español.
-        2) Por cada tarea, añade un título de primer nivel con el nombre de la tarea.
-        3) Formatea el informe en Markdown para que quede cohesivo. 
-        4) Importante, no quites nada. 
-        5) Responde solo con el informe formateado. El informe es {report_content}:
-        """
-
-        # Use the LLM to generate the final report
-        try :
-            llm = get_model()
-            # Get response and save it to string
-            response = llm.complete(f"{instructions}")
-            contenido_final = response.choices[0].text
-        except Exception as e:
-            contenido_final = report_content
-        # Save the final report to last_report.md
-        # delte the last report if exists
-        if os.path.exists("logs/last_report.md"):
-            os.remove("logs/last_report.md")
-        with open("logs/last_report.md", "w") as report_file:
+        contenido_final = report_content
+        
+        markdown_filename = "logs/last_report.md"
+        if os.path.exists(markdown_filename):
+            os.remove(markdown_filename)
+        with open(markdown_filename, "w") as report_file:
             report_file.write(contenido_final)
-        convert_markdown_to_pdf('logs/last_report.md', 'logs/last_report.pdf')
-        logger.info("Consolidated report generated and saved to logs/last_report.md")
-
+        # Generate un temp file with a unique name the content in pdf format. Return it
+        if session_id:
+            pdf_filename = f"logs/{session_id}.pdf" 
+        else :
+            pdf_filename = f"logs/last_report.pdf"
+        
+        if os.path.exists(pdf_filename):
+            os.remove(pdf_filename)
+                              
+        convert_markdown_to_pdf(markdown_filename, pdf_filename)
+        logger.info(f"Consolidated report generated and saved to {pdf_filename}")
+        return pdf_filename
+    
     @crew
     def crew(self) -> Crew:
         """Creates the GiftedChildrenHelper crew"""
