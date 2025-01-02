@@ -3,7 +3,7 @@ from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_base_url, get_model, get_embed_model, get_model_name
+from gifted_children_helper.utils.models import get_base_url, get_embed_aux_model_name, get_model, get_embed_model, get_model_name
 import os
 import pickle
 from crewai.tools import tool
@@ -90,12 +90,17 @@ def query_file(question, file_path, save_index=True):
         index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
         index_path = os.path.join(tmp_dir, index_file_name)
 
-        DEFAULT_MODEL = 'gpt-3.5-turbo'
+        DEFAULT_MODEL = 'gpt-3.5-turbo' 
         if Settings.llm.model == DEFAULT_MODEL : 
+            embed_aux_model_name = get_embed_aux_model_name()
             Settings.llm = Ollama(
-                model=get_model_name().replace("ollama/", ""),
+                #model=get_model_name().replace("ollama/", ""),
+                model= embed_aux_model_name.replace("ollama/", ""),
                 base_url = get_base_url(),
-                context_window=5000)
+                request_timeout=3600,  # Aumentar el tiempo de espera
+                context_window=5000,
+                keep_alive="30m"  # Aumentar el tiempo de vida
+            )
             Settings.embed_model = get_embed_model()
         
         if os.path.exists(index_path):
@@ -119,9 +124,13 @@ def query_file(question, file_path, save_index=True):
 
         logger.info(f"Querying {file_path=} with question: {question=}")
 
-        response = query_engine.query(question)
-        response.print_response_stream()
-        return response.response_txt
+        try:
+            response = query_engine.query(question)
+            response.print_response_stream()
+            return response.response_txt
+        except Exception as e:
+            logger.error("Error during query execution: {}", e)
+            return None
     except Exception as e:
         logger.error(f"Error loading file {file_path=}: {e}")
         if "openai" in str(e).lower():
@@ -129,8 +138,6 @@ def query_file(question, file_path, save_index=True):
         elif "ollama" in str(e).lower():
             logger.error("There was an issue with the Ollama service. Please check your network connection and configuration.")
         return None
-
-
 
 @tool("Consultar un libro sobre altas capacidades en niños.")
 def ask_altas_capacidades_en_ninos(question:str) -> str:
@@ -159,10 +166,6 @@ def ask_terapia_cognitivo_conductual(question: str) -> str:
     """Consultar el libro: Terapia Cognitivo Conductual Aplicada A Niños Y Adolescentes."""
     return query_file(question, file_path="terapia_cognitivo_conductual_aplicada_a_niños_y_adolescentes.txt")
 
-
-
-
-
 def test_text_file(file_path="~/git/gifted-children-helper/knowledge/external_docs/books/TerapiaCognitivoConductualAplicadaANinosYAdolescdentes.txt",save_index=False):
     """
     Test the query_file function with a predefined text file and question.
@@ -172,7 +175,6 @@ def test_text_file(file_path="~/git/gifted-children-helper/knowledge/external_do
     question = """ Quien es el autor o autores de este libro y que conclusiones se pueden sacar de el?"""
     response = query_file(question, file_path,save_index)
     logger.info("Response: {}", response)
-
 
 def test_find_error_in_file(file_path):
     """
@@ -200,7 +202,6 @@ def test_find_error_in_file(file_path):
         logger.error("Failed to read the file: {}", e)
         raise e
 
-
 def test_all_files():
     FILES= [
         "altas_capacidades_en_niños.pdf",
@@ -211,4 +212,4 @@ def test_all_files():
         ]
     for file in FILES:
         test_text_file(file,save_index=False)
-    
+

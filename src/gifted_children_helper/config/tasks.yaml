@@ -1,10 +1,18 @@
-initial_case_evaluation:
-  description: >
-    Analizar la información disponible y realizar la evaluación inicial del caso {case}.
-    Establecer prioridades de evaluación.
-  expected_output: Plan de intervención muy profesional en markdown, en español, con especialistas asignados y prioridades en markdown. Importante, responde en español.
-  agent: coordinator
-  output_file: "logs/initial_case_evaluation.md"
+# initial_case_evaluation:
+#   description: >
+#     Analizar la información disponible y realizar la evaluación inicial del caso {case}.
+#     Establecer prioridades de evaluación, asignando a cada uno de los especialistas, y solo a estos:
+#      - clinical_psychologist
+#      - neurologist
+#      - occupational_therapist
+#      - educational_psychologist
+#      - family_therapist
+#      - educational_advisor
+#      - activity_coordinator
+
+#   expected_output: Plan de intervención muy profesional en markdown, en español, con especialistas asignados y prioridades en markdown. Importante, responde en español.
+#   agent: coordinator
+#   output_file: "logs/initial_case_evaluation.md"
 
 clinical_psychology_assessment:
   description: >

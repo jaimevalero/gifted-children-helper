@@ -7,8 +7,11 @@ from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_integracion_sensorial, ask_manual_necesidades_especificas,  ask_terapia_cognitivo_conductual
 #from src.gifted_children_helper.utils.reports import copy_report  # type: ignore
 from gifted_children_helper.utils.models import get_embed_model_name, get_model, get_model_name
+from gifted_children_helper.utils.connection_webui import communicate_task_gui
 
 import inspect
+
+from gifted_children_helper.utils.reports import convert_markdown_to_pdf
 
 
 @CrewBase
@@ -157,18 +160,19 @@ class GiftedChildrenHelper():
             ]
         )
 
-    @task
-    def initial_case_evaluation(self) -> Task:
-        logger.info("Initializing initial case evaluation task")
-        return Task(
-            config=self.tasks_config['initial_case_evaluation'],
-        )
+    # @task
+    # def initial_case_evaluation(self) -> Task:
+    #     logger.info("Initializing initial case evaluation task")
+    #     return Task(
+    #         config=self.tasks_config['initial_case_evaluation'],
+    #     )
     
     @task
     def clinical_psychology_assessment(self) -> Task:
         logger.info("Initializing clinical psychology assessment task")
         return Task(
             config=self.tasks_config['clinical_psychology_assessment'],
+            callback=communicate_task_gui
         )
 
     @task
@@ -176,6 +180,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing neurological assessment task")
         return Task(
             config=self.tasks_config['neurological_assessment'],
+            callback=communicate_task_gui
         )
 
     @task
@@ -183,6 +188,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing occupational therapy assessment task")
         return Task(
             config=self.tasks_config['occupational_therapy_assessment'],
+            callback=communicate_task_gui
         )
 
     @task
@@ -190,6 +196,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing educational psychology assessment task")
         return Task(
             config=self.tasks_config['educational_psychology_assessment'],
+            callback=communicate_task_gui
         )
 
     @task
@@ -197,6 +204,7 @@ class GiftedChildrenHelper():
         logger.info("Initializing family therapy assessment task")
         return Task(
             config=self.tasks_config['family_therapy_assessment'],
+            callback=communicate_task_gui
         )
 
     @task
@@ -204,6 +212,14 @@ class GiftedChildrenHelper():
         logger.info("Initializing activity planning assessment task")
         return Task(
             config=self.tasks_config['activity_planning_assessment'],
+            context=[
+                self.clinical_psychology_assessment(),
+                self.neurological_assessment(),
+                self.occupational_therapy_assessment(),
+                self.educational_psychology_assessment(),
+                self.family_therapy_assessment(),
+            ],
+            callback=communicate_task_gui
         )
 
     # @task
@@ -224,13 +240,6 @@ class GiftedChildrenHelper():
     #         #     self.neurological_assessment(),
     #         #     self.occupational_therapy_assessment(),
     #         #     self.educational_psychology_assessment(),
-    #         #     self.family_therapy_assessment(),
-    #         #     self.activity_planning_assessment()],
-    #         callback=copy_report,
-    #         output_file=filename
-    #     )
-    
-    #     return task
         
     def generate_consolidated_report(self):
         """
@@ -261,7 +270,9 @@ class GiftedChildrenHelper():
         # Use the LLM to generate the final report
         try :
             llm = get_model()
-            contenido_final = llm.complete(f"{instructions}")
+            # Get response and save it to string
+            response = llm.complete(f"{instructions}")
+            contenido_final = response.choices[0].text
         except Exception as e:
             contenido_final = report_content
         # Save the final report to last_report.md
@@ -270,7 +281,7 @@ class GiftedChildrenHelper():
             os.remove("logs/last_report.md")
         with open("logs/last_report.md", "w") as report_file:
             report_file.write(contenido_final)
-
+        convert_markdown_to_pdf('logs/last_report.md', 'logs/last_report.pdf')
         logger.info("Consolidated report generated and saved to logs/last_report.md")
 
     @crew

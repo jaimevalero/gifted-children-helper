@@ -3,6 +3,7 @@ import sys
 import warnings
 import os
 from loguru import logger
+from dotenv import load_dotenv
 
 from gifted_children_helper.crew import GiftedChildrenHelper
 
@@ -23,6 +24,7 @@ def get_case():
     logger.info(f"Case: {case}")
     return case
 
+
 def run():
     """
     Run the crew.
@@ -30,16 +32,20 @@ def run():
     inputs = {
         'case' : get_case()
     }
+    load_dotenv()
     ensure_dirs_exist()
-
-    helper = GiftedChildrenHelper()
-    crew = helper.crew()
-    crew.kickoff(inputs=inputs)
-    # por cada una de las crew.tasks, añadirlo todo a un solo string.
-    # Despues , formatearlo para darle uniformidad
-    helper.generate_consolidated_report()
-    a = 0
-
+    
+    try :
+        helper = GiftedChildrenHelper()
+        crew = helper.crew()
+        crew.kickoff(inputs=inputs)
+        # por cada una de las crew.tasks, añadirlo todo a un solo string.
+        # Despues , formatearlo para darle uniformidad
+        helper.generate_consolidated_report()
+        a = 0
+    except Exception as e:
+        logger.error(f"An error occurred while running the crew: {e}")
+        
 def ensure_dirs_exist():
     dirs = ["logs", "tmp"]
     # Ensure the directories exist in the current working directory
