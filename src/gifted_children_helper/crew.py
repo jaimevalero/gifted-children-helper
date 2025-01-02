@@ -23,7 +23,7 @@ class GiftedChildrenHelper():
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
-    tasks_done = 1
+    tasks_done = 0 # 2 because the first are not counted
 
     MAX_EXECUTION_TIMEOUT=1200
     model_name = get_model_name()
@@ -176,13 +176,6 @@ class GiftedChildrenHelper():
             ]
         )
 
-    # @task
-    # def initial_case_evaluation(self) -> Task:
-    #     logger.info("Initializing initial case evaluation task")
-    #     return Task(
-    #         config=self.tasks_config['initial_case_evaluation'],
-    #     )
-    
     @task
     def clinical_psychology_assessment(self) -> Task:
         logger.info("Initializing clinical psychology assessment task")
@@ -239,25 +232,6 @@ class GiftedChildrenHelper():
             callback=self.callback_function,
         )
 
-    # @task
-    # def integration_planning(self) -> Task:
-    #     logger.info("Task: integration_planning")
-    #     # Generate filename for the output file logs/report-yyyy-mm-dd-hh-mm.md
-    #     if "logs" not in os.listdir():
-    #         os.mkdir("logs")
-    #     filename = f"logs/report-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.md"
-    #     # Remove if exists logs/last_report.md
-    #     if os.path.exists("logs/last_report.md"):
-    #         os.remove("logs/last_report.md")
-        
-    #     task = Task(
-    #         config=self.tasks_config['integration_planning'],
-    #         # context=[
-    #         #     self.clinical_psychology_assessment(),
-    #         #     self.neurological_assessment(),
-    #         #     self.occupational_therapy_assessment(),
-    #         #     self.educational_psychology_assessment(),
-        
     def generate_consolidated_report(self,session_id):
         """
         Generate a consolidated report from all task outputs and save it to last_report.md.

@@ -7,6 +7,7 @@ import uuid
 import os
 from gifted_children_helper.main import run
 from dotenv import load_dotenv
+from streamlit.components.v1 import html
 
 # Load environment variables
 load_dotenv()
@@ -27,10 +28,11 @@ def streamlit_callback(message: str, progress: float = None):
     logger.info(f"Streamlit callback called with message: {message} and progress: {progress}")
     # Convert markdown to html
     st.markdown(message)
-
+    
     if progress is not None:
         if "progress_bar" not in st.session_state:
             st.session_state.progress_bar = st.progress(0)
+        progress = min(1.0, max(0.0, progress))  # Ensure progress is between 0 and 1   
         st.session_state.progress_bar.progress(progress)
 
 def call_crew_ai(case, session_id, callback):
@@ -66,81 +68,43 @@ def load_terms_and_policy():
     with open(terms_file_path, 'r', encoding='utf-8') as file:
         return file.read()
 
+def add_navbar():
+    """
+    Add a navigation bar to the Streamlit app.
+    """
+    logger.info("Adding navigation bar to the app")
+    st.markdown("""
+<nav class="navbar navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1">Gabinete integral de psicología</span>
+</nav>
+    """, unsafe_allow_html=True)
+
 def main():
+    # Add the navigation bar
+    add_navbar()
+    
     # Set the title of the Streamlit app
     logger.info("Starting Streamlit app")
-    st.title("Formulario para Informe Psicológico")
-    st.write("Esta aplicación simula, mediante inteligencia artificial, un gabinete psicológico especializado en familias con niños/as de altas capacidades.")
-    st.write("Completa el formulario para generar un informe psicológico.")
+
+    #st.title("Formulario para Informe Psicológico")
+    st.info("""Esta aplicación simula, mediante inteligencia artificial, un gabinete psicológico especializado en familias con niños/as de altas capacidades.
+
+Completa el formulario para generar un informe psicológico.""")
     
-    # Add a button to toggle dark mode with an icon
-    if "dark_mode" not in st.session_state:
-        st.session_state.dark_mode = False
-
-    def toggle_dark_mode():
-        st.session_state.dark_mode = not st.session_state.dark_mode
-
-    st.sidebar.button("🌙 Modo oscuro", on_click=toggle_dark_mode)
-
-    # Apply dark mode if enabled
-    if st.session_state.dark_mode:
-        st.markdown("""
-            <style>
-            body {
-                background-color: #121212;
-                color: #f0f0f0;
-            }
-            .stTextArea textarea {
-                background-color: #333;
-                color: #f0f0f0;
-                font-size: 14px;
-                border-radius: 5px;
-                padding: 10px;
-            }
-            .stButton button {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 5px;
-            }
-            .stButton button:hover {
-                background-color: #45a049;
-            }
-            .stSidebar .css-1d391kg {
-                background-color: #333;
-            }
-            .stSidebar .css-1d391kg .css-1v3fvcr {
-                color: #f0f0f0;
-            }
-            .stSidebar .css-1d391kg .css-1v3fvcr:hover {
-                color: #4CAF50;
-            }
-            .stTextArea label {
-                font-size: 18px;
-                font-weight: bold;
-                color: #f0f0f0;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-    else:
-        # Load the CSS from the static file
-        css_file_path = os.path.join(os.path.dirname(__file__), 'static', 'style.css')
-        with open(css_file_path) as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    # Load the CSS from the static file
+    css_file_path = os.path.join(os.path.dirname(__file__), 'static', 'style.css')
+    with open(css_file_path) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
     # Generate a UUID for the session if not already present
     if "session_id" not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
 
     # Add text areas for user input with lighter placeholder text
-    description = st.text_area("1. Descripción del Niño/a", placeholder="Incluye edad, lugar de residencia, personalidad, y características principales...", height=100)
+    description = st.text_area("1. Descripción del Niño/a", placeholder="""
+Incluye edad, lugar de residencia, personalidad, y características principales.
+Pe: Juan es un niño de 8 años que vive en Madrid. Es muy curioso y le encanta
+                               """, height=100)
     family_dynamics = st.text_area("2. Dinámica Familiar", placeholder="Describe cómo interactúa con la familia, rutinas en casa, y relación con hermanos...", height=100)
     emotional_behavior = st.text_area("3. Comportamiento y Manejo Emocional", placeholder="Explica cómo se comporta en diferentes situaciones y gestiona sus emociones...", height=100)
     skills_development = st.text_area("4. Habilidades y Desarrollo", placeholder="Describe las habilidades del niño/a y áreas de desarrollo (académico, físico, creativo, social)...", height=100)
@@ -150,11 +114,11 @@ def main():
 
     # Mock authentication
     email = mock_google_auth()
-    st.sidebar.markdown(f"**Usuario autenticado:** {email}")
+    #st.sidebar.markdown(f"**Usuario autenticado:** {email}")
 
     # Count words in all text areas
     total_words = count_words(description, family_dynamics, emotional_behavior, skills_development, school_context, problems_difficulties, additional_observations)
-    st.sidebar.write(f"Total words: {total_words}")
+    #st.sidebar.write(f"Total words: {total_words}")
 
     MINIMUN_WORDS = 200 
     debug_mode = os.getenv("DEBUG") == "1" # Check if DEBUG mode is enabled
@@ -180,19 +144,25 @@ def main():
     if not data_policy_accepted:
         st.error("Por favor, acepta los términos de servicio para continuar.")
 
-    if st.button("Generar informe", disabled=send_button_disabled or not data_policy_accepted):
-        # Call Crew.ai with session ID and all text areas
-        #st.write("**Generando informe:**")
+    if st.button("Generar informe 📝", disabled=send_button_disabled or not data_policy_accepted):
+        # Initialize the case variable
+        case = ""
 
-        case = f""" 
-        **Descripción del Niño/a:** {description}
-        **Dinámica Familiar:** {family_dynamics}
-        **Comportamiento y Manejo Emocional:** {emotional_behavior}
-        **Habilidades y Desarrollo:** {skills_development}
-        **Contexto Escolar y Extraescolar:** {school_context}
-        **Problemas y Situaciones Difíciles:** {problems_difficulties}
-        **Observaciones Adicionales:** {additional_observations}
-        """
+        # Append each section if the associated text is not empty
+        if description:
+            case += f"**Descripción del Niño/a:** {description}\n"
+        if family_dynamics:
+            case += f"**Dinámica Familiar:** {family_dynamics}\n"
+        if emotional_behavior:
+            case += f"**Comportamiento y Manejo Emocional:** {emotional_behavior}\n"
+        if skills_development:
+            case += f"**Habilidades y Desarrollo:** {skills_development}\n"
+        if school_context:
+            case += f"**Contexto Escolar y Extraescolar:** {school_context}\n"
+        if problems_difficulties:
+            case += f"**Problemas y Situaciones Difíciles:** {problems_difficulties}\n"
+        if additional_observations:
+            case += f"**Observaciones Adicionales:** {additional_observations}\n"
         
         pdf_filename = call_crew_ai(case, st.session_state.session_id, streamlit_callback)
         
@@ -203,7 +173,7 @@ def main():
         if os.path.exists(pdf_filename):
             with open(pdf_filename, "rb") as file:
                 st.download_button(
-                    label="Descargar informe",
+                    label="Descargar informe 📥",  # Added download icon
                     data=file,
                     file_name="informe_final.pdf",  # Specify the desired download name
                     mime="application/pdf"
@@ -211,6 +181,12 @@ def main():
         
     # Log the current app mode
     logger.info("Current app mode: Generar Informe")
+
+    # Add footer with link to source code
+    footer_html = """<div style='text-align: right;'>
+      <p>Desarrollado con ❤️ en <a href="https://github.com/jaimevalero/gifted-children-helper/" target="_blank">GitHub</a>.</p>
+    </div>"""
+    st.markdown(footer_html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
