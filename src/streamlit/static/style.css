@@ -8,6 +8,7 @@ body {
     font-size: 14px;
     border-radius: 5px;
     padding: 10px;
+    height: 130px; /* Establecer la altura de los text_area */
 }
 .stButton button {
     background-color: #2DA1A7; /* Color corporativo */

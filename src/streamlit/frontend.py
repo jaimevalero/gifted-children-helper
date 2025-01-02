@@ -103,14 +103,45 @@ Por favor, completa el formulario para generar un informe psicológico.""")
     # Add text areas for user input with lighter placeholder text
     description = st.text_area("1. Descripción del Niño/a", placeholder="""
 Incluye edad, lugar de residencia, personalidad, y características principales.
-Pe: Juan es un niño de 8 años que vive en Madrid. Es muy curioso y le encanta
-                               """, height=100)
-    family_dynamics = st.text_area("2. Dinámica Familiar", placeholder="Describe cómo interactúa con la familia, rutinas en casa, y relación con hermanos...", height=100)
-    emotional_behavior = st.text_area("3. Comportamiento y Manejo Emocional", placeholder="Explica cómo se comporta en diferentes situaciones y gestiona sus emociones...", height=100)
-    skills_development = st.text_area("4. Habilidades y Desarrollo", placeholder="Describe las habilidades del niño/a y áreas de desarrollo (académico, físico, creativo, social)...", height=100)
-    school_context = st.text_area("5. Contexto Escolar y Extraescolar", placeholder="Comenta sobre su progreso académico y actividades fuera de la escuela...", height=100)
-    problems_difficulties = st.text_area("6. Problemas y Situaciones Difíciles", placeholder="Indica los problemas principales y cuándo suelen ocurrir...", height=100)
-    additional_observations = st.text_area("7. Observaciones Adicionales", placeholder="Añade cualquier otro detalle que consideres importante...", height=100)
+Ejemplo: 
+Juan es un niño de 8 años que vive en Madrid con su hermano Enrique de 11. Es un niño muy curioso, con gran interés por la astronomía y los videojuegos. A menudo hace preguntas complejas sobre el universo y muestra un vocabulario avanzado para su edad.
+""")
+
+    family_dynamics = st.text_area("2. Dinámica Familiar", placeholder="""
+Describe cómo interactúa con la familia, rutinas en casa, y relación con hermanos.
+Ejemplo: 
+En casa, Juan mantiene una relación cercana con su madre, quien lo apoya en sus proyectos escolares. Sin embargo, suele discutir con su hermano Enrique, quien a veces se siente desplazado por la atención que recibe Juan debido a sus logros académicos. Los padres tratan de mantener un equilibrio, pero a menudo enfrentan dificultades para atender las necesidades de ambos hijos.
+""")
+
+    emotional_behavior = st.text_area("3. Comportamiento y Manejo Emocional", placeholder="""
+Explica cómo se comporta en diferentes situaciones y gestiona sus emociones.
+Ejemplo: 
+Juan suele frustrarse cuando no logra alcanzar la perfección en sus proyectos o cuando se siente incomprendido por sus compañeros en el colegio. Tiende a aislarse cuando está molesto, aunque responde bien a actividades estructuradas como clases de música. Su autoestima es alta en lo académico, pero se muestra inseguro en interacciones sociales.
+""")
+
+    skills_development = st.text_area("4. Habilidades y Desarrollo", placeholder="""
+Describe las habilidades del niño/a y áreas de desarrollo (académico, físico, creativo, social).
+Ejemplo: 
+Juan destaca en matemáticas y ciencias, resolviendo problemas avanzados para su edad. Ha comenzado a escribir cuentos breves y muestra creatividad en su forma de narrar. Sin embargo, en actividades deportivas se siente menos capaz y evita participar en juegos de equipo, lo que afecta su integración social.
+""")
+
+    school_context = st.text_area("5. Contexto Escolar y Extraescolar", placeholder="""
+Comenta sobre su progreso académico y actividades fuera de la escuela.
+Ejemplo: 
+En el colegio, Juan suele aburrirse con tareas repetitivas y ha manifestado interés por proyectos más desafiantes. Participa en un taller de robótica después de clases, donde trabaja con estudiantes mayores y disfruta la experiencia. Sus profesores reconocen su talento, pero a veces no saben cómo manejar sus necesidades específicas.
+""")
+
+    problems_difficulties = st.text_area("6. Problemas y Situaciones Difíciles", placeholder="""
+Indica los problemas principales y cuándo suelen ocurrir.
+Ejemplo: 
+Juan se siente aislado socialmente, ya que sus compañeros lo perciben como "diferente" debido a su forma de expresarse y sus intereses. En casa, las tensiones con su hermano mayor son frecuentes, especialmente en actividades compartidas como juegos de mesa. Su madre señala que Juan tiene dificultades para manejar la frustración y aceptar críticas constructivas.
+""")
+
+    additional_observations = st.text_area("7. Observaciones Adicionales", placeholder="""
+Añade cualquier otro detalle que consideres importante.
+Ejemplo: 
+Juan tiene un gran interés por aprender programación y ha comenzado a explorar plataformas en línea. Sus padres están preocupados por su exceso de tiempo frente a pantallas y buscan formas de equilibrar sus actividades tecnológicas con experiencias al aire libre. También mencionan que Juan muestra interés por participar en programas para niños de altas capacidades.
+""")
 
     # Mock authentication
     email = mock_google_auth()
@@ -141,7 +172,7 @@ Pe: Juan es un niño de 8 años que vive en Madrid. Es muy curioso y le encanta
 
     # Add footer with link to source code
     footer_html = """<div style='text-align: right;'>
-      <p>Desarrollado con ❤️ para <a href="https://www.asociacionamaci.com/" target="_blank">AMACI</a>.</p>
+      <p>Desarrollado con ❤️ para <a href="https://www.asociacionamaci.com/" target="_blank">AMACI</a></p>
     </div>"""
 
     # Si no se han aceptado los terminos del servicio, no permita enviar el formulario, y poner un st.error
