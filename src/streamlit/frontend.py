@@ -89,7 +89,7 @@ def main():
     #st.title("Formulario para Informe Psicológico")
     st.info("""Esta aplicación simula, mediante inteligencia artificial, un gabinete psicológico especializado en familias con niños/as de altas capacidades.
 
-Completa el formulario para generar un informe psicológico.""")
+Por favor, completa el formulario para generar un informe psicológico.""")
     
     # Load the CSS from the static file
     css_file_path = os.path.join(os.path.dirname(__file__), 'static', 'style.css')
@@ -139,6 +139,11 @@ Pe: Juan es un niño de 8 años que vive en Madrid. Es muy curioso y le encanta
 
     data_policy_accepted = st.checkbox("Acepto los términos de servicio.", value=debug_mode)
 
+    # Add footer with link to source code
+    footer_html = """<div style='text-align: right;'>
+      <p>Desarrollado con ❤️ para <a href="https://www.asociacionamaci.com/" target="_blank">AMACI</a>.</p>
+    </div>"""
+
     # Si no se han aceptado los terminos del servicio, no permita enviar el formulario, y poner un st.error
     # Ojo que al principio no debe mostrar el error, solo cuando se intente enviar el formulario
     if not data_policy_accepted:
@@ -178,14 +183,12 @@ Pe: Juan es un niño de 8 años que vive en Madrid. Es muy curioso y le encanta
                     file_name="informe_final.pdf",  # Specify the desired download name
                     mime="application/pdf"
                 )
-        
+            st.markdown(footer_html, unsafe_allow_html=True)
+
     # Log the current app mode
     logger.info("Current app mode: Generar Informe")
 
-    # Add footer with link to source code
-    footer_html = """<div style='text-align: right;'>
-      <p>Desarrollado con ❤️ en <a href="https://github.com/jaimevalero/gifted-children-helper/" target="_blank">GitHub</a>.</p>
-    </div>"""
+
     st.markdown(footer_html, unsafe_allow_html=True)
 
 if __name__ == "__main__":

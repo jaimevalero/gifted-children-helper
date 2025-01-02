@@ -10,7 +10,7 @@ body {
     padding: 10px;
 }
 .stButton button {
-    background-color: #4CAF50;
+    background-color: #2DA1A7; /* Color corporativo */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -23,7 +23,7 @@ body {
     border-radius: 5px;
 }
 .stButton button:hover {
-    background-color: #45a049;
+    background-color: #25898B; /* Slightly darker shade for hover effect */
 }
 .stButton button:disabled {
     background-color: #a5d6a7;
@@ -37,7 +37,7 @@ body {
     color: #333;
 }
 .stSidebar .css-1d391kg .css-1v3fvcr:hover {
-    color: #4CAF50;
+    color: #2DA1A7; /* Color corporativo */
 }
 .stTextArea label {
     font-size: 18px;
@@ -47,7 +47,7 @@ body {
 
 /* Navbar styles */
 .navbar {
-    background-color: #4CAF50;
+    background-color: #2DA1A7; /* Color corporativo */
     color: white;
     padding: 10px;
     margin-bottom: 50px;
