@@ -152,7 +152,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
     #st.sidebar.write(f"Total words: {total_words}")
 
     MINIMUN_WORDS = 200 
-    debug_mode = os.getenv("DEBUG") == "1" # Check if DEBUG mode is enabled
+    debug_mode = os.getenv("LOCAL") == "1" # Check if LOCAL mode is enabled
     minimun_words = 0 if debug_mode else MINIMUN_WORDS
     words_remaining = minimun_words - total_words
 
@@ -214,8 +214,8 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
                     file_name="informe_final.pdf",  # Specify the desired download name
                     mime="application/pdf"
                 )
-            st.markdown(footer_html, unsafe_allow_html=True)
-
+            
+            
     # Log the current app mode
     logger.info("Current app mode: Generar Informe")
 

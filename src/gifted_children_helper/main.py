@@ -44,6 +44,8 @@ def run(case: str = None, callback: callable = None,session_id: str = None):
         # por cada una de las crew.tasks, añadirlo todo a un solo string.
         # Despues , formatearlo para darle uniformidad
         pdf_filename = helper.generate_consolidated_report(session_id)
+        # Print token usage
+        logger.info(f"Token usage: {crew.usage_metrics}")
         return pdf_filename
         
     except Exception as e:

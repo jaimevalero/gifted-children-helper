@@ -277,12 +277,16 @@ class GiftedChildrenHelper():
         manager_agent = [ agent  for agent in self.agents if agent.role == cordinator_role][0]
         embed_model_name = get_embed_model_name()
 
+        # Get provider from model name
+        default_model = get_model_name()
+        provider = "ollama" if "ollama" in default_model else "openai"
+
         crew = Crew(
             agents=non_manager_agents,
             tasks=self.tasks,
             
             embedder= {
-                "provider": "ollama",
+                "provider": provider,
                 "config": {
                     "model": embed_model_name
                 }    

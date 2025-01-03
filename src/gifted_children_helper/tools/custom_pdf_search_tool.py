@@ -49,10 +49,7 @@ def read_text_file(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
             content = f.read()
-        # Normalizamos el texto para evitar problemas con caracteres especiales
-        #content = unicodedata.normalize('NFKD', content).encode('ascii', 'ignore').decode('ascii')
-        # Quitamos los acentos, mayusculas y minusculas
-        #content = content.replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u").replace("Á", "A").replace("É", "E").replace("Í", "I").replace("Ó", "O").replace("Ú", "U")
+
         # Generamos un identificador único para cada documento y creamos instancias de Document
         return [Document(text=content, doc_id=str(uuid.uuid4()))]
     except Exception as e:
@@ -91,16 +88,10 @@ def query_file(question, file_path, save_index=True):
         index_path = os.path.join(tmp_dir, index_file_name)
 
         DEFAULT_MODEL = 'gpt-3.5-turbo' 
+        # Define model for embeddings and for the answering 
         if Settings.llm.model == DEFAULT_MODEL : 
             embed_aux_model_name = get_embed_aux_model_name()
-            Settings.llm = Ollama(
-                #model=get_model_name().replace("ollama/", ""),
-                model= embed_aux_model_name.replace("ollama/", ""),
-                base_url = get_base_url(),
-                request_timeout=3600,  # Aumentar el tiempo de espera
-                context_window=5000,
-                keep_alive="30m"  # Aumentar el tiempo de vida
-            )
+            Settings.llm = get_model(embed_aux_model_name)
             Settings.embed_model = get_embed_model()
         
         if os.path.exists(index_path):

@@ -11,7 +11,7 @@ clinical_psychologist:
   backstory: Doctor en psicología clínica con especialización en altas capacidades y trastornos del neurodesarrollo. 
   verbose: true
   context: Evaluar aspectos clínicos del caso {case}
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 neurologist:
@@ -28,7 +28,7 @@ neurologist:
   context: > 
     Realizar evaluación neurológica del caso {case}
     No puedes pedir pruebas complementarias (EEG, neuroimagen, etc.), pero puedes sugerir que serían útiles para el dictamen.
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 occupational_therapist:
@@ -42,7 +42,7 @@ occupational_therapist:
   backstory: Terapeuta ocupacional experto en integración sensorial y regulación conductual
   verbose: true
   context: Evaluar aspectos ocupacionales y sensoriales del caso {case}
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 educational_psychologist:
@@ -56,7 +56,7 @@ educational_psychologist:
   backstory: Psicopedagogo con amplia experiencia en altas capacidades y adaptaciones curriculares
   verbose: true
   context: Desarrollar plan psicopedagógico para el caso {case}
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 family_therapist:
@@ -70,7 +70,7 @@ family_therapist:
   backstory: Terapeuta familiar especializado en familias con niños de altas capacidades
   verbose: true
   context: Abordar aspectos familiares del caso {case}
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 educational_advisor:
@@ -83,7 +83,7 @@ educational_advisor:
   backstory: Profesional con experiencia en orientación educativa y adaptaciones curriculares en el sistema español
   verbose: true
   context: Analizar el caso {case} y proponer adaptaciones curriculares
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 activity_coordinator:
@@ -96,7 +96,7 @@ activity_coordinator:
   backstory: Especialista en recursos educativos y actividades para desarrollo del talento
   verbose: true
   context: Planificar actividades para el caso {case}
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
 
 
 coordinator:
@@ -110,7 +110,7 @@ coordinator:
   backstory: Coordinador experto en gestión de casos complejos de altas capacidades
   verbose: true
   context: Coordinar la intervención integral del caso {case}
-  llm: ollama/qwen2.5-8k:14b
+  #llm: ollama/qwen2.5-8k:14b
   allow_delegation: true
   
 # psychologist:
