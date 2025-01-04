@@ -5,7 +5,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_integracion_sensorial, ask_manual_necesidades_especificas, ask_terapia_cognitivo_conductual
-from gifted_children_helper.utils.models import get_embed_model_name, get_model, get_model_name
+from gifted_children_helper.utils.models import Provider, get_model_embed_name, get_model, get_model_name, get_provider
 from gifted_children_helper.utils.connection_webui import communicate_task_gui
 import inspect
 from gifted_children_helper.utils.reports import convert_markdown_to_pdf
@@ -50,7 +50,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[ask_altas_capacidades_en_ninos,
                    ask_terapia_cognitivo_conductual]
 
@@ -66,7 +66,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[
                     ask_barreras_entorno_escolar_alumnos_altas_capacidades,
                     ask_altas_capacidades_en_ninos,
@@ -83,7 +83,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[
                     ask_barreras_entorno_escolar_alumnos_altas_capacidades,
                     ask_altas_capacidades_en_ninos,
@@ -100,7 +100,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() )
+            model = get_model_main() )
 
     @agent
     def clinical_psychologist(self) -> Agent:
@@ -111,7 +111,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[ask_altas_capacidades_en_ninos,
                    ask_terapia_cognitivo_conductual] )
 
@@ -124,7 +124,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[ask_altas_capacidades_en_ninos,
                    ] )
 
@@ -137,7 +137,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[ask_integracion_sensorial] )
             
   
@@ -151,7 +151,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[
                 ask_altas_capacidades_en_ninos,
                 ask_manual_necesidades_especificas,
@@ -168,7 +168,7 @@ class GiftedChildrenHelper():
 
         return Agent(
             config=config,
-            model = get_model() ,
+            model = get_model_main() ,
             tools=[
                 ask_altas_capacidades_en_ninos,
                 ask_barreras_entorno_escolar_alumnos_altas_capacidades,
@@ -275,12 +275,10 @@ class GiftedChildrenHelper():
         cordinator_role = 'Coordinador del gabinete'
         non_manager_agents = [ agent  for agent in self.agents if agent.role != cordinator_role] 
         manager_agent = [ agent  for agent in self.agents if agent.role == cordinator_role][0]
-        embed_model_name = get_embed_model_name()
+        embed_model_name = get_model_embed_name()
 
-        # Get provider from model name
-        default_model = get_model_name()
-        provider = "ollama" if "ollama" in default_model else "openai"
-
+        provider = "ollama" if get_provider() == Provider.OLLAMA else "openai"
+        
         crew = Crew(
             agents=non_manager_agents,
             tasks=self.tasks,

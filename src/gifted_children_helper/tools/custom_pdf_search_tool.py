@@ -3,7 +3,7 @@ from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_base_url, get_embed_aux_model_name, get_model, get_embed_model, get_model_name
+from gifted_children_helper.utils.models import get_base_url, get_embed_aux_model_name, get_model, get_model_embed, get_model_name, get_model_aux
 import os
 import pickle
 from crewai.tools import tool
@@ -91,8 +91,10 @@ def query_file(question, file_path, save_index=True):
         # Define model for embeddings and for the answering 
         if Settings.llm.model == DEFAULT_MODEL : 
             embed_aux_model_name = get_embed_aux_model_name()
-            Settings.llm = get_model(embed_aux_model_name)
-            Settings.embed_model = get_embed_model()
+            # Damn you
+            # Settings.llm = get_model_main(embed_aux_model_name)
+            Settings.llm = get_model_aux()
+            Settings.embed_model = get_model_embed()
         
         if os.path.exists(index_path):
             index = load_index(index_path)
