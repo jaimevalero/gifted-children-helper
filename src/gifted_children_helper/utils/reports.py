@@ -36,7 +36,8 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
     """
     try:
         # Execute the pandoc command to convert Markdown to PDF
-        command = ['pandoc', markdown_file, '-o', pdf_file]
+        command = ['pandoc', markdown_file, '-o', pdf_file, '-V', 'geometry:margin=1in']
+
         subprocess.run(command, check=True)
         logger.info("Converted {} to {}", markdown_file, pdf_file)
     except subprocess.CalledProcessError as e:
