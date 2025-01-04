@@ -46,6 +46,18 @@
                 "${workspaceFolder}/src/streamlit/frontend.py" ,
                 "--server.port=8501", 
                 "--server.address=0.0.0.0"]
+        },
+        {
+            "name": "models.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/gifted_children_helper/utils/models.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
         }
     ]
 }

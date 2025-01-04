@@ -25,16 +25,16 @@ def get_provider(default_model=None) -> Provider:
     """
     if not default_model:
         default_model = get_model_name()
-    #logger.info(f"Default model name: {default_model}")
+    logger.info(f"Default model name: {default_model}")
     
     if "ollama" in default_model:
         provider = Provider.OLLAMA
-    elif "openai" in default_model or 'deepseek-chat' in default_model:
+    elif "openai" in default_model:
         provider = Provider.OPENAI
     else:
         raise ValueError(f"Provider not recognized for model {default_model}")
     
-    #logger.info(f"Provider determined: {provider}")
+    logger.info(f"Provider determined: {provider}")
     return provider
 
 def get_api_key():
@@ -66,7 +66,7 @@ def get_embed_aux_model_name():
         raise ValueError("Provider not recognized")
     return aux_model_name
     
-def get_model_embed_name():
+def get_embed_model_name():
     """
     Retrieve the embedding model name from the environment variable.
 
@@ -84,26 +84,19 @@ def get_base_url():
     Returns:
         str: The base URL for ollama
     """
-    provider = get_provider()
-    if provider == Provider.OPENAI:
-        return os.getenv("OPENAI_API_BASE")
-    elif provider == Provider.OLLAMA:
-        return os.getenv("OLLAMA_API_BASE")
-    else:
-        raise ValueError("Provider not recognized")
+    return os.getenv("OLLAMA_API_BASE")
 
-def get_model_embed():
+def get_embed_model():
 
-    embed_model_name = get_model_embed_name()
+    embed_model_name = get_embed_model_name()
     base_url = get_base_url()   
 
     provider = get_provider()
 
-    provider =  Provider.OLLAMA
     if provider ==  Provider.OLLAMA :
         embed_model = OllamaEmbedding(
                 model_name=embed_model_name,
-                base_url="http://127.0.0.1:11434", #base_url,
+                base_url=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
                 keep_alive="25m",
@@ -115,7 +108,6 @@ def get_model_embed():
         embed_model =OpenAIEmbedding(
                 model_name=embed_model_name,
                 api_key=get_api_key(),
-                api_base=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
                 keep_alive="25m",
@@ -140,18 +132,7 @@ def get_model_name():
         raise ValueError("MODEL_NAME environment variable not set")
     return model_name
 
-def get_model_aux():
-    llm = Ollama(
-            model="qwen2.5:14b-8k",
-            base_url = "http://127.0.0.1:11434",
-            num_ctx=1024*32,
-            context_window=1028*8,
-            request_timeout=3600,
-            keep_alive="25m"
-            )
-    return llm
-
-def get_model_main(model_name=None):
+def get_model(model_name=None):
     """
     Retrieve the model based on the provided model name or environment variable.
 
@@ -179,7 +160,6 @@ def get_model_main(model_name=None):
     elif provider == Provider.OPENAI:
         llm = OpenAI(
                 model=model_name.replace("openai/", ""),
-                api_base = base_url,
                 api_key=get_api_key(),
                 num_ctx=8192,
                 request_timeout=3600,

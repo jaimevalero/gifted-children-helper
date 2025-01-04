@@ -1,9 +1,7 @@
-import unicodedata  # Importamos unicodedata para normalizar el texto
 from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
-from llama_index.llms.ollama import Ollama
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_base_url, get_embed_aux_model_name, get_model, get_model_embed, get_model_name, get_model_aux
+from gifted_children_helper.utils.models import get_model
 import os
 import pickle
 from crewai.tools import tool
@@ -90,11 +88,10 @@ def query_file(question, file_path, save_index=True):
         DEFAULT_MODEL = 'gpt-3.5-turbo' 
         # Define model for embeddings and for the answering 
         if Settings.llm.model == DEFAULT_MODEL : 
-            embed_aux_model_name = get_embed_aux_model_name()
-            # Damn you
+
             # Settings.llm = get_model_main(embed_aux_model_name)
-            Settings.llm = get_model_aux()
-            Settings.embed_model = get_model_embed()
+            Settings.llm = get_model("AUX")
+            Settings.embed_model = get_model("EMBED")
         
         if os.path.exists(index_path):
             index = load_index(index_path)
@@ -125,6 +122,7 @@ def query_file(question, file_path, save_index=True):
             logger.error("Error during query execution: {}", e)
             return None
     except Exception as e:
+        logger.exception(e)
         logger.error(f"Error loading file {file_path=}: {e}")
         if "openai" in str(e).lower():
             logger.error("It seems you have exceeded your OpenAI quota, but you are using Ollama. Please check your configuration.")
@@ -206,3 +204,5 @@ def test_all_files():
     for file in FILES:
         test_text_file(file,save_index=False)
 
+if __name__ == "__main__":
+   test_all_files()
