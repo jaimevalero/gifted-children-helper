@@ -2,7 +2,8 @@ crewai
 crewai-tools 
 loguru
 ollama
-chromadb
+# Pin to chromadb version 0.3.29
+chromadb==0.3.29
 llama-index 
 llama-index-llms-ollama
 llama-index-embeddings-ollama
