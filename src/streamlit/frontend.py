@@ -3,6 +3,7 @@ import os
 
 # Add the src directory to PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append("src")
 
 import streamlit as st
 import requests
