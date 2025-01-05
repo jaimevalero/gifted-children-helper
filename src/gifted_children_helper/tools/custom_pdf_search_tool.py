@@ -6,6 +6,7 @@ import os
 import pickle
 from crewai.tools import tool
 import uuid  # Importamos uuid para generar identificadores únicos
+import hashlib
 
 def save_index_file(index, file_path):
     """
@@ -33,6 +34,27 @@ def load_index(file_path):
         index = pickle.load(f)
     logger.info("Index loaded from {}", file_path)
     return index
+
+def obfuscate_file_path(file_path: str) -> str:
+    """
+    Obfuscate the file path using the MD5 hash of the file name.
+    
+    Args:
+        file_path (str): The original file path.
+    
+    Returns:
+        str: The obfuscated file path.
+    """
+    # Extract the base name of the file
+    base_name = os.path.basename(file_path)
+    
+    # Compute the MD5 hash of the base name
+    md5_hash = hashlib.md5(base_name.encode()).hexdigest()
+    
+    # Log the obfuscation process
+    logger.info(f"Obfuscating file path: {file_path} to {md5_hash}")
+    
+    return md5_hash
 
 def read_text_file(file_path):
     """
@@ -93,7 +115,8 @@ def query_file(question, file_path, save_index=True):
         
         # Construct the index file path
         prefix_model = Settings.embed_model.model_name.replace("/","-").replace("""\"""","-").replace(":","-").replace(".","-").replace("_","-")
-        index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
+        #index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
+        index_file_name = obfuscate_file_path(os.path.basename(file_path))+ "_index.pkl"
         index_file_name = f"{prefix_model}_{index_file_name}"
         index_path = os.path.join(tmp_dir, index_file_name)
 
@@ -210,5 +233,5 @@ def test_all_files():
     for file in FILES:
         test_text_file(file,save_index=True)
 
-if __name__ == "__main__":
-   test_all_files()
+# if __name__ == "__main__":
+#    test_all_files()
