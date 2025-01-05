@@ -2,8 +2,7 @@ crewai
 crewai-tools 
 loguru
 ollama
-# Pin to chromadb version 0.3.29
-chromadb==0.3.29
+chromadb
 llama-index 
 llama-index-llms-ollama
 llama-index-embeddings-ollama
@@ -18,3 +17,5 @@ streamlit
 fpdf 
 requests
 streamlit-google-auth
+
+pysqlite3-binary
