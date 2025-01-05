@@ -67,7 +67,8 @@ def auth():
         allowed_users=allowed_users,
         token_key=os.getenv("TOKEN_KEY"),
         secret_path="client_secret.json",
-        redirect_uri="http://localhost:8501",
+        # redirect_uri="http://localhost:8501",
+        redirect_uri= "https://guiding-families.streamlit.app",
     )
     authenticator.check_auth()
     authenticator.login()
