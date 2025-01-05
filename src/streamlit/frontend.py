@@ -118,7 +118,7 @@ def main():
     logger.info("Starting Streamlit app")
 
     #st.title("Formulario para Informe Psicológico")
-    st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico especializado en familias con niños/as de altas capacidades.""")
+    st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.""")
     st.info("""Por favor, completa el formulario para generar un informe psicológico. 
 No olvides logarte con google y aceptar los términos del servicio""")
     

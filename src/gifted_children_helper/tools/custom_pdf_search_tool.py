@@ -81,9 +81,7 @@ def query_file(question, file_path, save_index=True):
             os.makedirs(tmp_dir)
             logger.info("Created directory {}", tmp_dir)
 
-        # Construct the index file path
-        index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
-        index_path = os.path.join(tmp_dir, index_file_name)
+
 
         DEFAULT_MODEL = 'gpt-3.5-turbo' 
         # Define model for embeddings and for the answering 
@@ -93,6 +91,13 @@ def query_file(question, file_path, save_index=True):
             Settings.llm = get_model("AUX")
             Settings.embed_model = get_model("EMBED")
         
+        # Construct the index file path
+        prefix_model = Settings.embed_model.model_name.replace("/","-").replace("""\"""","-").replace(":","-").replace(".","-").replace("_","-")
+        index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
+        index_file_name = f"{prefix_model}_{index_file_name}"
+        index_path = os.path.join(tmp_dir, index_file_name)
+
+
         if os.path.exists(index_path):
             index = load_index(index_path)
         else:
@@ -108,6 +113,7 @@ def query_file(question, file_path, save_index=True):
             logger.info(f"File data loaded successfully {file_path=}")
             index = VectorStoreIndex.from_documents(data, show_progress=True)
             if save_index:
+                logger.debug(f"Saving index to {index_path=}") 
                 save_index_file(index, index_path)
         
         query_engine = index.as_query_engine(streaming=True, similarity_top_k=3)
@@ -202,7 +208,7 @@ def test_all_files():
         "terapia_cognitivo_conductual_aplicada_a_niños_y_adolescentes.txt",
         ]
     for file in FILES:
-        test_text_file(file,save_index=False)
+        test_text_file(file,save_index=True)
 
 if __name__ == "__main__":
    test_all_files()

@@ -98,7 +98,7 @@ def __get_model_embed():
     #provider =  Provider.OLLAMA
     if provider ==  Provider.OLLAMA :
         embed_model = OllamaEmbedding(
-                model_name=model_name,
+                model_name=model_name.replace("ollama/", ""),
                 base_url=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
@@ -110,7 +110,7 @@ def __get_model_embed():
     elif provider == Provider.OPENAI:
         api_key = get_api_key(model_type)
         embed_model =OpenAIEmbedding(
-                model_name=model_name,
+                model_name=model_name.replace("openai/", ""),
                 api_key=api_key,
                 api_base=base_url,
                 num_ctx=8192,
