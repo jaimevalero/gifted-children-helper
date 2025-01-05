@@ -8,3 +8,5 @@ knowledge/external_docs/
 tmp
 times.lst
 .streamlit/*
+.env
+client_secret.json
