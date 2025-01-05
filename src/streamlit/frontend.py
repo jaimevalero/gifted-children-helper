@@ -1,13 +1,13 @@
 import sys
 import os
 
+# Ugly hack because of https://stackoverflow.com/questions/76958817/streamlit-your-system-has-an-unsupported-version-of-sqlite3-chroma-requires-sq
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-# Add the src directory to PYTHONPATH
+# Add the src directory to PYTHONPATH, because stream cloud expects all paths refered to app file directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-#sys.path.append("src")
 
 from chromadb import Documents
 from chromadb import EmbeddingFunction 
@@ -80,7 +80,7 @@ def auth():
             authenticator.logout()
 
     if not st.session_state["connected"]:
-        st.warning("Por favor lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación") 
+        st.warning("Por favor, lógate con google para continuar. Además, solo usuarios autorizados pueden acceder a esta aplicación") 
 
 
 def mock_google_auth():
@@ -157,9 +157,12 @@ def main():
     logger.info("Starting Streamlit app")
 
     #st.title("Formulario para Informe Psicológico")
-    st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.""")
-    st.info("""Por favor, completa el formulario para generar un informe psicológico. 
-No olvides logarte con google y aceptar los términos del servicio""")
+    st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.
+
+Por favor, completa el formulario para generar un informe psicológico. 
+            """)
+    st.info("""            
+No olvides logarte con google y aceptar los términos del servicio.""")
     
     # Load the CSS from the static file
     css_file_path = os.path.join(os.path.dirname(__file__), 'static', 'style.css')
