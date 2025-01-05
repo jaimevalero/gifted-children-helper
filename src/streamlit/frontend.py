@@ -7,10 +7,42 @@ import uuid
 import os
 from gifted_children_helper.main import run
 from dotenv import load_dotenv
-from streamlit.components.v1 import html
+try : 
+    from streamlit.auth.authenticate import Authenticator
+except:
+    from auth.authenticate import Authenticator
+
 
 # Load environment variables
 load_dotenv()
+
+def auth():
+
+    # emails of users that are allowed to login
+    allowed_users = os.getenv("ALLOWED_USERS").split(",")
+
+    
+    #st.write("## Streamlit Google Auth")
+
+    authenticator = Authenticator(
+        allowed_users=allowed_users,
+        token_key=os.getenv("TOKEN_KEY"),
+        secret_path="client_secret.json",
+        redirect_uri="http://localhost:8501",
+    )
+    authenticator.check_auth()
+    authenticator.login()
+
+    # show content that requires login
+    if st.session_state["connected"]:
+        st.write(f"Bienvenido {st.session_state['user_info'].get('email')}")
+        logger.info(f"Logado {st.session_state['user_info'].get('email')}")
+        if st.button("Log out ❌"):
+            authenticator.logout()
+
+    if not st.session_state["connected"]:
+        st.warning("Por favor lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación") 
+
 
 def mock_google_auth():
     # Mock authentication for demonstration purposes
@@ -41,7 +73,7 @@ def call_crew_ai(case, session_id, callback):
     if "progress_bar" not in st.session_state:
         st.session_state.progress_bar = st.progress(0)
     
-    st.write("Generando el informe. Esto tarda varios minutos. Por favor, espere")
+    st.toast("Generando el informe. Esto tarda varios minutos. Por favor, espere")
     # Aquí puedes llamar a la función de Crew.ai y pasar el callback
     # Ejemplo de uso del callback:
 
@@ -76,20 +108,19 @@ def add_navbar():
     st.markdown("""
 <nav class="navbar navbar-light bg-light">
   <span class="navbar-brand mb-0 h1">Gabinete integral de psicología</span>
-</nav>
-    """, unsafe_allow_html=True)
+</nav>""", unsafe_allow_html=True)
 
 def main():
     # Add the navigation bar
     add_navbar()
-    
+
     # Set the title of the Streamlit app
     logger.info("Starting Streamlit app")
 
     #st.title("Formulario para Informe Psicológico")
-    st.info("""Esta aplicación simula, mediante inteligencia artificial, un gabinete psicológico especializado en familias con niños/as de altas capacidades.
-
-Por favor, completa el formulario para generar un informe psicológico.""")
+    st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico especializado en familias con niños/as de altas capacidades.""")
+    st.info("""Por favor, completa el formulario para generar un informe psicológico. 
+No olvides logarte con google y aceptar los términos del servicio""")
     
     # Load the CSS from the static file
     css_file_path = os.path.join(os.path.dirname(__file__), 'static', 'style.css')
@@ -144,8 +175,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
 """)
 
     # Mock authentication
-    email = mock_google_auth()
-    #st.sidebar.markdown(f"**Usuario autenticado:** {email}")
+    
 
     # Count words in all text areas
     total_words = count_words(description, family_dynamics, emotional_behavior, skills_development, school_context, problems_difficulties, additional_observations)
@@ -180,7 +210,18 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
     if not data_policy_accepted:
         st.error("Por favor, acepta los términos de servicio para continuar.")
 
-    if st.button("Generar informe 📝", disabled=send_button_disabled or not data_policy_accepted):
+    auth()
+    try :
+        if not st.session_state["connected"]:
+            #st.error("Por favor, lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación")
+            authorized = False
+        else:
+            authorized = True
+    except:
+        #st.error("Por favor, lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación")
+        authorized = False
+                 
+    if st.button("Generar informe 📝", disabled=send_button_disabled or not data_policy_accepted or not authorized):
         # Initialize the case variable
         case = ""
 
@@ -204,6 +245,8 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
         
         # Set progress to 100% after completion
         streamlit_callback("Informe generado con éxito.", 1.0)
+
+        st.toast("Acabado el informe, descarguelo para verlo")
 
         # Ensure the file is only accessible to the current user
         if os.path.exists(pdf_filename):

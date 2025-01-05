@@ -14,88 +14,91 @@ class Provider(Enum):
     OLLAMA = "ollama"
     OPENAI = "openai"
 
+ 
 
-
-def get_provider(default_model=None) -> Provider:
+def get_provider(model_type) -> Provider:
     """
     Get the provider from the model name.
     
     Returns:
         Provider: The provider enum value.
     """
-    if not default_model:
-        default_model = get_model_name()
-    logger.info(f"Default model name: {default_model}")
+    model_type = model_type.upper()
+
+    if model_type not in ["MAIN", "AUX", "EMBED"]:
+        raise ValueError(f"Provider not recognized for model {model_type}")
     
-    if "ollama" in default_model:
+    provider_string =  os.environ[f"{model_type}_PROVIDER"] 
+
+    
+    if "ollama" in provider_string:
         provider = Provider.OLLAMA
-    elif "openai" in default_model:
+    elif "openai" in provider_string or 'deepseek-chat' in provider_string:
         provider = Provider.OPENAI
     else:
-        raise ValueError(f"Provider not recognized for model {default_model}")
+        raise ValueError(f"Provider not recognized for model {provider_string}")
     
-    logger.info(f"Provider determined: {provider}")
+    #logger.info(f"Provider determined: {provider}")
     return provider
 
-def get_api_key():
+def get_api_key(model_type):
     """
     Retrieve the API key from the environment variable.
 
     Returns:
         str: The API key.
     """
-    provider = get_provider()
-    if provider == Provider.OPENAI:
-        return os.getenv("OPENAI_API_KEY")
-    elif provider == Provider.OLLAMA:
-        raise ValueError("OLLAMA provider does not require an API key")
+    model_type = model_type.upper()
+    if model_type not in ["MAIN", "AUX", "EMBED"]:
+        raise ValueError(f"Provider not recognized for model {model_type}")
     
-def get_embed_aux_model_name():
-    """
-    Retrieve the auxiliary embedding model name from the environment variable.
+    return os.getenv(f"{model_type}_TOKEN", None)
 
-    Returns:
-        str: The name of the auxiliary embedding model. 
-    """
-    provider = get_provider()
-    if provider == Provider.OPENAI:
-        aux_model_name =  os.getenv("OPENAI_MODEL_AUX_EMBED_NAME", get_model_name())
-    elif provider == Provider.OLLAMA:
-        aux_model_name = os.getenv("OLLAMA_MODEL_AUX_EMBED_NAME", get_model_name())
-    else:
-        raise ValueError("Provider not recognized")
-    return aux_model_name
     
-def get_embed_model_name():
+def get_model_name(model_type):
     """
     Retrieve the embedding model name from the environment variable.
 
     Returns:
-        str: The name of the embedding model. Defaults to 'mxbai-embed-large' if not set.
+        str: The name of the embedding model. 
     """
-    if not os.getenv("EMBED_MODEL"):
-        raise ValueError("EMBED_MODEL environment variable not set")
-    return os.getenv("EMBED_MODEL").replace("ollama/", "")
+    model_type = model_type.upper()
+    if model_type not in ["MAIN", "AUX", "EMBED"]:
+        raise ValueError(f"Provider not recognized for model {model_type}")
+    
+    if not os.getenv(f"{model_type}_MODEL_NAME"):
+        raise ValueError(f"{model_type}_MODEL_NAME environment variable not set")
+    return os.getenv(f"{model_type}_MODEL_NAME")
 
-def get_base_url():
+def get_api_base(model_type):
     """
-    Retrieve the base URL from the environment variable.
+    Retrieve the api name from the environment variable.
 
     Returns:
-        str: The base URL for ollama
+        str: The name of the api. 
     """
-    return os.getenv("OLLAMA_API_BASE")
+    model_type = model_type.upper()
+    if model_type not in ["MAIN", "AUX", "EMBED"]:
+        raise ValueError(f"Provider not recognized for model {model_type}")
+    
+    if not os.getenv(f"{model_type}_API_BASE"):
+        raise ValueError(f"{model_type}_MODEL_NAME environment variable not set")
+    return os.getenv(f"{model_type}_API_BASE")
 
-def get_embed_model():
 
-    embed_model_name = get_embed_model_name()
-    base_url = get_base_url()   
 
-    provider = get_provider()
 
+def __get_model_embed():
+
+    model_type = "EMBED"
+    model_name = get_model_name(model_type).replace("openai/deepseek-chat", "")
+    base_url = get_api_base(model_type)   
+    provider = get_provider(model_type)
+
+    #provider =  Provider.OLLAMA
     if provider ==  Provider.OLLAMA :
         embed_model = OllamaEmbedding(
-                model_name=embed_model_name,
+                model_name=model_name,
                 base_url=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
@@ -105,9 +108,11 @@ def get_embed_model():
                     "num_ctx" : 8192},
             )      
     elif provider == Provider.OPENAI:
+        api_key = get_api_key(model_type)
         embed_model =OpenAIEmbedding(
-                model_name=embed_model_name,
-                api_key=get_api_key(),
+                model_name=model_name,
+                api_key=api_key,
+                api_base=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
                 keep_alive="25m",
@@ -116,54 +121,36 @@ def get_embed_model():
     
     return embed_model
 
-def get_model_name():
-    """
-    Retrieve the model name from the provided model name or environment variable.
 
-    Args:
-        model_name (str, optional): The name of the model to retrieve. Defaults to None.
 
-    Returns:
-        str: The name of the model.
-    """
-    # load .env file
-    model_name = os.getenv("OLLAMA_MODEL_NAME", os.getenv("OPENAI_MODEL_NAME"))
-    if not model_name:
-        raise ValueError("MODEL_NAME environment variable not set")
-    return model_name
+def get_model(model_type):
 
-def get_model(model_name=None):
-    """
-    Retrieve the model based on the provided model name or environment variable.
-
-    Args:
-        model_name (str, optional): The name of the model to retrieve. Defaults to None.
-
-    Returns:
-        LLM: An instance of the LLM class configured with the specified or default model name.
-    """
-    if not model_name:
-        model_name = get_model_name()
-    base_url = get_base_url()
-    provider = get_provider()
-
+    if model_type == "EMBED":
+        return __get_model_embed()
+    
+    model_name = get_model_name(model_type)
+    base_url = get_api_base(model_type)   
+    provider = get_provider(model_type) 
     if provider ==  Provider.OLLAMA :
-        Settings.context_windows= 8192
         llm = Ollama(
-                model=model_name.replace("ollama/", ""),
-                base_url = base_url,
-                num_ctx=1024*32,
-                context_window=1028*8,
-                request_timeout=3600,
-                keep_alive="25m"
-                )
+            model=model_name.replace("ollama/", ""),
+            base_url = base_url,
+            num_ctx=1024*32,
+            context_window=1028*8,
+            request_timeout=3600,
+            keep_alive="25m"
+            )
     elif provider == Provider.OPENAI:
+        api_key = get_api_key(model_type)
         llm = OpenAI(
-                model=model_name.replace("openai/", ""),
-                api_key=get_api_key(),
-                num_ctx=8192,
-                request_timeout=3600,
-                keep_alive="25m")
-        
+            model=model_name.replace("openai/", ""),
+            api_base = base_url,
+            api_key=api_key,
+            num_ctx=8192,
+            request_timeout=3600,
+            keep_alive="25m")
     return llm
 
+# if main, execute __get_model_embed()
+# if __name__ == "__main__":
+#     __get_model_embed()

@@ -16,3 +16,4 @@ pdfkit
 streamlit 
 fpdf 
 requests
+streamlit-google-auth

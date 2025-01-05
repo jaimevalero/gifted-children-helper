@@ -8,3 +8,4 @@ knowledge/external_docs/
 tmp
 times.lst
 .env
+client_secret.json
