@@ -20,6 +20,9 @@ try :
 except:
     from auth.authenticate import Authenticator
 
+from chromadb import Documents
+from chromadb import EmbeddingFunction 
+from chromadb import Embeddings
 def load_secrets():
     """
     Load secrets from Streamlit's secrets.toml and update environment variables and client_secret.json.
