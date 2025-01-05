@@ -6,6 +6,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 #sys.path.append("src")
 
+from chromadb import Documents
+from chromadb import EmbeddingFunction 
+from chromadb import Embeddings
+
 import streamlit as st
 from loguru import logger
 import uuid
@@ -16,9 +20,7 @@ try :
 except:
     from auth.authenticate import Authenticator
 
-# from chromadb import Documents
-# from chromadb import EmbeddingFunction 
-# from chromadb import Embeddings
+
 def load_secrets():
     """
     Load secrets from Streamlit's secrets.toml and update environment variables and client_secret.json.
