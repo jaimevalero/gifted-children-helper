@@ -13,7 +13,6 @@ import time
 from loguru import logger
 import uuid
 import os
-from gifted_children_helper.main import run
 from dotenv import load_dotenv
 import json
 try : 
@@ -49,6 +48,8 @@ def load_secrets():
 
 # Call load_secrets to initialize secrets
 load_secrets()
+
+from gifted_children_helper.main import run
 
 def auth():
 
