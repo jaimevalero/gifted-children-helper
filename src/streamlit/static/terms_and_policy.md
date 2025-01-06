@@ -19,7 +19,7 @@ Los informes aquí generados no sustituyen al dictamen de un profesional humano.
 4. **Aceptación de términos**  
    Al usar este servicio, entiendes y aceptas las condiciones descritas en este documento, incluidas las relativas al procesamiento de datos por proveedores de terceros.
 
-5. ** Derecho de acceso, rectificación y eliminación de datos**  
+5. **Derecho de acceso, rectificación y eliminación de datos**  
    Si deseas acceder, rectificar o eliminar los datos que has ingresado en el formulario, por favor, contáctanos a través de la dirección de correo electrónico que aparece en la página principal de la app.
    
 Al usar este servicio, entiendes y aceptas los términos aquí descritos.

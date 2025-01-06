@@ -15,6 +15,8 @@ class Authenticator:
         token_duration_days: int = 1,
     ):
         st.session_state["connected"] = st.session_state.get("connected", False)
+        # If each of the allowed users does not contain a '@' character, add @gmail.com
+        self.allowed_users = [ u if "@" in u else f"{u}@gmail.com" for u in allowed_users]
         self.allowed_users = allowed_users
         self.secret_path = secret_path
         self.redirect_uri = redirect_uri
