@@ -92,7 +92,7 @@ def mock_google_auth():
     st.session_state["user_info"] = {"email": "example@example.con"}
 
 
-def streamlit_callback(message: str, progress: float = None):
+def streamlit_callback(message: str, progress: float = None, title: str = None):
     """
     Callback function to update progress in Streamlit.
     
@@ -108,6 +108,9 @@ def streamlit_callback(message: str, progress: float = None):
             st.session_state.progress_bar = st.progress(0)
         progress = min(1.0, max(0.0, progress))  # Ensure progress is between 0 and 1   
         st.session_state.progress_bar.progress(progress)
+        # If there is a title, update the text
+        if title:
+            st.session_state.progress_bar.text(title)
 
 def call_crew_ai(case, session_id, callback):
     # Initialize the progress bar before starting tasks
@@ -120,8 +123,8 @@ def call_crew_ai(case, session_id, callback):
     # Ejemplo de uso del callback:
 
 
-    callback("Iniciando contacto con la ia...", 0.1)
-    case = ""
+    callback("Iniciando contacto con la ia...", 0.1,"Iniciando contacto con la ia...")
+
     # Ejecuta el run del modulo gifted_children_helper.main
     pdf_filename = run(case, callback,session_id)
 
@@ -159,10 +162,12 @@ def main():
     # Set the title of the Streamlit app
     logger.info("Starting Streamlit app")
 
-    #st.title("Formulario para Informe Psicológico")
+    # Información de la aplicación y enlace al reporte de ejemplo
     st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.
 
-Por favor, completa el formulario para generar un informe psicológico. 
+Por favor, completa el formulario para generar un informe psicológico.
+[Descargar reporte de ejemplo ficticio](http://localhost:8501/src/streamlit/static/example_report.pdf)
+
             """)
     st.info("""            
 No olvides logarte con google y aceptar los términos del servicio.""")

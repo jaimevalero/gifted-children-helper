@@ -32,12 +32,10 @@ class GiftedChildrenHelper():
         total_tasks = len(self.tasks)
         percentage_progress = self.tasks_done / total_tasks
 
-        progress_message = f"""
-({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}.\n
-{output.raw}
-        """
+        progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
+        title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
         logger.info(progress_message)
-        self.task_callback(progress_message, percentage_progress)
+        self.task_callback(progress_message, percentage_progress,title)
 
     @agent
     def clinical_psychologist(self) -> Agent:
