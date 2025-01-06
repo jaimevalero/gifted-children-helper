@@ -73,6 +73,7 @@ def auth():
     authenticator.check_auth()
     authenticator.login()
 
+
     # show content that requires login
     if st.session_state["connected"]:
         st.write(f"Bienvenido {st.session_state['user_info'].get('email')}")
@@ -86,9 +87,10 @@ def auth():
 
 def mock_google_auth():
     # Mock authentication for demonstration purposes
-    logger.info("Mocking Google authentication")
-    st.session_state["user_email"] = "user_mock@example.com"
-    return st.session_state["user_email"]
+    logger.debug("Mocking Google authentication")
+    st.session_state["connected"] = True
+    st.session_state["user_info"] = {"email": "example@example.con"}
+
 
 def streamlit_callback(message: str, progress: float = None):
     """
@@ -253,7 +255,12 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
     if not data_policy_accepted:
         st.error("Por favor, acepta los términos de servicio para continuar.")
 
-    auth()
+    # If is LOCAL environent variable is set to 1, mock the google auth
+    if os.getenv("LOCAL","0") == "1":
+        mock_google_auth()        
+    else:
+        auth()
+
     try :
         if not st.session_state["connected"]:
             #st.error("Por favor, lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación")

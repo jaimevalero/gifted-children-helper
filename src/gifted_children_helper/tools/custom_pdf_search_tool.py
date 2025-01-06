@@ -87,6 +87,7 @@ def query_file(question, file_path, save_index=True):
     Returns:
         str: The response text from the query.
     """
+    
     BASE_PATH = os.path.expanduser("~/git/gifted-children-helper/knowledge/external_docs/books")
     if not file_path.startswith(BASE_PATH):
         file_path = os.path.join(BASE_PATH, file_path)
@@ -98,16 +99,22 @@ def query_file(question, file_path, save_index=True):
     
     try:
         # Ensure the tmp directory exists
-        tmp_dir = os.path.expanduser("~/tmp")
+        tmp_dir = os.path.expanduser("./embeddings")
         if not os.path.exists(tmp_dir):
             os.makedirs(tmp_dir)
             logger.info("Created directory {}", tmp_dir)
 
 
 
-        DEFAULT_MODEL = 'gpt-3.5-turbo' 
+        
+        try : 
+            DEFAULT_MODEL = 'gpt-3.5-turbo' 
+            has_to_change_default_model = Settings.llm.model == DEFAULT_MODEL
+        except :
+            has_to_change_default_model = False
+
         # Define model for embeddings and for the answering 
-        if Settings.llm.model == DEFAULT_MODEL : 
+        if has_to_change_default_model : 
 
             # Settings.llm = get_model_main(embed_aux_model_name)
             Settings.llm = get_model("AUX")
