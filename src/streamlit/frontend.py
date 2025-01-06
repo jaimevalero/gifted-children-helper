@@ -166,7 +166,7 @@ def main():
     st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.
 
 Por favor, completa el formulario para generar un informe psicológico.
-[Descargar reporte de ejemplo ficticio](http://localhost:8501/src/streamlit/static/example_report.pdf)
+[Descargar reporte de ejemplo ficticio](https://github.com/jaimevalero/gifted-children-helper/raw/master/src/streamlit/static/example_report.pdf)
 
             """)
     st.info("""            
