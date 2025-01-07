@@ -307,7 +307,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
             
             
     # Log the current app mode
-    logger.info("Current app mode: Generar Informe")
+    logger.info("End of render")
 
 
     st.markdown(footer_html, unsafe_allow_html=True)
