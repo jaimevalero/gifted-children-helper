@@ -88,7 +88,8 @@ def query_file(question, file_path, save_index=True):
         str: The response text from the query.
     """
     
-    BASE_PATH = os.path.expanduser("~/git/gifted-children-helper/knowledge/external_docs/books")
+    # Use the current working directory to construct the base path
+    BASE_PATH = os.path.join(os.getenv("PWD"), "knowledge/external_docs/books")
     if not file_path.startswith(BASE_PATH):
         file_path = os.path.join(BASE_PATH, file_path)
     
@@ -240,5 +241,9 @@ def test_all_files():
     for file in FILES:
         test_text_file(file,save_index=True)
 
-# if __name__ == "__main__":
-#    test_all_files()
+if __name__ == "__main__":
+    from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+
+    # Call load_secrets to initialize secrets
+    load_secrets()       
+    test_all_files()

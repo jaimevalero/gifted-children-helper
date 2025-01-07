@@ -23,37 +23,11 @@ try :
 except:
     from auth.authenticate import Authenticator
 
-
-def load_secrets():
-    """
-    Load secrets from Streamlit's secrets.toml and update environment variables and client_secret.json.
-    """
-    logger.info("Loading secrets from secrets.toml")
-    
-    # Load environment variables from .env file
-    load_dotenv()
-
-    # Update environment variables with secrets from secrets.toml
-    os.environ["MAIN_TOKEN"] = st.secrets["MAIN_TOKEN"]
-    os.environ["AUX_TOKEN"] = st.secrets["AUX_TOKEN"]
-    os.environ["EMBED_TOKEN"] = st.secrets["EMBED_TOKEN"]
-    os.environ["TOKEN_KEY"] = st.secrets["TOKEN_KEY"]
-
-    # Update client_secret.json with secrets from secrets.toml
-    client_secret_path = "client_secret.json"
-    with open(client_secret_path, "r") as file:
-        client_secret_data = json.load(file)
-
-    client_secret_data["web"]["client_id"] = st.secrets["client_id"]
-    client_secret_data["web"]["client_secret"] = st.secrets["client_secret"]
-
-    with open(client_secret_path, "w") as file:
-        json.dump(client_secret_data, file, indent=2)
+from gifted_children_helper.main import run
+from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
 
 # Call load_secrets to initialize secrets
-load_secrets()
-
-from gifted_children_helper.main import run
+load_secrets(st)
 
 def auth():
 

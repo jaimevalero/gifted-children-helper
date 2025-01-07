@@ -21,6 +21,7 @@ from enum import Enum
 class Provider(Enum):
     OLLAMA = "ollama"
     OPENAI = "openai"
+    DEEPSEEK = "deepseek"
 
  
 
@@ -41,8 +42,10 @@ def get_provider(model_type) -> Provider:
     
     if "ollama" in provider_string:
         provider = Provider.OLLAMA
-    elif "openai" in provider_string or 'deepseek-chat' in provider_string:
+    elif "openai" in provider_string :
         provider = Provider.OPENAI
+    elif "deepseek" in provider_string:
+        provider = Provider.DEEPSEEK
     else:
         raise ValueError(f"Provider not recognized for model {provider_string}")
     
@@ -120,11 +123,13 @@ def __get_model_embed():
         embed_model =OpenAIEmbedding(
                 model_name=model_name.replace("openai/", ""),
                 api_key=api_key,
-                api_base=base_url,
+                #api_base=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
                 keep_alive="25m",
             )
+    else:
+        raise ValueError(f"Provider not recognized for model")
 
     
     return embed_model
@@ -145,18 +150,31 @@ def __get_model_aux():
             request_timeout=3600,
             keep_alive="25m"
             )
-    elif provider == Provider.OPENAI:
+    elif provider == Provider.DEEPSEEK:
         api_key = get_api_key(model_type)
-        
+        # DeepSeek is open ai compatible, so we can use the open ai model
         llm = ChatOpenAI(
                     model="deepseek-chat", 
                     openai_api_key=api_key, 
                     openai_api_base='https://api.deepseek.com',
                     max_tokens=8192        )  
+    else:
+        raise ValueError(f"Provider not recognized for model {provider}")
     return llm 
 
 def get_model(model_type):
-
+    """ Get LLM model. There are two dimensions to consider
+    - model_type: "MAIN", "AUX", "EMBED" 
+        "MAIN": for the llm for agents.
+        "AUX": for the llm for tools and taking to embeddings.
+        "EMBED": for the embeddings.
+    
+    Each domain, contains a configuration for the provider, model_name, the url for the endpoint and the api key.
+    - Provider (class): Cloud provider for the model. 
+        "ollama": for Ollama.
+        "openai": for OpenAI.
+        "deepseek": for DeepSeek (Alibaba).
+    """
     if model_type == "EMBED":
         return __get_model_embed()
     elif model_type == "AUX":
@@ -174,16 +192,23 @@ def get_model(model_type):
             request_timeout=3600,
             keep_alive="25m"
             )
-    elif provider == Provider.OPENAI:
+    elif provider == Provider.DEEPSEEK:
         api_key = get_api_key(model_type)
         os.environ['DEEPSEEK_API_KEY'] = api_key
         llm = LLM(model=model_name,
                   max_tokens=8192,
                   timeout=25*60,
                   )
+    else:
+        raise ValueError(f"Provider not recognized for model {provider}")
 
     return llm
 
 # if main, execute __get_model_embed()
-# if __name__ == "__main__":
-#     __get_model_embed()
+
+if __name__ == "__main__":
+    from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+
+    # Call load_secrets to initialize secrets
+    load_secrets()    
+    __get_model_embed()
