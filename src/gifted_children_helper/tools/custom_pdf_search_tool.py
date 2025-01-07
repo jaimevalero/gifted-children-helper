@@ -1,14 +1,14 @@
 from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_api_key, get_model
+from gifted_children_helper.utils.models import get_api_key, get_model, get_model_name
 import os
 import pickle
 from crewai.tools import tool
 import uuid  # Importamos uuid para generar identificadores únicos
 import hashlib
 
-
+has_model_been_changed = False
 
 def save_index_file(index, file_path):
     """
@@ -129,17 +129,20 @@ def query_file(question, file_path, save_index=True):
         except:
             pass
         try : 
-            DEFAULT_MODEL = 'gpt-3.5-turbo' 
-            has_to_change_default_model = Settings.llm.model == DEFAULT_MODEL
+            AUX_MODEL_NAME = get_model_name("AUX")
+            #DEFAULT_MODEL = 'gpt-3.5-turbo' 
+            has_to_change_default_model = Settings.llm.model != AUX_MODEL_NAME
         except :
             has_to_change_default_model = False
 
         # Define model for embeddings and for the answering 
-        if has_to_change_default_model : 
+        if not has_model_been_changed : 
 
             # Settings.llm = get_model_main(embed_aux_model_name)
             Settings.llm = get_model("AUX")
             Settings.embed_model = get_model("EMBED")
+            has_model_been_changed = True
+            logger.debug(f"Aux model changed")
             try : 
                 logger.debug(f"Model changed to {Settings.llm=}")
                 logger.debug(f"Model changed to {Settings.embed_model=}")
