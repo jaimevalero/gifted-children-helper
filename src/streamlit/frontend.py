@@ -24,10 +24,11 @@ except:
     from auth.authenticate import Authenticator
 
 # Call load_secrets to initialize secrets
+from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+
 load_secrets(st)
 
 from gifted_children_helper.main import run
-from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
 
 
 
