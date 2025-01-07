@@ -142,11 +142,12 @@ def query_file(question, file_path, save_index=True):
         # Define model for embeddings and for the answering 
         if not has_model_been_changed : 
 
-            # Settings.llm = get_model_main(embed_aux_model_name)
+            logger.debug(f"Get model AUX")
             Settings.llm = get_model("AUX")
+            logger.debug(f"Get model EMBED")
             Settings.embed_model = get_model("EMBED")
             has_model_been_changed = True
-            logger.debug(f"Aux model changed")
+            logger.debug(f"Both models changed")
             try : 
                 logger.debug(f"Model changed to {Settings.llm=}")
                 logger.debug(f"Model changed to {Settings.embed_model=}")
