@@ -27,15 +27,33 @@ class GiftedChildrenHelper():
     MAX_EXECUTION_TIMEOUT=1200
     model_name = get_model_name("MAIN")
 
-    def callback_function(self,output):
-        self.tasks_done += 1
-        total_tasks = len(self.tasks)
-        percentage_progress = self.tasks_done / total_tasks
+    def step_callback(self,step_output):
+        
+        text = None
+        try:
+            # If step_output is an AgentFinish object, , get the text from the agent output 
+            if hasattr(step_output, 'text'):
+                text = f"*Acción finalizada: {step_output.thought}*" 
+            elif hasattr(step_output, 'result'):
+                text = f"*Respuesta bibliográfica: {step_output.result}*"
+            if text:
+                logger.info(f"Step output: {text}")
+                self.task_callback(text)
+        except Exception as e:
+            logger.error(f"Error in step callback: {e}")        
 
-        progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
-        title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
-        logger.info(progress_message)
-        self.task_callback(progress_message, percentage_progress,title)
+    def callback_function(self,output):
+        try :
+            self.tasks_done += 1
+            total_tasks = len(self.tasks)
+            percentage_progress = self.tasks_done / total_tasks
+
+            progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
+            title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
+            logger.info(progress_message)
+            self.task_callback(progress_message, percentage_progress,title)
+        except Exception as e:
+            logger.error(f"Error in callback function: {e}")
 
     @agent
     def clinical_psychologist(self) -> Agent:
@@ -46,6 +64,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[ask_altas_capacidades_en_ninos,
@@ -62,6 +81,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[
@@ -79,6 +99,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[
@@ -96,6 +117,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") )
 
@@ -107,6 +129,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[ask_altas_capacidades_en_ninos,
@@ -120,6 +143,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[ask_altas_capacidades_en_ninos,
@@ -133,6 +157,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[ask_integracion_sensorial] )
@@ -147,6 +172,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[
@@ -164,6 +190,7 @@ class GiftedChildrenHelper():
         config["llm"] = self.model_name
 
         return Agent(
+            step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
             tools=[

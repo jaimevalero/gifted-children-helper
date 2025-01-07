@@ -69,7 +69,7 @@ def mock_google_auth():
     st.session_state["user_info"] = {"email": "example@example.con"}
 
 
-def streamlit_callback(message: str, progress: float = None, title: str = None):
+def streamlit_callback(message: str= None, progress: float = None, title: str = None):
     """
     Callback function to update progress in Streamlit.
     
@@ -78,18 +78,19 @@ def streamlit_callback(message: str, progress: float = None, title: str = None):
     """
     logger.info(f"Streamlit callback called with message: {message} and progress: {progress}")
     # Convert markdown to html
-    st.markdown(message)
+    if message:
+        st.markdown(message)
     
     if progress is not None:
-        if "progress_bar" not in st.session_state:
-            st.session_state.progress_bar = st.progress(0)
+        # if "progress_bar" not in st.session_state:
+        #     st.session_state.progress_bar = st.progress(0)
         progress = min(1.0, max(0.0, progress))  # Ensure progress is between 0 and 1   
         st.session_state.progress_bar.progress(progress)
         # If there is a title, update the text
-        if title:
-            st.session_state.progress_bar.text(title)
+    if title:
+        st.session_state.progress_bar.text(title)
 
-def call_crew_ai(case, session_id, callback):
+def call_crew_ai(case, session_id, streamlit_callback):
     # Initialize the progress bar before starting tasks
     logger.info("Calling Crew AI with session ID: {}", session_id)
     if "progress_bar" not in st.session_state:
@@ -100,10 +101,10 @@ def call_crew_ai(case, session_id, callback):
     # Ejemplo de uso del callback:
 
 
-    callback("Iniciando contacto con la ia...", 0.1,"Iniciando contacto con la ia...")
+    streamlit_callback("Iniciando contacto con la ia...", 0.1,"Iniciando contacto con la ia...")
 
     # Ejecuta el run del modulo gifted_children_helper.main
-    pdf_filename = run(case, callback,session_id)
+    pdf_filename = run(case, streamlit_callback,session_id)
 
     return pdf_filename
 

@@ -34,7 +34,7 @@ def run(case: str = None, callback: callable = None,session_id: str = None):
     inputs = {
         'case': case
     }
-    load_dotenv()
+    #load_dotenv()
     ensure_dirs_exist()
     
     try:
@@ -100,6 +100,8 @@ def test():
 if __name__ == "__main__":
     logger.info("Running the main function")
     # Depending on the arguments, run the crew, train the crew, or replay the crew
+    load_dotenv()
+
     if len(sys.argv) > 1:
         if sys.argv[1] == "train":
             train()
