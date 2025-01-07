@@ -102,12 +102,12 @@ def get_api_base(model_type):
 def __get_model_embed():
 
     model_type = "EMBED"
-    model_name = get_model_name(model_type).replace("openai/deepseek-chat", "")
-    base_url = get_api_base(model_type)   
+    model_name = get_model_name(model_type)
     provider = get_provider(model_type)
 
     #provider =  Provider.OLLAMA
     if provider ==  Provider.OLLAMA :
+        base_url = get_api_base(model_type)   
         embed_model = OllamaEmbedding(
                 model_name=model_name.replace("ollama/", ""),
                 base_url=base_url,
@@ -206,9 +206,9 @@ def get_model(model_type):
 
 # if main, execute __get_model_embed()
 
-if __name__ == "__main__":
-    from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+# if __name__ == "__main__":
+#     from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
 
-    # Call load_secrets to initialize secrets
-    load_secrets()    
-    __get_model_embed()
+# # Call load_secrets to initialize secrets
+#     load_secrets()    
+#     __get_model_embed()

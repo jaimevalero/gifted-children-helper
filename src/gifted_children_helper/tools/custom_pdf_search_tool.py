@@ -1,12 +1,14 @@
 from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_model
+from gifted_children_helper.utils.models import get_api_key, get_model
 import os
 import pickle
 from crewai.tools import tool
 import uuid  # Importamos uuid para generar identificadores únicos
 import hashlib
+
+
 
 def save_index_file(index, file_path):
     """
@@ -16,6 +18,13 @@ def save_index_file(index, file_path):
         index (VectorStoreIndex): The index to save.
         file_path (str): The path to the file where the index will be saved.
     """
+    # Remove sensitive information before saving
+    try :
+        if "sk-proj-" in index._embed_model.api_key :
+            index._embed_model.api_key = "removed"
+    except:
+        pass
+
     with open(file_path, 'wb') as f:
         pickle.dump(index, f)
     logger.info("Index saved to {}", file_path)
@@ -32,7 +41,15 @@ def load_index(file_path):
     """
     with open(file_path, 'rb') as f:
         index = pickle.load(f)
-    logger.info("Index loaded from {}", file_path)
+    
+
+    try : 
+        if index._embed_model.api_key == "removed":
+            index._embed_model.api_key = get_api_key("EMBED")
+    except:
+        pass
+    
+    
     return index
 
 def obfuscate_file_path(file_path: str) -> str:
@@ -241,9 +258,21 @@ def test_all_files():
     for file in FILES:
         test_text_file(file,save_index=True)
 
-if __name__ == "__main__":
-    from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+# if __name__ == "__main__":
+#     from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
 
-    # Call load_secrets to initialize secrets
-    load_secrets()       
-    test_all_files()
+#     # Call load_secrets to initialize secrets
+#     load_secrets()       
+    #test_all_files()
+    # INDEX_PATHS = [
+    #     "embeddings/text-embedding-3-small_1e084ddcdb626d85292fdbd927c62283_index.pkl",
+    #     "embeddings/text-embedding-3-small_64932f393f18911efea1827b724be456_index.pkl",
+    #     "embeddings/text-embedding-3-small_a4e36c937a461e67595b3e3167207d0a_index.pkl",
+    #     "embeddings/text-embedding-3-small_ddb1c7431f1b3a3cb7e8b527639abaaa_index.pkl",
+    #     "embeddings/text-embedding-3-small_f3f9640cbbf72bd3f14d1ca6bf066bf1_index.pkl",
+    # ]
+    # for index_path in INDEX_PATHS:
+    #     index = load_index(index_path)
+    #     save_index_file(index, index_path)
+         
+    #test_all_files()
