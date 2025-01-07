@@ -140,7 +140,12 @@ def query_file(question, file_path, save_index=True):
             # Settings.llm = get_model_main(embed_aux_model_name)
             Settings.llm = get_model("AUX")
             Settings.embed_model = get_model("EMBED")
-        
+            try : 
+                logger.debug(f"Model changed to {Settings.llm=}")
+                logger.debug(f"Model changed to {Settings.embed_model=}")
+            except:
+                pass
+
         # Construct the index file path
         prefix_model = Settings.embed_model.model_name.replace("/","-").replace("""\"""","-").replace(":","-").replace(".","-").replace("_","-")
         #index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
