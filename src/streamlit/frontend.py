@@ -287,7 +287,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
         if st.session_state.additional_observations:
             case += f"**Observaciones Adicionales:** {st.session_state.additional_observations}\n"
         
-        pdf_filename = call_crew_ai(case, st.session_state.session_id, streamlit_callback)
+        report_filename = call_crew_ai(case, st.session_state.session_id, streamlit_callback)
         
         # Set progress to 100% after completion
         streamlit_callback("Informe generado con éxito.", 1.0)
@@ -295,13 +295,17 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
         st.toast("Acabado el informe, descarguelo para verlo")
 
         # Ensure the file is only accessible to the current user
-        if os.path.exists(pdf_filename):
-            with open(pdf_filename, "rb") as file:
+        if os.path.exists(report_filename):
+            # if report ends with .pdf, the mime = "application/pdf"
+            # else, if reports ends with .md, the mime = "text/markdown"
+            mime = "application/pdf" if report_filename.endswith(".pdf") else "text/markdown"
+            file_name = "informe_final.pdf" if report_filename.endswith(".pdf") else "informe_final.md"
+            with open(report_filename, "rb") as file:
                 st.download_button(
                     label="Descargar informe 📥",  # Added download icon
                     data=file,
-                    file_name="informe_final.pdf",  # Specify the desired download name
-                    mime="application/pdf"
+                    file_name=file_name, 
+                    mime=mime
                 )
             
             

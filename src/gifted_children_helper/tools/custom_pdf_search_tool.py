@@ -1,12 +1,13 @@
 from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_api_key, get_model, get_model_name
+from gifted_children_helper.utils.models import get_api_key, get_model
 import os
 import pickle
 from crewai.tools import tool
 import uuid  # Importamos uuid para generar identificadores únicos
 import hashlib
+
 
 
 def save_index_file(index, file_path):
@@ -103,8 +104,7 @@ def query_file(question, file_path, save_index=True):
     Returns:
         str: The response text from the query.
     """
-    has_model_been_changed = False
-
+    
     # Use the current working directory to construct the base path
     BASE_PATH = os.path.join(os.getenv("PWD"), "knowledge/external_docs/books")
     if not file_path.startswith(BASE_PATH):
@@ -112,8 +112,8 @@ def query_file(question, file_path, save_index=True):
     
     # Assert that the file exists
     if not os.path.exists(file_path):
-        logger.warning(f"File knowledge does not exist: {file_path}. Continue")
-        #return None
+        logger.error(f"File does not exist: {file_path}")
+        return None
     
     try:
         # Ensure the tmp directory exists
@@ -123,37 +123,21 @@ def query_file(question, file_path, save_index=True):
             logger.info("Created directory {}", tmp_dir)
 
 
-        logger.info("por aqui")
-        try:
-            logger.debug(Settings)
-            logger.debug(Settings.llm)
-            logger.debug(Settings.embed_model)
-            logger.debug(f"{ Settings.llm.model=}")
-            logger.debug(f"{ Settings.embed_model.model_name=}")
-        except:
-            pass
+
+        
         try : 
-            AUX_MODEL_NAME = get_model_name("AUX")
-            #DEFAULT_MODEL = 'gpt-3.5-turbo' 
-            has_to_change_default_model = Settings.llm.model != AUX_MODEL_NAME
+            DEFAULT_MODEL = 'gpt-3.5-turbo' 
+            has_to_change_default_model = Settings.llm.model == DEFAULT_MODEL
         except :
             has_to_change_default_model = False
 
         # Define model for embeddings and for the answering 
-        if not has_model_been_changed : 
+        if has_to_change_default_model : 
 
-            logger.debug(f"Get model AUX")
+            # Settings.llm = get_model_main(embed_aux_model_name)
             Settings.llm = get_model("AUX")
-            logger.debug(f"Get model EMBED")
             Settings.embed_model = get_model("EMBED")
-            has_model_been_changed = True
-            logger.debug(f"Both models changed")
-            try : 
-                logger.debug(f"Model changed to {Settings.llm=}")
-                logger.debug(f"Model changed to {Settings.embed_model=}")
-            except:
-                pass
-
+        
         # Construct the index file path
         prefix_model = Settings.embed_model.model_name.replace("/","-").replace("""\"""","-").replace(":","-").replace(".","-").replace("_","-")
         #index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
@@ -274,11 +258,11 @@ def test_all_files():
     for file in FILES:
         test_text_file(file,save_index=True)
 
-# if __name__ == "__main__":
-#     from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+if __name__ == "__main__":
+    from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
 
-#     # Call load_secrets to initialize secrets
-#     load_secrets()       
+    # Call load_secrets to initialize secrets
+    load_secrets()       
     #test_all_files()
     # INDEX_PATHS = [
     #     "embeddings/text-embedding-3-small_1e084ddcdb626d85292fdbd927c62283_index.pkl",
@@ -291,4 +275,4 @@ def test_all_files():
     #     index = load_index(index_path)
     #     save_index_file(index, index_path)
          
-    #test_all_files()
+    test_all_files()

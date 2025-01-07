@@ -33,11 +33,17 @@ class GiftedChildrenHelper():
         try:
             # If step_output is an AgentFinish object, , get the text from the agent output 
             if hasattr(step_output, 'text'):
-                text = f"*Acción finalizada: {step_output.thought}*" 
+                result_formatted = step_output.text.replace("```markdown","").replace("```","").replace("*","").replace("Thought:","Pensamiento:")
+                result_formatted = result_formatted.split("\n")[0]
+                text = f"*Acción finalizada: {result_formatted}*" 
             elif hasattr(step_output, 'result'):
-                text = f"*Respuesta bibliográfica: {step_output.result}*"
+                result_formatted = step_output.result.replace("```markdown","").replace("```","").replace("*","")
+                # Coger solo hasta el primer salto de línea "\n"
+                result_formatted = result_formatted.split("\n")[0]
+                text = f"*Respuesta bibliográfica: {result_formatted}*"
             if text:
                 logger.info(f"Step output: {text}")
+                # Coger solo hasta el primer salto de línea "\n"
                 self.task_callback(text)
         except Exception as e:
             logger.error(f"Error in step callback: {e}")        
@@ -287,9 +293,14 @@ class GiftedChildrenHelper():
         if os.path.exists(pdf_filename):
             os.remove(pdf_filename)
                               
-        convert_markdown_to_pdf(markdown_filename, pdf_filename)
-        logger.info(f"Consolidated report generated and saved to {pdf_filename}")
-        return pdf_filename
+        try :
+            convert_markdown_to_pdf(markdown_filename, pdf_filename)
+
+            logger.info(f"Consolidated report generated and saved to {pdf_filename}")
+            return pdf_filename
+        except Exception as e:
+            logger.error(f"Error generating pdf: {e}")
+            return markdown_filename
     
     @crew
     def crew(self) -> Crew:
