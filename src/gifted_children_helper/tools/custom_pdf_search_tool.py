@@ -8,7 +8,6 @@ from crewai.tools import tool
 import uuid  # Importamos uuid para generar identificadores únicos
 import hashlib
 
-has_model_been_changed = False
 
 def save_index_file(index, file_path):
     """
@@ -104,7 +103,8 @@ def query_file(question, file_path, save_index=True):
     Returns:
         str: The response text from the query.
     """
-    
+    has_model_been_changed = False
+
     # Use the current working directory to construct the base path
     BASE_PATH = os.path.join(os.getenv("PWD"), "knowledge/external_docs/books")
     if not file_path.startswith(BASE_PATH):
