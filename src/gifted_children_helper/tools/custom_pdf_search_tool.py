@@ -112,7 +112,7 @@ def query_file(question, file_path, save_index=True):
     
     # Assert that the file exists
     if not os.path.exists(file_path):
-        logger.warning(f"File does not exist: {file_path}")
+        logger.warning(f"File knowledge does not exist: {file_path}")
         #return None
     
     try:
