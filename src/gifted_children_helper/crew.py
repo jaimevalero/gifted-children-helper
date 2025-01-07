@@ -33,12 +33,14 @@ class GiftedChildrenHelper():
         try:
             # If step_output is an AgentFinish object, , get the text from the agent output 
             if hasattr(step_output, 'text'):
-                result_formatted = step_output.text.replace("```markdown","").replace("```","").replace("*","").replace("Thought:","Pensamiento:")
+                result_formatted = step_output.text
+                result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","").replace("Thought:","Pensamiento:")
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
                 text = f"*Acción finalizada: {result_formatted}*" 
             elif hasattr(step_output, 'result'):
-                result_formatted = step_output.result.replace("```markdown","").replace("```","").replace("*","")
+                result_formatted = step_output.text
+                result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","")
                 # Coger solo hasta el primer salto de línea "\n"
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
