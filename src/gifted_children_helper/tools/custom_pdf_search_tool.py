@@ -112,7 +112,7 @@ def query_file(question, file_path, save_index=True):
     
     # Assert that the file exists
     if not os.path.exists(file_path):
-        logger.warning(f"File knowledge does not exist: {file_path}")
+        logger.warning(f"File knowledge does not exist: {file_path}. Continue")
         #return None
     
     try:
@@ -123,8 +123,11 @@ def query_file(question, file_path, save_index=True):
             logger.info("Created directory {}", tmp_dir)
 
 
-
-        
+        try
+            logger.debug(f"{ Settings.llm.model=}")
+            logger.debug(f"{ Settings.embed_model.model_name=}")
+        except:
+            pass
         try : 
             DEFAULT_MODEL = 'gpt-3.5-turbo' 
             has_to_change_default_model = Settings.llm.model == DEFAULT_MODEL

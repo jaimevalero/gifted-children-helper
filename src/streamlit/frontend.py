@@ -254,18 +254,16 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
 
     # If is LOCAL environent variable is set to 1, mock the google auth
     if os.getenv("LOCAL","0") == "1":
-        mock_google_auth()        
+        mock_google_auth()    
     else:
         auth()
 
     try :
         if not st.session_state["connected"]:
-            #st.error("Por favor, lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación")
             authorized = False
         else:
             authorized = True
     except:
-        #st.error("Por favor, lógate con google para continuar. Ademas, solo usuarios autorizados pueden acceder a esta aplicación")
         authorized = False
                  
     if st.button("Generar informe 📝", disabled=send_button_disabled or not data_policy_accepted or not authorized):
