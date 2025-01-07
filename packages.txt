@@ -1,2 +1,3 @@
 pandoc
-pdflatex
+texlive-latex-base
+texlive-latex-extra
