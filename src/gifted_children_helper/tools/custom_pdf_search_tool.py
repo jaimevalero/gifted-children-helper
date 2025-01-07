@@ -112,8 +112,8 @@ def query_file(question, file_path, save_index=True):
     
     # Assert that the file exists
     if not os.path.exists(file_path):
-        logger.error(f"File does not exist: {file_path}")
-        return None
+        logger.warning(f"File does not exist: {file_path}")
+        #return None
     
     try:
         # Ensure the tmp directory exists
