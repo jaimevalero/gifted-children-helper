@@ -120,6 +120,8 @@ def __get_model_embed():
             )      
     elif provider == Provider.OPENAI:
         api_key = get_api_key(model_type)
+        # export OPENAI_API_KEY env variable
+        os.environ['OPENAI_API_KEY'] = api_key
         embed_model =OpenAIEmbedding(
                 model_name=model_name.replace("openai/", ""),
                 api_key=api_key,
