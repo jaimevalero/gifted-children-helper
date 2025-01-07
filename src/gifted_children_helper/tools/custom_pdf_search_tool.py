@@ -123,7 +123,11 @@ def query_file(question, file_path, save_index=True):
             logger.info("Created directory {}", tmp_dir)
 
 
+        logger.info("por aqui")
         try:
+            logger.debug(Settings)
+            logger.debug(Settings.llm)
+            logger.debug(Settings.embed_model)
             logger.debug(f"{ Settings.llm.model=}")
             logger.debug(f"{ Settings.embed_model.model_name=}")
         except:
