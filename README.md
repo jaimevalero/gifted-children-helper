@@ -3,53 +3,39 @@
 Demo de gabinete de ayuda integral a las familias de niños de altas capacidades
 powered by [crewAI](https://crewai.com). 
 
+## Context
+
+Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades. Utiliza [agentes](src/gifted_children_helper/config/agents.yaml) y [tareas](src/gifted_children_helper/config/tasks.yaml) configurados para proporcionar informes detallados y personalizados basados en la información proporcionada por los usuarios.
+
 ## Installation
 
-Ensure you have Python >=3.10 <=3.13 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
-
-First, if you haven't already, install uv:
+First, you need to install the packages listed on the packages.txt (debian)
 
 ```bash
-pip install uv
+sudo apt-get install $(cat packages.txt)
 ```
 
-Next, navigate to your project directory and install the dependencies:
-
-(Optional) Lock the dependencies and install them by using the CLI command:
-```bash
-crewai install
-```
-### Customizing
-
-**Add your `OPENAI_API_KEY` into the `.env` file**
-
-- Modify `src/gifted_children_helper/config/agents.yaml` to define your agents
-- Modify `src/gifted_children_helper/config/tasks.yaml` to define your tasks
-- Modify `src/gifted_children_helper/crew.py` to add your own logic, tools and specific args
-- Modify `src/gifted_children_helper/main.py` to add custom inputs for your agents and tasks
-
-## Running the Project
-
-To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
+Then, use python 3.10 and pip to install the required packages:
 
 ```bash
-$ crewai run
+pip install -r requirements.txt
 ```
 
-This command initializes the gifted-childer-helper Crew, assembling the agents and assigning them tasks as defined in your configuration.
+## Running the Application
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+To start the Streamlit application, run the following command:
 
-## Understanding Your Crew
 
-The gifted-childer-helper Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+To start the Streamlit application, run the following command:
+```bash
+streamlit run src/streamlit/frontend.py --server.port=8501 --server.address=0.0.0.0
+```
 
-## Support
+## Example Report
 
-For support, questions, or feedback regarding the GiftedChildrenHelper Crew or crewAI.
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
+Puedes descargar un reporte de ejemplo ficticio para ver el tipo de informe que genera la aplicación.
+[Descargar reporte de ejemplo](https://example.com/reporte-ejemplo.pdf)
 
-Let's create wonders together with the power and simplicity of crewAI.
+## Authentication and Terms of Service
+
+Para acceder a la aplicación, los usuarios deben autenticarse utilizando sus credenciales. Además, es importante que los usuarios lean y acepten los términos de servicio antes de utilizar la aplicación.
