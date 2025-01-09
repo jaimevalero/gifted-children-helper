@@ -1,5 +1,6 @@
 import sys
 import os
+import psutil  # Import psutil for system monitoring
 
 # Ugly hack because of https://stackoverflow.com/questions/76958817/streamlit-your-system-has-an-unsupported-version-of-sqlite3-chroma-requires-sq
 __import__('pysqlite3')
@@ -80,7 +81,7 @@ def streamlit_callback(message: str= None, progress: float = None, title: str = 
     # Convert markdown to html
     if message:
         st.markdown(message)
-    
+    log_system_usage()
     if progress is not None:
         # if "progress_bar" not in st.session_state:
         #     st.session_state.progress_bar = st.progress(0)
@@ -105,7 +106,7 @@ def call_crew_ai(case, session_id, streamlit_callback):
 
     # Ejecuta el run del modulo gifted_children_helper.main
     pdf_filename = run(case, streamlit_callback,session_id)
-
+    log_system_usage
     return pdf_filename
 
 
@@ -133,12 +134,24 @@ def add_navbar():
   <span class="navbar-brand mb-0 h1">Gabinete integral de psicología</span>
 </nav>""", unsafe_allow_html=True)
 
+def log_system_usage():
+    """
+    Log the system's CPU and memory usage.
+    """
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    logger.info("Memory usage: RSS = {} MB, VMS = {} MB", memory_info.rss / (1024 * 1024), memory_info.vms / (1024 * 1024))
+    logger.info("CPU usage: {}%", psutil.cpu_percent(interval=1))
+
 def main():
     # Add the navigation bar
     add_navbar()
 
     # Set the title of the Streamlit app
     logger.info("Starting Streamlit app")
+
+    # Log system usage
+    log_system_usage()
 
     # Información de la aplicación y enlace al reporte de ejemplo
     st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.
@@ -296,6 +309,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
 
         # Ensure the file is only accessible to the current user
         if os.path.exists(report_filename):
+            log_system_usage()
             # if report ends with .pdf, the mime = "application/pdf"
             # else, if reports ends with .md, the mime = "text/markdown"
             mime = "application/pdf" if report_filename.endswith(".pdf") else "text/markdown"
@@ -311,7 +325,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
             
     # Log the current app mode
     logger.info("End of render")
-
+    log_system_usage()
 
     st.markdown(footer_html, unsafe_allow_html=True)
 

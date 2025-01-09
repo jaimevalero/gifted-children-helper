@@ -34,7 +34,7 @@ streamlit run src/streamlit/frontend.py --server.port=8501 --server.address=0.0.
 ## Example Report
 
 Puedes descargar un reporte de ejemplo ficticio para ver el tipo de informe que genera la aplicación.
-[Descargar reporte de ejemplo](https://example.com/reporte-ejemplo.pdf)
+[Descargar reporte de ejemplo](src/streamlit/static/example_report.pdf)
 
 ## Authentication and Terms of Service
 

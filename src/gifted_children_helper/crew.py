@@ -34,11 +34,15 @@ class GiftedChildrenHelper():
             # If step_output is an AgentFinish object, , get the text from the agent output 
             if hasattr(step_output, 'text'):
                 result_formatted = step_output.text
-                result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","").replace("Thought:","Pensamiento:")
+                result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","")
+                result_formatted = next((line.split('Thought:')[1].strip() for line in step_output.text.split('\n') if 'Thought:' in line), "")
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
                 text = f"*Acción finalizada: {result_formatted}*" 
             elif hasattr(step_output, 'result'):
+                # If there is no text attribute, exit the function
+                if not hasattr(step_output.result, 'text'):
+                    return
                 result_formatted = step_output.text
                 result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","")
                 # Coger solo hasta el primer salto de línea "\n"
@@ -130,20 +134,6 @@ class GiftedChildrenHelper():
             step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") )
-
-    @agent
-    def clinical_psychologist(self) -> Agent:
-        agent_name = inspect.currentframe().f_code.co_name
-        logger.info(f"Initializing {agent_name} agent")
-        config = self.agents_config[agent_name]
-        config["llm"] = self.model_name
-
-        return Agent(
-            step_callback=self.step_callback,
-            config=config,
-            model = get_model("MAIN") ,
-            tools=[ask_altas_capacidades_en_ninos,
-                   ask_terapia_cognitivo_conductual] )
 
     @agent
     def neurologist(self) -> Agent:
