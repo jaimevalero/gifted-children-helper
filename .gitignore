@@ -10,3 +10,4 @@ times.lst
 .streamlit/*
 .env
 client_secret.json
+logs/*

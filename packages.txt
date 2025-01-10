@@ -1,3 +1,4 @@
 pandoc
 texlive-latex-base
 texlive-latex-extra
+psutils
