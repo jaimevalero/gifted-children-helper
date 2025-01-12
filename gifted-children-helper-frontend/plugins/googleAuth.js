@@ -29,6 +29,7 @@ function loadGoogleApiScript() {
     });
   };
 }
+console.log('Loading Google API script...');
 
 // Load the Google API script
 loadGoogleApiScript();

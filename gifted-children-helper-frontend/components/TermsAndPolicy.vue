@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels>
+  <v-expansion-panels v-model="expanded">
     <v-expansion-panel>
       <v-expansion-panel-header>
         Términos de servicio y política de privacidad
@@ -26,7 +26,8 @@ export default {
   data() {
     return {
       termsAndPolicyHtml: '',
-      accepted: false
+      accepted: false,
+      expanded: [0] // Initially expanded
     }
   },
   mounted() {
@@ -44,6 +45,9 @@ export default {
     },
     onAcceptChange() {
       this.$emit('accept-change', this.accepted);
+      if (this.accepted) {
+        this.expanded = []; // Close the expansion panel
+      }
     }
   }
 }
