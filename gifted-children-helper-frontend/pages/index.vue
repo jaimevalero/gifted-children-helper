@@ -62,7 +62,8 @@ export default {
       minWords: 0,
       snackbar: false,
       generatingReportSnackbar: false,
-      reportStatus: '' // Add a new data property for report status
+      reportStatus: '', // Add a new data property for report status
+      idToken: '' // Add a new data property for the ID token
     };
   },
   methods: {
@@ -80,6 +81,7 @@ export default {
         const googleUser = await this.$googleAuth.signIn();
         this.isAuthenticated = true;
         const profile = googleUser.getBasicProfile();
+        this.idToken = googleUser.getAuthResponse().id_token; // Get the ID token
         console.log('Logged in as:', profile.getName());
         this.snackbar = true; // Show snackbar
       } catch (error) {
@@ -111,10 +113,13 @@ export default {
           throw new Error('API URL is not defined in environment variables');
         }
 
-        const response = await fetch(`${apiUrl}/submit`, {
+        console.log('API URL:', apiUrl); // Log the API URL to console
+
+        const response = await fetch(`${apiUrl}/generate-report`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.idToken}` // Send the ID token in the Authorization header
           },
           body: JSON.stringify({ jobId, ...formData })
         });

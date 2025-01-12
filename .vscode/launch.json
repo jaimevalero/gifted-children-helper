@@ -58,6 +58,26 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             }
+        },
+        {
+            "name": "Run Vue App",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/gifted-children-helper-frontend",
+            "envFile": "${workspaceFolder}/gifted-children-helper-frontend/.env"
+        },
+        {
+            "name" : "fast api",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/gifted_children_helper_backend/fastapi/app.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/gifted_children_helper_backend"
+            }
         }
     ]
 }

@@ -20,3 +20,4 @@ streamlit-google-auth
 
 pysqlite3-binary
 psutil
+fastapi

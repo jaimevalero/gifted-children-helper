@@ -1,0 +1,59 @@
+body {
+    background-color: #ffffff;
+    color: #333;
+}
+.stTextArea textarea {
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 10px;
+    height: 130px; /* Establecer la altura de los text_area */
+}
+.stButton button {
+    background-color: #2DA1A7; /* Color corporativo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.stButton button:hover {
+    background-color: #25898B; /* Slightly darker shade for hover effect */
+}
+.stButton button:disabled {
+    background-color: #a5d6a7;
+    color: #ffffff;
+    cursor: not-allowed;
+}
+.stSidebar .css-1d391kg {
+    background-color: #f8f9fa;
+}
+.stSidebar .css-1d391kg .css-1v3fvcr {
+    color: #333;
+}
+.stSidebar .css-1d391kg .css-1v3fvcr:hover {
+    color: #2DA1A7; /* Color corporativo */
+}
+.stTextArea label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: #2DA1A7; /* Color corporativo */
+    color: white;
+    padding: 10px;
+    margin-bottom: 50px;
+}
+.navbar-brand {
+    color: white;
+    font-size: 24px;
+}
