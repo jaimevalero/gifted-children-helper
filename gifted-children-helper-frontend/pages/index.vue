@@ -31,7 +31,7 @@
               <p v-if="!isAuthenticated" class="error--text">
                 Debes estar logado con Google.
               </p>
-              <ReportStatus :status="reportStatus" /> <!-- Add the new component here -->
+              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" /> <!-- Conditionally render the component -->
             </v-card>
           </v-col>
         </v-row>
@@ -62,7 +62,8 @@ export default {
       minWords: 0,
       snackbar: false,
       generatingReportSnackbar: false,
-      reportStatus: '', // Add a new data property for report status
+      reportStatus: {}, // Change to an object to hold JSON data
+      reportStatusVisible: false, // Add a new data property to control visibility
       idToken: '' // Add a new data property for the ID token
     };
   },
@@ -136,8 +137,13 @@ export default {
         const wsUrl = `${process.env.VUE_APP_WS_URL}?uuid=${jobId}`;
         const socket = new WebSocket(wsUrl);
 
+        socket.onopen = () => {
+          console.log('WebSocket connection opened');
+          this.reportStatusVisible = true; // Show the ReportStatus component
+        };
+
         socket.onmessage = (event) => {
-          this.reportStatus = event.data; // Update report status
+          this.reportStatus = JSON.parse(event.data); // Update report status with JSON data
         };
 
         socket.onerror = (error) => {
@@ -159,6 +165,7 @@ export default {
 </script>
 
 <style>
+
 @import 'https://cdn.jsdelivr.net/npm/vuetify@2.6.4/dist/vuetify.min.css';
 </style>
 
