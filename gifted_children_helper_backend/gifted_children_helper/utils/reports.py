@@ -3,6 +3,7 @@ import shutil
 from loguru import logger
 from datetime import datetime
 import subprocess
+import psutil  # Import psutil for system monitoring
 
 def copy_report(*args, **kwargs):
     """ 
@@ -44,13 +45,22 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
         # Log the successful conversion
         logger.info("Converted {} to {}", markdown_file, pdf_file)
     except subprocess.CalledProcessError as e:
-        # Log the error with stdout and s   tderr
+        # Log the error with stdout and stderr
         logger.error("Failed to convert {} to PDF: {}\nstdout: {}\nstderr: {}", markdown_file, e, e.stdout, e.stderr)
         raise e
     except Exception as e:
         # Log any unexpected errors
         logger.error("An unexpected error occurred: {}", e)
         raise e
+
+def log_system_usage():
+    """
+    Log the system's CPU and memory usage.
+    """
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    logger.info("Memory usage: RSS = {} MB, VMS = {} MB", memory_info.rss / (1024 * 1024), memory_info.vms / (1024 * 1024))
+    logger.info("CPU usage: {}%", psutil.cpu_percent(interval=1))
 
 # Example usage
 # convert_markdown_to_pdf('logs/last_report.md', 'logs/last_report.pdf')

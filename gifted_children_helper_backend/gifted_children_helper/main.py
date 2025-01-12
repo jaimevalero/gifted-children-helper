@@ -38,7 +38,7 @@ def run(case: str = None, callback: callable = None,session_id: str = None):
     ensure_dirs_exist()
     
     try:
-        helper = GiftedChildrenHelper(task_callback=callback)
+        helper = GiftedChildrenHelper(task_callback=callback, session_id=session_id)
         crew = helper.crew()
         crew.kickoff(inputs=inputs)
         # por cada una de las crew.tasks, añadirlo todo a un solo string.

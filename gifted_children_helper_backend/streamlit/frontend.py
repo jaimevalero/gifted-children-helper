@@ -26,6 +26,7 @@ except:
 
 # Call load_secrets to initialize secrets
 from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+from gifted_children_helper.utils.reports import log_system_usage  # Import the log_system_usage function
 
 load_secrets(st)
 
@@ -130,15 +131,6 @@ def add_navbar():
   <span class="navbar-brand mb-0 h1">Gabinete integral de psicología</span>
 </nav>""", unsafe_allow_html=True)
 
-def log_system_usage():
-    """
-    Log the system's CPU and memory usage.
-    """
-    process = psutil.Process(os.getpid())
-    memory_info = process.memory_info()
-    logger.info("Memory usage: RSS = {} MB, VMS = {} MB", memory_info.rss / (1024 * 1024), memory_info.vms / (1024 * 1024))
-    logger.info("CPU usage: {}%", psutil.cpu_percent(interval=1))
-
 def main():
     """
     Main function to run the Streamlit app.
@@ -196,7 +188,7 @@ Juan suele frustrarse cuando no logra alcanzar la perfección en sus proyectos o
 """)
 
     st.session_state.skills_development = st.text_area("4. Habilidades y Desarrollo", value=st.session_state.skills_development, placeholder="""
-Describe las habilidades del niño/a y áreas de desarrollo (académico, físico, creativo, social).
+Describe las habilidades del niño/a y áreas de desarrollo (acad��mico, físico, creativo, social).
 Ejemplo: 
 Juan destaca en matemáticas y ciencias, resolviendo problemas avanzados para su edad. Ha comenzado a escribir cuentos breves y muestra creatividad en su forma de narrar. Sin embargo, en actividades deportivas se siente menos capaz y evita participar en juegos de equipo, lo que afecta su integración social.
 """)

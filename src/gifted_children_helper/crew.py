@@ -16,8 +16,10 @@ from gifted_children_helper.utils.reports import convert_markdown_to_pdf
 class GiftedChildrenHelper():
     """GiftedChildrenHelper crew"""
 
-    def __init__(self, task_callback: callable = None):
+    def __init__(self, task_callback: callable = None, session_id: str = None):
         self.task_callback = task_callback
+        self.session_id = session_id
+
         super().__init__()
 
     agents_config = 'config/agents.yaml'
@@ -52,7 +54,7 @@ class GiftedChildrenHelper():
             if text:
                 logger.info(f"Step output: {text}")
                 # Coger solo hasta el primer salto de línea "\n"
-                self.task_callback(text)
+                self.task_callback(text,self.session_id)
         except Exception as e:
             logger.error(f"Error in step callback: {e}")        
 
@@ -65,7 +67,7 @@ class GiftedChildrenHelper():
             progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
             title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
             logger.info(progress_message)
-            self.task_callback(progress_message, percentage_progress,title)
+            self.task_callback(progress_message, percentage_progress,title,self.session_id)
         except Exception as e:
             logger.error(f"Error in callback function: {e}")
 

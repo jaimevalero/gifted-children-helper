@@ -64,7 +64,9 @@ export default {
       generatingReportSnackbar: false,
       reportStatus: {}, // Change to an object to hold JSON data
       reportStatusVisible: false, // Add a new data property to control visibility
-      idToken: '' // Add a new data property for the ID token
+      idToken: '', // Add a new data property for the ID token
+      retryCount: 0, // Add a new data property for retry count
+      maxRetries: 5 // Add a new data property for maximum retries
     };
   },
   methods: {
@@ -116,13 +118,15 @@ export default {
 
         console.log('API URL:', apiUrl); // Log the API URL to console
 
+        const { totalWordCount, ...filteredFormData } = formData; // Remove totalWordCount from formData
+
         const response = await fetch(`${apiUrl}/generate-report`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.idToken}` // Send the ID token in the Authorization header
           },
-          body: JSON.stringify({ jobId, ...formData })
+          body: JSON.stringify({ uuid: jobId, ...filteredFormData }) // Include uuid in the request body
         });
 
         if (!response.ok) {
@@ -132,27 +136,8 @@ export default {
         const result = await response.json();
         console.log('Form submitted successfully:', result);
         this.snackbar = true;
-
-        // Open WebSocket connection to receive report status updates
-        const wsUrl = `${process.env.VUE_APP_WS_URL}?uuid=${jobId}`;
-        const socket = new WebSocket(wsUrl);
-
-        socket.onopen = () => {
-          console.log('WebSocket connection opened');
-          this.reportStatusVisible = true; // Show the ReportStatus component
-        };
-
-        socket.onmessage = (event) => {
-          this.reportStatus = JSON.parse(event.data); // Update report status with JSON data
-        };
-
-        socket.onerror = (error) => {
-          console.error('WebSocket error:', error);
-        };
-
-        socket.onclose = () => {
-          console.log('WebSocket connection closed');
-        };
+        this.reportStatusVisible = true; // Show the ReportStatus component
+        this.reportStatus = { uuid: jobId }; // Set the initial report status
 
       } catch (error) {
         console.error('Error submitting form:', error);
