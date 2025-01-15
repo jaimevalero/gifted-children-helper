@@ -12,6 +12,7 @@
 Ejemplo:
 Juan es un niño de 8 años que vive en Madrid con su hermano Enrique de 5 años. Es un niño muy curioso y le encanta explorar su entorno."
             prepend-inner-icon="mdi-account-child"
+
           />
         </v-col>
         <v-col cols="12">
@@ -54,11 +55,9 @@ Juan es muy bueno en matemáticas y le encanta resolver problemas. También es m
           <v-textarea
             outlined
             label="5. Contexto Escolar y Extraescolar"
-            v-model="school_context"
-            rows="6"
             placeholder="Comenta sobre su progreso académico y actividades fuera de la escuela.
 Ejemplo:
-Juan tiene muy buen rendimiento académico y participa en un club de ciencias después de la escuela. También le gusta jugar al fútbol con sus amigos."
+En el colegio, Juan suele aburrirse con tareas repetitivas y ha manifestado interés por proyectos más desafiantes. Participa en un taller de robótica después de clases, donde trabaja con estudiantes mayores y disfruta la experiencia. Sus profesores reconocen su talento, pero a veces no saben cómo manejar sus necesidades específicas."
             prepend-inner-icon="mdi-book-open-variant"
           />
         </v-col>
@@ -87,7 +86,10 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
           />
         </v-col>
         <v-col cols="12" class="text-right">
-          <v-btn :disabled="!isAuthenticated || totalWordCount < minWords" color="primary" type="submit">Enviar</v-btn>
+          <v-btn :disabled="!isAuthenticated || totalWordCount < minWords" color="primary" type="submit">
+            <v-icon left>mdi-send</v-icon> <!-- Añadir icono de envío -->
+            Enviar
+          </v-btn>
           <p v-if="totalWordCount < minWords" class="error--text">Minimum {{ minWords }} words required. Current: {{ totalWordCount }}</p>
         </v-col>
       </v-row>

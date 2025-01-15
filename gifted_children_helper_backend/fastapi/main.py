@@ -13,6 +13,8 @@ from gifted_children_helper.utils.reports import log_system_usage
 from gifted_children_helper.main import get_case, run
 from gifted_children_helper.utils.secrets import load_secrets
 import json
+from concurrent.futures import ThreadPoolExecutor
+import threading  # Import the threading module
 
 # Ugly hack because of https://stackoverflow.com/questions/76958817/streamlit-your-system-has-an-unsupported-version-of-sqlite3-chroma-requires-sq
 __import__('pysqlite3')
@@ -122,18 +124,15 @@ async def submit_form(request: Request, form_data: FormData):
         case += f"**Observaciones Adicionales:** {form_data.additional_observations}\n"
     
     case = get_case()
-    # Run the report generation with the WebSocket callback
-    report_filename = await run(case, websocket_callback, uuid)
-    
+
+    # Run the report generation in a separate thread
+    thread = threading.Thread(target=run, args=(case, websocket_callback, uuid))
+    thread.start()
+
     log_system_usage()
 
-    if os.path.exists(report_filename):
-        mime = "application/pdf" if report_filename.endswith(".pdf") else "text/markdown"
-        file_name = "informe_final.pdf" if report_filename.endswith(".pdf") else "informe_final.md"
-        return FileResponse(report_filename, media_type=mime, headers={"Content-Disposition": f"attachment; filename={file_name}"})
-
-    # Return the received data as a response
-    return {"jobId": form_data.uuid}
+    # Return the UUID to the frontend immediately
+    return {"uuid": form_data.uuid }
 
 # HTTP endpoint to send report status updates
 @app.get("/report_status/{uuid}")
@@ -149,10 +148,14 @@ async def report_status(uuid: str):
     """
     progress_file = f"tmp/{uuid}_progress.json"
     if os.path.exists(progress_file):
-        with open(progress_file) as f:
-            progress = json.load(f)  # Convert the string to a JSON object
-            logger.info(f"Sending progress update for UUID {uuid}: {progress}")
-            return progress
+        try :
+          with open(progress_file) as f:
+              progress = json.load(f)  # Convert the string to a JSON object
+              logger.info(f"Sending progress update for UUID {uuid}: {progress}")
+              return progress
+        except Exception as e:
+            logger.error(f"An error occurred while reading progress file: {e}")
+            raise HTTPException(status_code=500, detail="An error occurred while reading progress file")
     raise HTTPException(status_code=404, detail="Progress file not found")
 
 # Run the application on port 8080

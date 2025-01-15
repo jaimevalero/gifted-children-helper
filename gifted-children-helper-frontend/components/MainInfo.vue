@@ -5,6 +5,7 @@
       <br><br>
       Por favor, completa el formulario para generar un informe psicológico.
       <v-btn href="https://github.com/jaimevalero/gifted-children-helper/raw/master/src/streamlit/static/example_report.pdf" target="_blank" color="primary" class="mt-2">
+        <v-icon left>mdi-download</v-icon> <!-- Añadir icono de descarga -->
         Descargar reporte de ejemplo ficticio
       </v-btn>
     </v-alert>

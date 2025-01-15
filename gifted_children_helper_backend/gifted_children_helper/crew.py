@@ -29,16 +29,31 @@ class GiftedChildrenHelper():
     model_name = get_model_name("MAIN")
 
     def step_callback(self,step_output):
-        
+        # If step_output is None, exit the function
         text = None
+        try: 
+            if step_output.result == 'None':
+                return
+        except:
+            pass
+    
         try:
+
             # If step_output is an AgentFinish object, , get the text from the agent output 
             if hasattr(step_output, 'text'):
                 result_formatted = step_output.text
                 result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","")
-                result_formatted = next((line.split('Thought:')[1].strip() for line in step_output.text.split('\n') if 'Thought:' in line), "")
+                if result_formatted.lower().startswith("thought:"):
+                    result_formatted = result_formatted.split("Thought:")[1].strip()
+                elif result_formatted.lower().startswith("action:"):
+                    result_formatted  = result_formatted.split("Action:")[1].strip()
+                                    
+
+                #result_formatted = next((line.split('Thought:')[1].strip() for line in step_output.text.split('\n') if 'Thought:' in line), "")
+
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
+                result_formatted+="\n"
                 text = f"*Acción finalizada: {result_formatted}*" 
             elif hasattr(step_output, 'result'):
                 # If there is no text attribute, exit the function
@@ -56,7 +71,9 @@ class GiftedChildrenHelper():
                 #self.task_callback(text, 0.0, "Procesando",self.session_id)
                 progress_file = f"tmp/{self.session_id}_progress.json"
                 with open(progress_file, "w") as f:
-                    f.write(f'{{"log": "{text}"}}')
+                    resul_file = { "log": text}
+                    f.write(json.dumps(resul_file))
+
 
         except Exception as e:
             logger.error(f"Error in step callback: {e}")        
@@ -75,7 +92,7 @@ class GiftedChildrenHelper():
             with open(progress_file, "w") as f:
                 progress_data = {
                     "log": progress_message,
-                    "percentage": percentage_progress,
+                    "progress": percentage_progress,
                     "title": title
                 }
                 f.write(json.dumps(progress_data))

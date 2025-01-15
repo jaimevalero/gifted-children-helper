@@ -21,7 +21,10 @@
               <p v-if="!dataPolicyAccepted" class="error--text">
                 Debes aceptar los términos de servicio.
               </p>
-              <v-btn v-if="!isAuthenticated" @click="loginWithGoogle" color="primary">Login with Google</v-btn>
+              <v-btn v-if="!isAuthenticated" @click="loginWithGoogle" color="primary" class="my-3">
+                <v-icon left>mdi-google</v-icon> <!-- Añadir icono de Google -->
+                Iniciar sesión con Google
+              </v-btn>
               <v-snackbar v-model="snackbar" :timeout="3000" right>
                 ¡Usuario logado con éxito!
               </v-snackbar>
@@ -31,7 +34,7 @@
               <p v-if="!isAuthenticated" class="error--text">
                 Debes estar logado con Google.
               </p>
-              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" /> <!-- Conditionally render the component -->
+              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" /> <!-- Pass jobId to ReportStatus -->
             </v-card>
           </v-col>
         </v-row>
@@ -66,7 +69,8 @@ export default {
       reportStatusVisible: false, // Add a new data property to control visibility
       idToken: '', // Add a new data property for the ID token
       retryCount: 0, // Add a new data property for retry count
-      maxRetries: 5 // Add a new data property for maximum retries
+      maxRetries: 5, // Add a new data property for maximum retries
+      jobId: '' // Add a new data property for the job ID
     };
   },
   methods: {
@@ -106,6 +110,7 @@ export default {
       }
 
       const jobId = generateUUID(); // Generate a UUID for the job
+      this.jobId = jobId; // Save the jobId to the data property
       console.log('Generated Job ID:', jobId);
 
       this.generatingReportSnackbar = true; // Show generating report snackbar
@@ -137,12 +142,33 @@ export default {
         console.log('Form submitted successfully:', result);
         this.snackbar = true;
         this.reportStatusVisible = true; // Show the ReportStatus component
-        this.reportStatus = { uuid: jobId }; // Set the initial report status
+        this.reportStatus = { uuid: jobId }; // Set the initial report status        // Poll the report status every 5 seconds
+        this.pollReportStatus(jobId);
 
       } catch (error) {
         console.error('Error submitting form:', error);
       } finally {
         this.generatingReportSnackbar = false; // Hide generating report snackbar
+      }
+    },
+    async pollReportStatus(uuid) {
+      try {
+        const apiUrl = process.env.VUE_APP_API_URL;
+        const response = await fetch(`${apiUrl}/report_status/${uuid}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch report status');
+        }
+        const status = await response.json();
+        console.log('Report status:', status);
+        this.reportStatus = status;
+
+        if (status.progress < 1) {
+          setTimeout(() => this.pollReportStatus(uuid), 5000); // Poll again after 5 seconds
+        } else {
+          console.log('Report generation complete');
+        }
+      } catch (error) {
+        console.error('Error fetching report status:', error);
       }
     }
   }

@@ -67,17 +67,23 @@
             "webRoot": "${workspaceFolder}/gifted-children-helper-frontend",
             "envFile": "${workspaceFolder}/gifted-children-helper-frontend/.env"
         },
+
         {
-            "name" : "fast api",
+            "name": "FastAPI",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/gifted_children_helper_backend/fastapi/app.py",
-            "console": "integratedTerminal",
+            "module": "uvicorn",
+            "args": [
+                "gifted_children_helper_backend.fastapi.main:app", // Asegúrate de que esta ruta sea correcta
+                "--reload"
+            ],
+            "jinja": true,
             "justMyCode": true,
             "envFile": "${workspaceFolder}/.env",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/gifted_children_helper_backend"
             }
         }
+
     ]
 }
