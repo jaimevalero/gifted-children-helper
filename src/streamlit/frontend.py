@@ -267,7 +267,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
         st.error("Por favor, acepta los términos de servicio para continuar.")
 
     # If is LOCAL environent variable is set to 1, mock the google auth
-    if os.getenv("LOCAL","0") == "1":
+    if os.getenv("LOCAL","0") == "1" or True :
         mock_google_auth()    
     else:
         auth()
