@@ -101,6 +101,7 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
             Iniciar sesión con Google
           </v-btn>
           <p v-if="!isAuthenticated" class="error--text">Debes estar logado con Google.</p>
+
         </v-col>
         <v-col cols="12" class="text-right">
           <v-btn
@@ -112,18 +113,22 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
             Enviar
           </v-btn>
         </v-col>
+        <v-snackbar v-model="snackbar" :timeout="3000" right>
+          ¡Usuario logado con éxito!
+        </v-snackbar>
       </v-row>
     </v-container>
   </v-form>
 </template>
 
 <script>
-import TermsAndPolicy from '~/components/TermsAndPolicy.vue';
+// Import the TermsAndPolicy component
+import TermsAndPolicy from './TermsAndPolicy.vue';
 
 export default {
   name: 'EntryForm',
   components: {
-    TermsAndPolicy
+    TermsAndPolicy // Register the component
   },
   props: {
     isAuthenticated: {
@@ -144,8 +149,9 @@ export default {
       school_context: '',
       problems_difficulties: '',
       additional_observations: '',
-      minWords: 100, // Ensure the default value is set to 100
-      idToken: '' // Add a new data property for the ID token
+      minWords: 0, // Ensure the default value is set to 100
+      idToken: '', // Add a new data property for the ID token
+      snackbar: false // Add a new data property for the snackbar
     }
   },
   computed: {
@@ -201,6 +207,7 @@ export default {
         const profile = googleUser.getBasicProfile();
         this.idToken = googleUser.getAuthResponse().id_token; // Get the ID token
         console.log('Logged in as:', profile.getName());
+        this.snackbar = true; // Show the snackbar on successful login
         this.$emit('update:isAuthenticated', true); // Emit the authentication status to the parent component
       } catch (error) {
         console.error('Error signing in with Google:', error);

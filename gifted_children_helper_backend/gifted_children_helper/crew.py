@@ -19,6 +19,9 @@ class GiftedChildrenHelper():
     def __init__(self, task_callback: callable = None, session_id: str = None):
         self.task_callback = task_callback
         self.session_id = session_id
+        self.progress = 0
+        self.title = ""
+
         super().__init__()
 
     agents_config = 'config/agents.yaml'
@@ -64,15 +67,22 @@ class GiftedChildrenHelper():
                 # Coger solo hasta el primer salto de línea "\n"
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
+                result_formatted+="\n"
                 text = f"*Respuesta bibliográfica: {result_formatted}*"
             if text:
                 logger.info(f"Step output: {text}")
                 # Coger solo hasta el primer salto de línea "\n"
                 #self.task_callback(text, 0.0, "Procesando",self.session_id)
+                percentage_progress = self.progress
+                title = self.title
                 progress_file = f"tmp/{self.session_id}_progress.json"
                 with open(progress_file, "w") as f:
-                    resul_file = { "log": text}
-                    f.write(json.dumps(resul_file))
+                    progress_data = {
+                        "log": text,
+                        "progress": percentage_progress,
+                        "title": title
+                    }                
+                f.write(json.dumps(progress_data))
 
 
         except Exception as e:
@@ -87,7 +97,8 @@ class GiftedChildrenHelper():
             progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
             title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
             logger.info(progress_message)
-            #self.task_callback(progress_message, percentage_progress,title)
+            self.progress = percentage_progress
+            self.title = title
             progress_file = f"tmp/{self.session_id}_progress.json"
             with open(progress_file, "w") as f:
                 progress_data = {

@@ -22,9 +22,7 @@
 
               </EntryForm>
 
-              <v-snackbar v-model="snackbar" :timeout="3000" right>
-                ¡Usuario logado con éxito!
-              </v-snackbar>
+
               <v-snackbar v-model="generatingReportSnackbar" :timeout="3000" right>
                 Generando informe...
               </v-snackbar>
@@ -151,7 +149,7 @@ export default {
           throw new Error('Failed to fetch report status');
         }
         const status = await response.json();
-        console.log('Report status:', status);
+
         this.reportStatus = status;
 
         if (status.progress < 1) {
