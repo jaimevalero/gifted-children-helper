@@ -19,7 +19,7 @@ class GiftedChildrenHelper():
     def __init__(self, task_callback: callable = None, session_id: str = None):
         self.task_callback = task_callback
         self.session_id = session_id
-
+        self.progress = 0
         super().__init__()
 
     agents_config = 'config/agents.yaml'
@@ -50,11 +50,13 @@ class GiftedChildrenHelper():
                 # Coger solo hasta el primer salto de línea "\n"
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
+                result_formatted += "\n"
                 text = f"*Respuesta bibliográfica: {result_formatted}*"
             if text:
                 logger.info(f"Step output: {text}")
                 # Coger solo hasta el primer salto de línea "\n"
-                self.task_callback(text,self.session_id)
+                percentage_progress = self.progress
+                self.task_callback(text,percentage_progress,self.session_id)
         except Exception as e:
             logger.error(f"Error in step callback: {e}")        
 
@@ -63,7 +65,7 @@ class GiftedChildrenHelper():
             self.tasks_done += 1
             total_tasks = len(self.tasks)
             percentage_progress = self.tasks_done / total_tasks
-
+            self.progress = percentage_progress
             progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
             title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
             logger.info(progress_message)

@@ -12,7 +12,6 @@
 Ejemplo:
 Juan es un niño de 8 años que vive en Madrid con su hermano Enrique de 5 años. Es un niño muy curioso y le encanta explorar su entorno."
             prepend-inner-icon="mdi-account-child"
-
           />
         </v-col>
         <v-col cols="12">
@@ -55,6 +54,8 @@ Juan es muy bueno en matemáticas y le encanta resolver problemas. También es m
           <v-textarea
             outlined
             label="5. Contexto Escolar y Extraescolar"
+            v-model="school_context"
+            rows="6"
             placeholder="Comenta sobre su progreso académico y actividades fuera de la escuela.
 Ejemplo:
 En el colegio, Juan suele aburrirse con tareas repetitivas y ha manifestado interés por proyectos más desafiantes. Participa en un taller de robótica después de clases, donde trabaja con estudiantes mayores y disfruta la experiencia. Sus profesores reconocen su talento, pero a veces no saben cómo manejar sus necesidades específicas."
@@ -85,12 +86,31 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
             prepend-inner-icon="mdi-comment-text"
           />
         </v-col>
+        <v-col cols="12">
+          <p v-if="totalWordCount < minWords" class="error--text">Minimum {{ minWords }} words required. Current: {{ totalWordCount }}</p>
+        </v-col>
+        <v-col cols="12">
+          <TermsAndPolicy @accept-change="onAcceptChange" />
+          <p v-if="!dataPolicyAccepted" class="error--text">
+            Debes aceptar los términos de servicio.
+          </p>
+        </v-col>
         <v-col cols="12" class="text-right">
-          <v-btn :disabled="!isAuthenticated || totalWordCount < minWords" color="primary" type="submit">
+          <v-btn v-if="!isAuthenticated" @click="loginWithGoogle" color="secondary" class="my-3">
+            <v-icon left>mdi-google</v-icon> <!-- Añadir icono de Google -->
+            Iniciar sesión con Google
+          </v-btn>
+          <p v-if="!isAuthenticated" class="error--text">Debes estar logado con Google.</p>
+        </v-col>
+        <v-col cols="12" class="text-right">
+          <v-btn
+            :disabled="!isAuthenticated || totalWordCount < minWords || !dataPolicyAccepted"
+            color="green"
+            type="submit"
+          >
             <v-icon left>mdi-send</v-icon> <!-- Añadir icono de envío -->
             Enviar
           </v-btn>
-          <p v-if="totalWordCount < minWords" class="error--text">Minimum {{ minWords }} words required. Current: {{ totalWordCount }}</p>
         </v-col>
       </v-row>
     </v-container>
@@ -98,15 +118,16 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
 </template>
 
 <script>
+import TermsAndPolicy from '~/components/TermsAndPolicy.vue';
+
 export default {
   name: 'EntryForm',
+  components: {
+    TermsAndPolicy
+  },
   props: {
     isAuthenticated: {
       type: Boolean,
-      required: true
-    },
-    minWords: {
-      type: Number,
       required: true
     },
     dataPolicyAccepted: {
@@ -122,20 +143,22 @@ export default {
       skills_development: '',
       school_context: '',
       problems_difficulties: '',
-      additional_observations: ''
+      additional_observations: '',
+      minWords: 100, // Ensure the default value is set to 100
+      idToken: '' // Add a new data property for the ID token
     }
   },
   computed: {
     totalWordCount() {
       // Calculate the total word count from all textareas
       return (
-        this.description.split(' ').length +
-        this.family_dynamics.split(' ').length +
-        this.emotional_behavior.split(' ').length +
-        this.skills_development.split(' ').length +
-        this.school_context.split(' ').length +
-        this.problems_difficulties.split(' ').length +
-        this.additional_observations.split(' ').length
+        this.description.split(' ').filter(word => word).length +
+        this.family_dynamics.split(' ').filter(word => word).length +
+        this.emotional_behavior.split(' ').filter(word => word).length +
+        this.skills_development.split(' ').filter(word => word).length +
+        this.school_context.split(' ').filter(word => word).length +
+        this.problems_difficulties.split(' ').filter(word => word).length +
+        this.additional_observations.split(' ').filter(word => word).length
       );
     }
   },
@@ -158,8 +181,33 @@ export default {
         school_context: this.school_context,
         problems_difficulties: this.problems_difficulties,
         additional_observations: this.additional_observations,
-        totalWordCount: this.totalWordCount
+        totalWordCount: this.totalWordCount,
+        idToken: this.idToken // Include the ID token in the emitted data
       });
+    },
+    async loginWithGoogle() {
+      // Log the attempt to sign in
+      console.log('Attempting to sign in with Google');
+
+      try {
+        // Ensure the Google Auth instance is available
+        if (!this.$googleAuth) {
+          throw new Error('Google Auth instance is not available');
+        }
+
+        // Sign in with Google using the Google Auth instance
+        const googleUser = await this.$googleAuth.signIn();
+        this.isAuthenticated = true;
+        const profile = googleUser.getBasicProfile();
+        this.idToken = googleUser.getAuthResponse().id_token; // Get the ID token
+        console.log('Logged in as:', profile.getName());
+        this.$emit('update:isAuthenticated', true); // Emit the authentication status to the parent component
+      } catch (error) {
+        console.error('Error signing in with Google:', error);
+      }
+    },
+    onAcceptChange(accepted) {
+      this.$emit('update:dataPolicyAccepted', accepted);
     }
   }
 }
@@ -167,3 +215,4 @@ export default {
 
 <style scoped>
 </style>
+

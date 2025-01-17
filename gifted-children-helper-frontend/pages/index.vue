@@ -16,24 +16,19 @@
                 :minWords="minWords"
                 :dataPolicyAccepted="dataPolicyAccepted"
                 @submit="submitForm"
-              />
-              <TermsAndPolicy @accept-change="onAcceptChange" />
-              <p v-if="!dataPolicyAccepted" class="error--text">
-                Debes aceptar los términos de servicio.
-              </p>
-              <v-btn v-if="!isAuthenticated" @click="loginWithGoogle" color="primary" class="my-3">
-                <v-icon left>mdi-google</v-icon> <!-- Añadir icono de Google -->
-                Iniciar sesión con Google
-              </v-btn>
+                @update:isAuthenticated="isAuthenticated = $event"
+                @update:dataPolicyAccepted="dataPolicyAccepted = $event"
+              >
+
+              </EntryForm>
+
               <v-snackbar v-model="snackbar" :timeout="3000" right>
                 ¡Usuario logado con éxito!
               </v-snackbar>
               <v-snackbar v-model="generatingReportSnackbar" :timeout="3000" right>
                 Generando informe...
               </v-snackbar>
-              <p v-if="!isAuthenticated" class="error--text">
-                Debes estar logado con Google.
-              </p>
+
               <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" /> <!-- Pass jobId to ReportStatus -->
             </v-card>
           </v-col>
@@ -62,7 +57,7 @@ export default {
     return {
       isAuthenticated: false,
       dataPolicyAccepted: false,
-      minWords: 0,
+      minWords: 100, // Ensure the minWords value is set to 100
       snackbar: false,
       generatingReportSnackbar: false,
       reportStatus: {}, // Change to an object to hold JSON data
@@ -104,10 +99,7 @@ export default {
         console.error('User is not authenticated');
         return;
       }
-      if (formData.totalWordCount < this.minWords) {
-        console.error(`Minimum ${this.minWords} words required. Current: ${formData.totalWordCount}`);
-        return;
-      }
+
 
       const jobId = generateUUID(); // Generate a UUID for the job
       this.jobId = jobId; // Save the jobId to the data property
@@ -123,13 +115,13 @@ export default {
 
         console.log('API URL:', apiUrl); // Log the API URL to console
 
-        const { totalWordCount, ...filteredFormData } = formData; // Remove totalWordCount from formData
+        const { totalWordCount, idToken, ...filteredFormData } = formData; // Remove totalWordCount and idToken from formData
 
         const response = await fetch(`${apiUrl}/generate-report`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.idToken}` // Send the ID token in the Authorization header
+            'Authorization': `Bearer ${idToken}` // Send the ID token in the Authorization header
           },
           body: JSON.stringify({ uuid: jobId, ...filteredFormData }) // Include uuid in the request body
         });
