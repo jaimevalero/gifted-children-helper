@@ -1,15 +1,14 @@
 <template>
   <v-card>
-    <v-card-title>{{ title || 'Progreso del informe' }}</v-card-title>
+    <v-card-title>{{ title || 'Informe en progreso' }}</v-card-title>
     <v-card-text>
       <!-- Bind progress to model-value -->
-      <v-progress-linear :model-value="progress" height="10"></v-progress-linear>
+      <v-progress-linear indeterminate height="10"></v-progress-linear>
       <div v-html="renderedLog"></div> <!-- Render the Markdown as HTML -->
-
-      <v-snackbar v-model="reportGeneratedSnackbar" :timeout="3000" right>
-        Informe generado con éxito
-      </v-snackbar>
     </v-card-text>
+    <v-snackbar v-model="reportGeneratedSnackbar" :timeout="3000" color="success">
+      ¡Informe generado con éxito!
+    </v-snackbar>
     <v-card-actions>
       <v-spacer></v-spacer> <!-- Add spacer to push the button to the right -->
       <v-btn v-if="progress === 1" color="red" @click="downloadReport" icon>
@@ -78,6 +77,12 @@ export default {
           console.log('Progress new value:', newStatus.progress);
           this.progress = Math.max(0, Math.min(newStatus.progress, 1)); // Ensure progress is between 0 and 1
           console.log('Progress new value changed', this.progress);
+
+          // Mostrar el snackbar solo cuando el progreso llegue a 1
+          if (newStatus.progress === 1) {
+            this.reportGeneratedSnackbar = true;
+            console.log('Report generation complete - showing snackbar');
+          }
         }
         this.title = newStatus.title || '';
         let logEntry = newStatus.log || '';
