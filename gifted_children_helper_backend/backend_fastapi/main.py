@@ -15,8 +15,9 @@ from gifted_children_helper.utils.secrets import load_secrets
 import json
 from concurrent.futures import ThreadPoolExecutor
 import threading  # Import the threading module
+from backend_fastapi.auth_store import AuthStore
 
-# Ugly hack because of https://stackoverflow.com/questions/76958817/streamlit-your-system-has-an-unsupported-version-of-sqlite3-chroma-requires-sq
+
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -39,6 +40,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Initialize AuthStore
+auth_store = AuthStore()
 
 # Define a Pydantic model for the form data
 class FormData(BaseModel):
@@ -101,6 +105,10 @@ async def submit_form(request: Request, form_data: FormData):
     
     token = auth_header.split(" ")[1]
     token_info = verify_google_token(token)
+    user_id = token_info['sub']
+    
+    # Store the authorization
+    auth_store.add_auth(form_data.uuid, user_id)
     
     # Log the received form data and jobId
     logger.info(f"Received form data: {form_data}")
@@ -134,9 +142,32 @@ async def submit_form(request: Request, form_data: FormData):
     # Return the UUID to the frontend immediately
     return {"uuid": form_data.uuid }
 
+@app.get("/report_download/{uuid}")
+async def report_download(uuid: str):
+    """
+    HTTP endpoint to download the generated report.
+    Returns the PDF with a fixed filename regardless of the UUID.
+
+    Args:
+        uuid (str): The unique identifier for the report generation job.
+
+    Returns:
+        FileResponse: The generated report file with fixed filename 'final_report.pdf'
+    """
+    # Check if the report file exists
+    pdf_file = f"logs/{uuid}.pdf"
+      
+    if os.path.exists(pdf_file):
+        return FileResponse(
+            path=pdf_file, 
+            media_type="application/pdf", 
+            filename="final_report.pdf"  # Nombre fijo para el archivo descargado
+        )
+    raise HTTPException(status_code=404, detail="Report file not found")
+
 # HTTP endpoint to send report status updates
 @app.get("/report_status/{uuid}")
-async def report_status(uuid: str):
+async def report_status(request: Request, uuid: str):
     """
     HTTP endpoint to send report status updates.
 
@@ -146,6 +177,19 @@ async def report_status(uuid: str):
     Returns:
         dict: The progress status of the report generation.
     """
+    # Extract and verify token
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authorization header missing or invalid")
+    
+    token = auth_header.split(" ")[1]
+    token_info = verify_google_token(token)
+    user_id = token_info['sub']
+    
+    # Verify authorization
+    if not auth_store.verify_auth(uuid, user_id):
+        raise HTTPException(status_code=403, detail="Unauthorized access to report")
+    
     progress_file = f"tmp/{uuid}_progress.json"
     if os.path.exists(progress_file):
         try :
@@ -158,7 +202,14 @@ async def report_status(uuid: str):
             raise HTTPException(status_code=500, detail="An error occurred while reading progress file")
     raise HTTPException(status_code=404, detail="Progress file not found")
 
+# Add cleanup task
+@app.on_event("startup")
+async def startup_event():
+    """Clean up expired entries on startup"""
+    auth_store.cleanup()
+
 # Run the application on port 8080
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8080)
+
 
