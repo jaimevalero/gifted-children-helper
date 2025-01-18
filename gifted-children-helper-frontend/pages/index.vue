@@ -3,16 +3,14 @@
     <v-app-bar app color="primary" dark>
       <v-toolbar-title>Gabinete Integral de Psicología</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn text href="https://www.asociacionamaci.com/" target="_blank">AMACI</v-btn>
     </v-app-bar>
     <v-main>
       <v-container class="my-2"> <!-- Cambiar py-5 a my-2 para reducir el margen vertical -->
         <v-row justify="center">
-          <v-col cols="12" md="8" lg="6">
+          <v-col cols="12" md="10" lg="10">
             <v-card class="pa-4">
               <MainInfo />
               <v-divider class="my-4"></v-divider> <!-- Añadir un divisor para separar las secciones -->
-              <v-card-title class="text-h5">Formulario de Entrada</v-card-title> <!-- Añadir el título del formulario -->
               <EntryForm
                 :isAuthenticated="isAuthenticated"
                 :minWords="minWords"
