@@ -19,15 +19,14 @@
                 @update:isAuthenticated="updateIsAuthenticated"
                 @update:dataPolicyAccepted="dataPolicyAccepted = $event"
               >
-
               </EntryForm>
-
 
               <v-snackbar v-model="generatingReportSnackbar" :timeout="3000" right>
                 Generando informe...
               </v-snackbar>
 
-              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" :idToken="idToken" /> <!-- Pass idToken to ReportStatus -->
+              <!-- Ensure ReportStatus receives the correct props -->
+              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" :idToken="idToken" />
             </v-card>
           </v-col>
         </v-row>
@@ -135,7 +134,7 @@ export default {
         console.log('Form submitted successfully:', result);
         this.snackbar = true;
         this.reportStatusVisible = true; // Show the ReportStatus component
-        this.reportStatus = { uuid: jobId }; // Set the initial report status
+        this.reportStatus = { uuid: jobId, progress: 0 }; // Set the initial report status with progress
         // Poll the report status every 5 seconds
         this.pollReportStatus(jobId);
 

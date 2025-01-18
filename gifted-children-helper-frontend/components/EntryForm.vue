@@ -90,7 +90,7 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
           <p v-if="totalWordCount < minWords" class="error--text">Minimum {{ minWords }} words required. Current: {{ totalWordCount }}</p>
         </v-col>
         <v-col cols="12">
-          <TermsAndPolicy @accept-change="onAcceptChange" />
+          <TermsAndPolicy @accept-change="onAcceptChange" :default-checked="dataPolicyAccepted" />
           <p v-if="!dataPolicyAccepted" class="error--text">
             Debes aceptar los términos de servicio.
           </p>
@@ -124,6 +124,7 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
 <script>
 // Import the TermsAndPolicy component
 import TermsAndPolicy from './TermsAndPolicy.vue';
+import Cookies from 'js-cookie'; // Import js-cookie for handling cookies
 
 export default {
   name: 'EntryForm',
@@ -137,7 +138,8 @@ export default {
     },
     dataPolicyAccepted: {
       type: Boolean,
-      required: true
+      required: true,
+      default: process.env.NODE_ENV === 'development' // Default to true in development
     }
   },
   data() {
@@ -174,6 +176,15 @@ export default {
       set(value) {
         this.$emit('update:isAuthenticated', value);
       }
+    }
+  },
+  created() {
+    // Retrieve authentication state and ID token from cookies
+    const isAuthenticated = Cookies.get('isAuthenticated') === 'true';
+    const idToken = Cookies.get('idToken');
+    if (isAuthenticated && idToken) {
+      this.computedIsAuthenticated = true;
+      this.idToken = idToken;
     }
   },
   methods: {
@@ -219,6 +230,10 @@ export default {
         console.log('Logged in as:', profile.getName());
         this.snackbar = true; // Show the snackbar on successful login
         this.$emit('update:isAuthenticated', true); // Emit the authentication status to the parent component
+
+        // Save authentication state and ID token in cookies
+        Cookies.set('isAuthenticated', 'true', { expires: 7 });
+        Cookies.set('idToken', this.idToken, { expires: 7 });
       } catch (error) {
         console.error('Error signing in with Google:', error);
       }
