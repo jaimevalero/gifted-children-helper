@@ -323,11 +323,6 @@ class GiftedChildrenHelper():
 
         # Initialize the report content
         report_content = ""
-        # añade en markdown un informe de que el reporte se ha generado con IA
-        # y que no constituye un diagnóstico médico, ni una prueba de cribado válida.
-        report_content += "# Informe generado mediante inteligencia artificial\n\n"
-        report_content += "* No constituye un diagnóstico médico, ni una prueba de cribado válida. *\n\n"
-        report_content += "---\n\n"
 
         # add sepearator en markdown
         # Iterate over the tasks and collect their outputs
@@ -337,6 +332,13 @@ class GiftedChildrenHelper():
             report_content += f"# {i} Informe: {task_name.replace('_', ' ').title()}\n\n{task_output}\n\n"
             report_content += "---\n\n"
         report_content = report_content.replace("```markdown","").replace("```","")
+
+        # añade en markdown un informe de que el reporte se ha generado con IA
+        # y que no constituye un diagnóstico médico, ni una prueba de cribado válida.
+        report_content += "# Informe generado mediante inteligencia artificial.\n\n"
+        report_content += "## Este informe no constituye un diagnóstico médico, ni una prueba de cribado válida. \n\n"
+        report_content += "---\n\n"
+
         contenido_final = report_content
         
         markdown_filename = "logs/last_report.md"
