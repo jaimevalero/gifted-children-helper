@@ -11,6 +11,7 @@ from gifted_children_helper.utils.reports import convert_markdown_to_pdf
 
 import json
 from filelock import FileLock  # Import FileLock
+import time  # Import time for sleep
 
 
 @CrewBase
@@ -31,6 +32,26 @@ class GiftedChildrenHelper():
 
     MAX_EXECUTION_TIMEOUT=1200
     model_name = get_model_name("MAIN")
+
+    def write_progress_file(self,session_id: str, progress_data: dict):
+        """Write progress data to a JSON file with a file lock."""
+        progress_file = f"tmp/{session_id}_progress.json"
+        attempts = 3
+        for attempt in range(attempts):
+            try:
+                logger.debug(f"Writing progress data to {progress_file}, intento {attempt + 1}")
+                lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
+                with lock:  # Use the lock when accessing the file
+                    with open(progress_file, "w") as f:
+                        f.write(json.dumps(progress_data))
+                logger.debug(f"Progress data written to {progress_file} successfully")
+                break  # Exit the loop if successful
+            except Exception as e:
+                logger.error(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < attempts - 1:
+                    time.sleep(3)  # Wait for 3 seconds before retrying
+                else:
+                    logger.error("All attempts to write the progress file have failed.")
 
     def step_callback(self,step_output):
         # If step_output is None, exit the function
@@ -76,16 +97,12 @@ class GiftedChildrenHelper():
                 #self.task_callback(text, 0.0, "Procesando",self.session_id)
                 percentage_progress = self.progress
                 title = self.title
-                progress_file = f"tmp/{self.session_id}_progress.json"
-                lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
-                with lock:  # Use the lock when accessing the file
-                    with open(progress_file, "w") as f:
-                        progress_data = {
-                            "log": text,
-                            "progress": percentage_progress,
-                            "title": title
-                        }                
-                    f.write(json.dumps(progress_data))
+                progress_data = {
+                    "log": text,
+                    "progress": percentage_progress,
+                    "title": title
+                }
+                self.write_progress_file(self.session_id, progress_data)
 
 
         except Exception as e:
@@ -102,16 +119,12 @@ class GiftedChildrenHelper():
             logger.info(progress_message)
             self.progress = percentage_progress
             self.title = title
-            progress_file = f"tmp/{self.session_id}_progress.json"
-            lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
-            with lock:  # Use the lock when accessing the file
-                with open(progress_file, "w") as f:
-                    progress_data = {
-                        "log": progress_message,
-                        "progress": percentage_progress,
-                        "title": title
-                    }
-                    f.write(json.dumps(progress_data))
+            progress_data = {
+                "log": progress_message,
+                "progress": percentage_progress,
+                "title": title
+            }
+            self.write_progress_file(self.session_id, progress_data)
         except Exception as e:
                 logger.error(f"Error in callback function: {e}")
 
