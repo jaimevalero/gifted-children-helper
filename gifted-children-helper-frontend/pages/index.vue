@@ -4,11 +4,11 @@
       <v-toolbar-title>Gabinete Integral de Psicología</v-toolbar-title>
       <v-spacer></v-spacer>
     </v-app-bar>
-    <v-main>
-      <v-container class="my-2"> <!-- Cambiar py-5 a my-2 para reducir el margen vertical -->
-        <v-row justify="center">
+    <v-main class="main-content">
+      <v-container class="pa-0"> <!-- Eliminamos padding del container -->
+        <v-row justify="center" no-gutters> <!-- Eliminamos gutters de la fila -->
           <v-col cols="12" md="10" lg="10">
-            <v-card class="pa-4">
+            <v-card class="mt-0"> <!-- Eliminamos padding superior de la card -->
               <MainInfo />
               <v-divider class="my-4"></v-divider> <!-- Añadir un divisor para separar las secciones -->
               <EntryForm
@@ -182,9 +182,18 @@ export default {
 </script>
 
 <style>
-/* Reducir el margen superior del contenedor principal */
-.v-main {
-  margin-top: 0 !important;
+/* Ajustes para eliminar espacios innecesarios */
+.main-content {
+  padding-top: 0 !important;
+}
+
+.v-application--wrap {
+  min-height: 100vh !important;
+}
+
+/* Ajustar el espacio del app-bar */
+.v-app-bar + .v-main {
+  padding-top: 64px !important; /* altura del navbar */
 }
 
 @import 'https://cdn.jsdelivr.net/npm/vuetify@2.6.4/dist/vuetify.min.css';
