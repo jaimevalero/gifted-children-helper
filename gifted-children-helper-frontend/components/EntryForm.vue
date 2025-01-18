@@ -90,7 +90,7 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
           />
         </v-col>
         <v-col cols="12">
-          <p v-if="totalWordCount < minWords" class="error--text">Minimum {{ minWords }} words required. Current: {{ totalWordCount }}</p>
+          <p v-if="totalWordCount < minWords" class="error--text">Por favor debe rellenar al menos {{ minWords }} palabras. Palabras actuales: {{ totalWordCount }}</p>
         </v-col>
         <v-col cols="12">
           <TermsAndPolicy @accept-change="onAcceptChange" :default-checked="dataPolicyAccepted" />
@@ -154,7 +154,7 @@ export default {
       school_context: '',
       problems_difficulties: '',
       additional_observations: '',
-      minWords: 0, // Ensure the default value is set to 100
+      minWords: 0, // Ensure the default value is set to 200
       idToken: '', // Add a new data property for the ID token
       snackbar: false // Add a new data property for the snackbar
     }
