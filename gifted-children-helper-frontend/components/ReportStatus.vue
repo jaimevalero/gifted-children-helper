@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>{{ title || 'Informe en progreso' }}</v-card-title>
+    <v-card-title>{{ title || 'Generando el informe' }}</v-card-title>
     <v-card-text>
       <!-- Bind progress to model-value -->
       <v-progress-linear indeterminate height="10"></v-progress-linear>
@@ -9,8 +9,7 @@
     <v-snackbar v-model="reportGeneratedSnackbar" :timeout="3000" color="success">
       ¡Informe generado con éxito!
     </v-snackbar>
-    <v-card-actions>
-      <v-spacer></v-spacer> <!-- Add spacer to push the button to the right -->
+    <v-card-actions class="justify-center"> <!-- Cambiar esta línea -->
       <v-btn v-if="progress === 1" color="red" @click="downloadReport" icon>
         <v-icon>mdi-download</v-icon>
         Descargar reporte
@@ -204,6 +203,11 @@ export default {
 <style scoped>
 .v-card {
   margin-top: 20px;
+}
+
+.justify-center {
+  display: flex;
+  justify-content: center;
 }
 </style>
 

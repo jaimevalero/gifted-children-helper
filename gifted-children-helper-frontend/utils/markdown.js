@@ -21,6 +21,8 @@ export function convertMarkdownToHtml(markdown) {
   markdown = markdown.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
   // bold
   markdown = markdown.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>');
+  markdown = markdown.replace(/^\* (.*$)\*/gim, '<strong>$1</strong>');
+
   markdown = markdown.replace(/\*(.*)\*/gim, '<em>$1</em>');
   // links
   markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>');
