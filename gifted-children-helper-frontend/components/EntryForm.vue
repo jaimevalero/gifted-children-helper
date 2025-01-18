@@ -99,7 +99,7 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
           </p>
         </v-col>
         <v-col cols="12" class="text-right">
-          <v-btn v-if="!computedIsAuthenticated" @click="loginWithGoogle" color="secondary" class="my-3">
+          <v-btn  v-if="!computedIsAuthenticated" elevation="2" @click="loginWithGoogle" color="secondary" class="my-3">
             <v-icon left>mdi-google</v-icon> <!-- Añadir icono de Google -->
             Iniciar sesión con Google
           </v-btn>

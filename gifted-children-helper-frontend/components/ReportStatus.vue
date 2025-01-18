@@ -2,16 +2,26 @@
   <v-card>
     <v-card-title>{{ title || 'Generando el informe' }}</v-card-title>
     <v-card-text>
-      <!-- Bind progress to model-value -->
-      <v-progress-linear indeterminate height="10"></v-progress-linear>
+      <v-progress-linear
+        v-if="progress !== 1"
+        indeterminate
+        height="10"
+      ></v-progress-linear>
       <div v-html="renderedLog"></div> <!-- Render the Markdown as HTML -->
     </v-card-text>
     <v-snackbar v-model="reportGeneratedSnackbar" :timeout="3000" color="success">
       ¡Informe generado con éxito!
     </v-snackbar>
-    <v-card-actions class="justify-center"> <!-- Cambiar esta línea -->
-      <v-btn v-if="progress === 1" color="red" @click="downloadReport" icon>
-        <v-icon>mdi-download</v-icon>
+    <v-card-actions class="justify-center">
+      <v-btn
+        v-if="progress === 1"
+        color="primary"
+        @click="downloadReport"
+        class="download-button"
+        elevation="2"
+        :loading="downloading"
+      >
+        <v-icon left>mdi-download</v-icon>
         Descargar reporte
       </v-btn>
     </v-card-actions>
@@ -208,6 +218,23 @@ export default {
 .justify-center {
   display: flex;
   justify-content: center;
+}
+
+.download-button {
+  border: 2px solid currentColor;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.download-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.download-button:active {
+  transform: translateY(0);
 }
 </style>
 

@@ -1,9 +1,11 @@
-# GiftedChildrenHelper Crew
+# Gabinete de ayuda psicológica para niños de altas capacidades
 
-Demo de gabinete de ayuda integral a las familias de niños de altas capacidades
-powered by [crewAI](https://crewai.com). 
+Simulación de gabinete psicológico de ayuda integral a las familias de niños de altas capacidades.
+Powered by [crewAI](https://crewai.com). 
 
-## Especialistas y sus Informes
+Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades. Utiliza [agentes](src/gifted_children_helper/config/agents.yaml) y [tareas](src/gifted_children_helper/config/tasks.yaml) configurados para proporcionar informes detallados y personalizados basados en la información proporcionada por los usuarios.
+
+## Especialistas (agentes) y sus Informes (tareas)
 
 El gabinete cuenta con un equipo multidisciplinar de especialistas, cada uno generando informes específicos:
 
@@ -39,11 +41,11 @@ El gabinete cuenta con un equipo multidisciplinar de especialistas, cada uno gen
 - **Rol**: Supervisión y coordinación del equipo multidisciplinar
 - **Informe**: Integración de todas las evaluaciones en un plan de intervención coordinado
 
-Cada especialista genera informes profesionales en formato markdown, proporcionando una visión integral del caso y recomendaciones específicas para implementación tanto en el entorno familiar como educativo.
+Cada especialista genera informes profesionales en pdf, proporcionando una visión integral del caso y recomendaciones específicas para implementación tanto en el entorno familiar como educativo.
 
-## Context
 
-Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades. Utiliza [agentes](src/gifted_children_helper/config/agents.yaml) y [tareas](src/gifted_children_helper/config/tasks.yaml) configurados para proporcionar informes detallados y personalizados basados en la información proporcionada por los usuarios.
+
+
 
 ## Installation
 First, you need to install the packages listed on the packages.txt (debian)
