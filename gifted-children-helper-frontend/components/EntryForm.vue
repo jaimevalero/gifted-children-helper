@@ -96,16 +96,16 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
           </p>
         </v-col>
         <v-col cols="12" class="text-right">
-          <v-btn v-if="!isAuthenticated" @click="loginWithGoogle" color="secondary" class="my-3">
+          <v-btn v-if="!computedIsAuthenticated" @click="loginWithGoogle" color="secondary" class="my-3">
             <v-icon left>mdi-google</v-icon> <!-- Añadir icono de Google -->
             Iniciar sesión con Google
           </v-btn>
-          <p v-if="!isAuthenticated" class="error--text">Debes estar logado con Google.</p>
+          <p v-if="!computedIsAuthenticated" class="error--text">Debes estar logado con Google.</p>
 
         </v-col>
         <v-col cols="12" class="text-right">
           <v-btn
-            :disabled="!isAuthenticated || totalWordCount < minWords || !dataPolicyAccepted"
+            :disabled="!computedIsAuthenticated || totalWordCount < minWords || !dataPolicyAccepted"
             color="green"
             type="submit"
           >
@@ -166,11 +166,19 @@ export default {
         this.problems_difficulties.split(' ').filter(word => word).length +
         this.additional_observations.split(' ').filter(word => word).length
       );
+    },
+    computedIsAuthenticated: {
+      get() {
+        return this.isAuthenticated;
+      },
+      set(value) {
+        this.$emit('update:isAuthenticated', value);
+      }
     }
   },
   methods: {
     handleSubmit() {
-      if (!this.isAuthenticated) {
+      if (!this.computedIsAuthenticated) {
         console.error('User is not authenticated');
         return;
       }
@@ -178,6 +186,7 @@ export default {
         console.error(`Minimum ${this.minWords} words required. Current: ${this.totalWordCount}`);
         return;
       }
+      console.log('ID Token before emitting form data:', this.idToken); // Log the ID token
       // Emit form data to parent component
       this.$emit('submit', {
         description: this.description,
@@ -203,9 +212,10 @@ export default {
 
         // Sign in with Google using the Google Auth instance
         const googleUser = await this.$googleAuth.signIn();
-        this.isAuthenticated = true;
+        this.computedIsAuthenticated = true; // Use the computed property to update isAuthenticated
         const profile = googleUser.getBasicProfile();
         this.idToken = googleUser.getAuthResponse().id_token; // Get the ID token
+        console.log('ID Token after login:', this.idToken); // Log the ID token
         console.log('Logged in as:', profile.getName());
         this.snackbar = true; // Show the snackbar on successful login
         this.$emit('update:isAuthenticated', true); // Emit the authentication status to the parent component

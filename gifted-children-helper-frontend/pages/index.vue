@@ -16,7 +16,7 @@
                 :minWords="minWords"
                 :dataPolicyAccepted="dataPolicyAccepted"
                 @submit="submitForm"
-                @update:isAuthenticated="isAuthenticated = $event"
+                @update:isAuthenticated="updateIsAuthenticated"
                 @update:dataPolicyAccepted="dataPolicyAccepted = $event"
               >
 
@@ -27,7 +27,7 @@
                 Generando informe...
               </v-snackbar>
 
-              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" /> <!-- Pass jobId to ReportStatus -->
+              <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" :idToken="idToken" /> <!-- Pass idToken to ReportStatus -->
             </v-card>
           </v-col>
         </v-row>
@@ -79,9 +79,10 @@ export default {
 
         // Sign in with Google using the Google Auth instance
         const googleUser = await this.$googleAuth.signIn();
-        this.isAuthenticated = true;
+        this.updateIsAuthenticated(true); // Use the new method to update isAuthenticated
         const profile = googleUser.getBasicProfile();
         this.idToken = googleUser.getAuthResponse().id_token; // Get the ID token
+        console.log('ID Token after login:', this.idToken); // Log the ID token
         console.log('Logged in as:', profile.getName());
         this.snackbar = true; // Show snackbar
       } catch (error) {
@@ -98,6 +99,8 @@ export default {
         return;
       }
 
+      this.idToken = formData.idToken; // Save the idToken to the data property
+      console.log('ID Token after form submission:', this.idToken); // Log the ID token
 
       const jobId = generateUUID(); // Generate a UUID for the job
       this.jobId = jobId; // Save the jobId to the data property
@@ -132,7 +135,8 @@ export default {
         console.log('Form submitted successfully:', result);
         this.snackbar = true;
         this.reportStatusVisible = true; // Show the ReportStatus component
-        this.reportStatus = { uuid: jobId }; // Set the initial report status        // Poll the report status every 5 seconds
+        this.reportStatus = { uuid: jobId }; // Set the initial report status
+        // Poll the report status every 5 seconds
         this.pollReportStatus(jobId);
 
       } catch (error) {
@@ -160,6 +164,9 @@ export default {
       } catch (error) {
         console.error('Error fetching report status:', error);
       }
+    },
+    updateIsAuthenticated(value) {
+      this.isAuthenticated = value;
     }
   }
 }

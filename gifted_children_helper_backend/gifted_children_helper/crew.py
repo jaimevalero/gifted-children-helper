@@ -10,6 +10,7 @@ import inspect
 from gifted_children_helper.utils.reports import convert_markdown_to_pdf
 
 import json
+from filelock import FileLock  # Import FileLock
 
 
 @CrewBase
@@ -76,13 +77,15 @@ class GiftedChildrenHelper():
                 percentage_progress = self.progress
                 title = self.title
                 progress_file = f"tmp/{self.session_id}_progress.json"
-                with open(progress_file, "w") as f:
-                    progress_data = {
-                        "log": text,
-                        "progress": percentage_progress,
-                        "title": title
-                    }                
-                f.write(json.dumps(progress_data))
+                lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
+                with lock:  # Use the lock when accessing the file
+                    with open(progress_file, "w") as f:
+                        progress_data = {
+                            "log": text,
+                            "progress": percentage_progress,
+                            "title": title
+                        }                
+                    f.write(json.dumps(progress_data))
 
 
         except Exception as e:
@@ -100,13 +103,15 @@ class GiftedChildrenHelper():
             self.progress = percentage_progress
             self.title = title
             progress_file = f"tmp/{self.session_id}_progress.json"
-            with open(progress_file, "w") as f:
-                progress_data = {
-                    "log": progress_message,
-                    "progress": percentage_progress,
-                    "title": title
-                }
-                f.write(json.dumps(progress_data))
+            lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
+            with lock:  # Use the lock when accessing the file
+                with open(progress_file, "w") as f:
+                    progress_data = {
+                        "log": progress_message,
+                        "progress": percentage_progress,
+                        "title": title
+                    }
+                    f.write(json.dumps(progress_data))
         except Exception as e:
                 logger.error(f"Error in callback function: {e}")
 

@@ -16,6 +16,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 import threading  # Import the threading module
 from backend_fastapi.auth_store import AuthStore
+from filelock import FileLock  # Import FileLock
 
 
 __import__('pysqlite3')
@@ -186,17 +187,19 @@ async def report_status(request: Request, uuid: str):
     token_info = verify_google_token(token)
     user_id = token_info['sub']
     
-    # Verify authorization
-    if not auth_store.verify_auth(uuid, user_id):
+    report_belongs_user = auth_store.verify_auth(uuid, user_id) # Verify authorization
+    if not report_belongs_user:
         raise HTTPException(status_code=403, detail="Unauthorized access to report")
     
     progress_file = f"tmp/{uuid}_progress.json"
+    lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
     if os.path.exists(progress_file):
-        try :
-          with open(progress_file) as f:
-              progress = json.load(f)  # Convert the string to a JSON object
-              logger.info(f"Sending progress update for UUID {uuid}: {progress}")
-              return progress
+        try:
+            with lock:  # Use the lock when accessing the file
+                with open(progress_file) as f:
+                    progress = json.load(f)  # Convert the string to a JSON object
+                    logger.info(f"Sending progress update for UUID {uuid}: {progress}")
+                    return progress
         except Exception as e:
             logger.error(f"An error occurred while reading progress file: {e}")
             raise HTTPException(status_code=500, detail="An error occurred while reading progress file")
