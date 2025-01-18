@@ -6,11 +6,13 @@
       <v-btn text href="https://www.asociacionamaci.com/" target="_blank">AMACI</v-btn>
     </v-app-bar>
     <v-main>
-      <v-container class="py-5">
+      <v-container class="my-2"> <!-- Cambiar py-5 a my-2 para reducir el margen vertical -->
         <v-row justify="center">
           <v-col cols="12" md="8" lg="6">
             <v-card class="pa-4">
               <MainInfo />
+              <v-divider class="my-4"></v-divider> <!-- Añadir un divisor para separar las secciones -->
+              <v-card-title class="text-h5">Formulario de Entrada</v-card-title> <!-- Añadir el título del formulario -->
               <EntryForm
                 :isAuthenticated="isAuthenticated"
                 :minWords="minWords"
@@ -25,13 +27,20 @@
                 Generando informe...
               </v-snackbar>
 
-              <!-- Ensure ReportStatus receives the correct props -->
               <ReportStatus v-if="reportStatusVisible" :status="reportStatus" :uuid="jobId" :idToken="idToken" />
             </v-card>
           </v-col>
         </v-row>
       </v-container>
     </v-main>
+    <v-footer app color="primary" dark>
+      <v-col class="text-right" cols="12">
+        <v-btn icon href="https://github.com/jaimevalero/gifted-children-helper" target="_blank">
+          <v-icon>mdi-github</v-icon>
+        </v-btn>
+        Hecho con <v-icon color="red">mdi-heart</v-icon> para <a href="https://www.asociacionamaci.com/" target="_blank" class="text-white">AMACI</a>
+      </v-col>
+    </v-footer>
   </v-app>
 </template>
 
@@ -175,6 +184,10 @@ export default {
 </script>
 
 <style>
+/* Reducir el margen superior del contenedor principal */
+.v-main {
+  margin-top: 0 !important;
+}
 
 @import 'https://cdn.jsdelivr.net/npm/vuetify@2.6.4/dist/vuetify.min.css';
 </style>

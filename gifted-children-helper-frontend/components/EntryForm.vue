@@ -1,5 +1,8 @@
 <template>
   <v-form @submit.prevent="handleSubmit">
+    <v-divider class="my-4"></v-divider> <!-- Añadir un divisor para separar las secciones -->
+    <v-card-title class="text-h5">Formulario de entrada</v-card-title> <!-- Añadir el título del formulario -->
+
     <v-container>
       <v-row dense>
         <v-col cols="12">

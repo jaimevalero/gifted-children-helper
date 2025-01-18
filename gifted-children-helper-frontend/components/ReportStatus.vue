@@ -3,13 +3,26 @@
     <v-card-title>{{ title || 'Progreso del informe' }}</v-card-title>
     <v-card-text>
       <!-- Bind progress to model-value -->
-      <v-progress-linear indeterminate height="10"></v-progress-linear>
+      <v-progress-linear :model-value="progress" height="10"></v-progress-linear>
       <div v-html="renderedLog"></div> <!-- Render the Markdown as HTML -->
+
+      <v-snackbar v-model="reportGeneratedSnackbar" :timeout="3000" right>
+        Informe generado con éxito
+      </v-snackbar>
     </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer> <!-- Add spacer to push the button to the right -->
+      <v-btn v-if="progress === 1" color="red" @click="downloadReport" icon>
+        <v-icon>mdi-download</v-icon>
+        Descargar reporte
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
 <script>
+import { convertMarkdownToHtml } from '~/utils/markdown.js'; // Import the function
+
 export default {
   name: 'ReportStatus',
   props: {
@@ -33,13 +46,14 @@ export default {
       log: '',
       intervalId: null, // Add an interval ID to manage the polling
       error: null, // Add an error property to handle errors
-      lastStatus: null // Add a property to store the last status
+      lastStatus: null, // Add a property to store the last status
+      reportGeneratedSnackbar: false // Add a property for the snackbar
     };
   },
   computed: {
     renderedLog() {
-      // Convert the Markdown log to HTML using a simple function
-      return this.convertMarkdownToHtml(this.log);
+      // Convert the Markdown log to HTML using the imported function
+      return convertMarkdownToHtml(this.log);
     }
   },
   watch: {
@@ -74,11 +88,11 @@ export default {
         this.lastStatus = newStatus; // Update the last status
       }
       console.log('Status updated:', newStatus);
-      console.log('Progress:', this.progress);
 
-      // print v-progress-linear object
-      console.log(this.$refs.progress);
-
+      // Show snackbar and enable download button when progress reaches 1
+      if (this.progress === 1) {
+        this.reportGeneratedSnackbar = true;
+      }
     },
     updateProgressBar(progress) {
       console.log("Actualizando el progreso");
@@ -146,36 +160,29 @@ export default {
         this.error = 'Error fetching report status. Please try again later.';
       }
     },
-    convertMarkdownToHtml(markdown) {
-      // Simple Markdown to HTML conversion
-      // This is a basic implementation and may not cover all Markdown features
-      // You can use a library like `markdown-it` for more advanced Markdown parsing
-      markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold text
-      markdown = markdown.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italic text
-      markdown = markdown.replace(/`(.*?)`/g, '<code>$1</code>'); // Inline code
-      markdown = markdown.replace(/(?:\r\n|\r|\n)/g, '<br>'); // Line breaks
-      markdown = markdown.replace(/^-{3,}/g, '<hr>'); // Horizontal rule
-      // titles
-      markdown = markdown.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-      markdown = markdown.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-      markdown = markdown.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-      markdown = markdown.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
-      markdown = markdown.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
-      // bold
-      markdown = markdown.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>');
-      markdown = markdown.replace(/\*(.*)\*/gim, '<em>$1</em>');
-      // links
-      markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>');
-      // lists
-      markdown = markdown.replace(/^\*(.*)/gim, '<li>$1</li>');
-      markdown = markdown.replace(/^\d\.(.*)/gim, '<li>$1</li>');
-      markdown = markdown.replace(/<li>(.*)<\/li>/gim, '<ul><li>$1</li></ul>');
-      // subrayado
-      markdown = markdown.replace(/__(.*)__/gim, '<u>$1</u>');
-
-
-
-      return markdown;
+    async downloadReport() {
+      try {
+        const apiUrl = process.env.VUE_APP_API_URL;
+        const response = await fetch(`${apiUrl}/report_download/${this.uuid}`, {
+          headers: {
+            'Authorization': `Bearer ${this.idToken}` // Send the ID token in the Authorization header
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Failed to download report');
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'final_report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (error) {
+        console.error('Error downloading report:', error);
+        this.error = 'Error downloading report. Please try again later.';
+      }
     }
   },
   mounted() {
@@ -194,3 +201,4 @@ export default {
   margin-top: 20px;
 }
 </style>
+
