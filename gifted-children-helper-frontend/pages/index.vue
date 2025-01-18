@@ -152,12 +152,15 @@ export default {
         if (!response.ok) {
           throw new Error('Failed to fetch report status');
         }
+        console.log('Report 1');
         const status = await response.json();
-
+        console.log('Report status2:', status);
         this.reportStatus = status;
-
+        console.log('Report generation in progress3');
         if (status.progress < 1) {
+          console.log('Report generation in progress');
           setTimeout(() => this.pollReportStatus(uuid), 5000); // Poll again after 5 seconds
+          console.log('Report generation in progress2');
         } else {
           console.log('Report generation complete');
         }
