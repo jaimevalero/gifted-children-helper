@@ -74,7 +74,7 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "gifted_children_helper_backend.fastapi.main:app", // Asegúrate de que esta ruta sea correcta
+                "gifted_children_helper_backend.backend_fastapi.main:app", // Asegúrate de que esta ruta sea correcta
                 "--reload"
             ],
             "jinja": true,
