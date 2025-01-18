@@ -31,8 +31,8 @@
         </v-row>
       </v-container>
     </v-main>
-    <v-footer app color="primary" dark>
-      <v-col class="text-right" cols="12">
+    <v-footer app color="primary" dark class="footer-compact" absolute> <!-- Añadido absolute -->
+      <v-col class="text-right py-2" cols="12"> <!-- Reducido el padding vertical de py-3 a py-2 -->
         <v-btn icon href="https://github.com/jaimevalero/gifted-children-helper" target="_blank">
           <v-icon>mdi-github</v-icon>
         </v-btn>
@@ -197,5 +197,29 @@ export default {
 }
 
 @import 'https://cdn.jsdelivr.net/npm/vuetify@2.6.4/dist/vuetify.min.css';
+
+/* Ajuste para hacer el footer más compacto */
+.footer-compact {
+  min-height: 40px !important; /* Reducido de 48px por defecto */
+  height: auto !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  z-index: 100 !important;
+}
+
+.footer-compact .v-btn {
+  margin: 0 4px !important;
+}
+
+/* Ocultar footer duplicado de Vuetify */
+.v-application .v-footer:not(.footer-compact) {
+  display: none !important;
+}
+
+/* Ajustar el contenido principal para que no se solape con el footer */
+.v-main {
+  padding-bottom: 40px !important;
+}
 </style>
 
