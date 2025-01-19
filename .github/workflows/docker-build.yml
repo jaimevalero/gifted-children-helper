@@ -40,3 +40,19 @@ jobs:
             ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:buildcache
           cache-to: type=registry,ref=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:buildcache,mode=max
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: gifted-children-helper
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy gifted-children-helper \
+            --image=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:latest \
+            --region=europe-southwest1
