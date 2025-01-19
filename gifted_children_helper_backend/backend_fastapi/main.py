@@ -155,7 +155,7 @@ async def submit_form(request: Request, form_data: FormData):
     if form_data.additional_observations:
         case += f"**Observaciones Adicionales:** {form_data.additional_observations}\n"
     
-    case = get_case()
+    #case = get_case()
 
     # Run the report generation in a separate thread
     thread = threading.Thread(target=run, args=(case, websocket_callback, uuid))
