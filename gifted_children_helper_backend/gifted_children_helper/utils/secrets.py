@@ -33,6 +33,7 @@ def load_secrets(st=None):
     else:
         # We are not in a Streamlit environment, just load secrets from secrets.toml
         # Load secrets from secrets file, and sets  environment variables
+        logger.info("Loading secrets from secrets.toml")
         secrets_file = ".streamlit/secrets.toml"
         if os.path.exists(secrets_file):
             with open(secrets_file, "r") as file:
