@@ -10,7 +10,7 @@ def load_secrets(st=None):
     logger.info("Loading secrets from secrets.toml")
     
     # Load environment variables from .env file
-    load_dotenv()
+    load_dotenv(override=False)
 
     if st:
         # Update environment variables with secrets from secrets.toml
@@ -34,15 +34,21 @@ def load_secrets(st=None):
         # We are not in a Streamlit environment, just load secrets from secrets.toml
         # Load secrets from secrets file, and sets  environment variables
         secrets_file = ".streamlit/secrets.toml"
-        with open(secrets_file, "r") as file:
-            secrets = file.readlines()
-            for secret in secrets:
-                key, value = secret.strip().split(" = ")
-                # skip empty lines , or lines that contains "#" caracters
-                if not key or key.startswith("#"):
-                    continue
-                os.environ[key] = value.replace('"', "").replace("'", "")
-
+        if os.path.exists(secrets_file):
+            with open(secrets_file, "r") as file:
+                secrets = file.readlines()
+                for secret in secrets:
+                    key, value = secret.strip().split(" = ")
+                    # skip empty lines , or lines that contains "#" caracters
+                    if not key or key.startswith("#"):
+                        continue
+                    os.environ[key] = value.replace('"', "").replace("'", "")
+        else:
+            logger.error("Secrets file not found")
+    # Check if the secrets were loaded correctly, if env MAIN_TOKEN is not set, raise an error
+    if not os.getenv("MAIN_TOKEN"):
+        logger.error("Error loading secrets")
+        raise ValueError("Error loading secrets MAIN_TOKEN")
 
 
 
