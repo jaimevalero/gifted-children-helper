@@ -9,15 +9,21 @@ from gifted_children_helper.utils.models import Provider,  get_model,  get_model
 import inspect
 from gifted_children_helper.utils.reports import convert_markdown_to_pdf
 
-
+import json
+from filelock import FileLock  # Import FileLock
+import time  # Import time for sleep
 
 
 @CrewBase
 class GiftedChildrenHelper():
     """GiftedChildrenHelper crew"""
 
-    def __init__(self, task_callback: callable = None):
+    def __init__(self, task_callback: callable = None, session_id: str = None):
         self.task_callback = task_callback
+        self.session_id = session_id
+        self.progress = 0
+        self.title = ""
+
         super().__init__()
 
     agents_config = 'config/agents.yaml'
@@ -27,17 +33,52 @@ class GiftedChildrenHelper():
     MAX_EXECUTION_TIMEOUT=1200
     model_name = get_model_name("MAIN")
 
+    def write_progress_file(self,session_id: str, progress_data: dict):
+        """Write progress data to a JSON file with a file lock."""
+        progress_file = f"tmp/{session_id}_progress.json"
+        attempts = 3
+        for attempt in range(attempts):
+            try:
+                logger.debug(f"Writing progress data to {progress_file}, intento {attempt + 1}")
+                lock = FileLock(f"{progress_file}.lock")  # Create a lock for the progress file
+                with lock:  # Use the lock when accessing the file
+                    with open(progress_file, "w") as f:
+                        f.write(json.dumps(progress_data))
+                logger.debug(f"Progress data written to {progress_file} successfully")
+                break  # Exit the loop if successful
+            except Exception as e:
+                logger.error(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < attempts - 1:
+                    time.sleep(3)  # Wait for 3 seconds before retrying
+                else:
+                    logger.error("All attempts to write the progress file have failed.")
+
     def step_callback(self,step_output):
-        
+        # If step_output is None, exit the function
         text = None
+        try: 
+            if step_output.result == 'None':
+                return
+        except:
+            pass
+    
         try:
+
             # If step_output is an AgentFinish object, , get the text from the agent output 
             if hasattr(step_output, 'text'):
                 result_formatted = step_output.text
                 result_formatted = result_formatted.replace("```markdown","").replace("```","").replace("*","")
-                result_formatted = next((line.split('Thought:')[1].strip() for line in step_output.text.split('\n') if 'Thought:' in line), "")
+                if result_formatted.lower().startswith("thought:"):
+                    result_formatted = result_formatted.split("Thought:")[1].strip()
+                elif result_formatted.lower().startswith("action:"):
+                    result_formatted  = result_formatted.split("Action:")[1].strip()
+                                    
+
+                #result_formatted = next((line.split('Thought:')[1].strip() for line in step_output.text.split('\n') if 'Thought:' in line), "")
+
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
+                result_formatted+="\n"
                 text = f"*Acción finalizada: {result_formatted}*" 
             elif hasattr(step_output, 'result'):
                 # If there is no text attribute, exit the function
@@ -48,11 +89,22 @@ class GiftedChildrenHelper():
                 # Coger solo hasta el primer salto de línea "\n"
                 if "\n" in result_formatted:
                     result_formatted = result_formatted.split("\n")[0]
+                result_formatted+="\n"
                 text = f"*Respuesta bibliográfica: {result_formatted}*"
             if text:
                 logger.info(f"Step output: {text}")
                 # Coger solo hasta el primer salto de línea "\n"
-                self.task_callback(text)
+                #self.task_callback(text, 0.0, "Procesando",self.session_id)
+                percentage_progress = self.progress
+                title = self.title
+                progress_data = {
+                    "log": text,
+                    "progress": percentage_progress,
+                    "title": title
+                }
+                self.write_progress_file(self.session_id, progress_data)
+
+
         except Exception as e:
             logger.error(f"Error in step callback: {e}")        
 
@@ -65,9 +117,16 @@ class GiftedChildrenHelper():
             progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
             title = f"({self.tasks_done}/{total_tasks}) Acabado el informe del {output.agent}"
             logger.info(progress_message)
-            self.task_callback(progress_message, percentage_progress,title)
+            self.progress = percentage_progress
+            self.title = title
+            progress_data = {
+                "log": progress_message,
+                "progress": percentage_progress,
+                "title": title
+            }
+            self.write_progress_file(self.session_id, progress_data)
         except Exception as e:
-            logger.error(f"Error in callback function: {e}")
+                logger.error(f"Error in callback function: {e}")
 
     @agent
     def clinical_psychologist(self) -> Agent:
@@ -265,12 +324,21 @@ class GiftedChildrenHelper():
         # Initialize the report content
         report_content = ""
 
+        # add sepearator en markdown
         # Iterate over the tasks and collect their outputs
         for i,task in enumerate(self.tasks[1:-1],start=1):
             task_name = task.name
             task_output = task.output.raw
             report_content += f"# {i} Informe: {task_name.replace('_', ' ').title()}\n\n{task_output}\n\n"
+            report_content += "---\n\n"
         report_content = report_content.replace("```markdown","").replace("```","")
+
+        # añade en markdown un informe de que el reporte se ha generado con IA
+        # y que no constituye un diagnóstico médico, ni una prueba de cribado válida.
+        report_content += "# Informe generado mediante inteligencia artificial.\n\n"
+        report_content += "## Este informe no constituye un diagnóstico médico, ni una prueba de cribado válida. \n\n"
+        report_content += "---\n\n"
+
         contenido_final = report_content
         
         markdown_filename = "logs/last_report.md"

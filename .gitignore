@@ -11,3 +11,4 @@ times.lst
 .env
 client_secret.json
 logs/*
+.vercel

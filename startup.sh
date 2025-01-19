@@ -51,3 +51,25 @@ Informe neurológico
 Informe de terapia ocupacional
 Informe psicopedagógico
 Informe de terapia familiar
+
+
+{
+    "web": {
+      "client_id": "replace with your client id",
+      "project_id": "gifted-children-helper",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_secret": "replace with your client secret",
+      "redirect_uris": [
+        "http://localhost:3000/",
+         # "https://guiding-families.streamlit.app"
+      ]
+    }
+}
+
+
+npm run dev
+
+
+docker run -v /home/jaimevalero/git/gifted-children-helper/.streamlit/secrets.toml:/app/.streamlit/secrets.toml guiding-families-backend

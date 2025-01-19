@@ -26,33 +26,26 @@ except:
 
 # Call load_secrets to initialize secrets
 from gifted_children_helper.utils.secrets import load_secrets  # Import the moved function
+from gifted_children_helper.utils.reports import log_system_usage  # Import the log_system_usage function
 
 load_secrets(st)
 
 from gifted_children_helper.main import run
 
-
-
 def auth():
-
-    # emails of users that are allowed to login
+    """
+    Authenticate the user using Google Auth.
+    """
     allowed_users = os.getenv("ALLOWED_USERS").split(",")
-
-    
-    #st.write("## Streamlit Google Auth")
-
     authenticator = Authenticator(
         allowed_users=allowed_users,
         token_key=os.getenv("TOKEN_KEY"),
         secret_path="client_secret.json",
-        # redirect_uri="http://localhost:8501",
         redirect_uri= "https://guiding-families.streamlit.app",
     )
     authenticator.check_auth()
     authenticator.login()
 
-
-    # show content that requires login
     if st.session_state["connected"]:
         st.write(f"Bienvenido {st.session_state['user_info'].get('email')}")
         logger.info(f"Logado {st.session_state['user_info'].get('email')}")
@@ -62,13 +55,13 @@ def auth():
     if not st.session_state["connected"]:
         st.warning("Por favor, lógate con google para continuar. Además, solo usuarios autorizados pueden acceder a esta aplicación") 
 
-
 def mock_google_auth():
-    # Mock authentication for demonstration purposes
+    """
+    Mock authentication for demonstration purposes.
+    """
     logger.debug("Mocking Google authentication")
     st.session_state["connected"] = True
     st.session_state["user_info"] = {"email": "example@example.con"}
-
 
 def streamlit_callback(message: str= None, progress: float = None, title: str = None):
     """
@@ -76,49 +69,53 @@ def streamlit_callback(message: str= None, progress: float = None, title: str = 
     
     :param message: Message to display.
     :param progress: Progress percentage (0 to 1).
+    :param title: Title to display.
     """
     logger.info(f"Streamlit callback called with message: {message} and progress: {progress}")
-    # Convert markdown to html
     if message:
         st.markdown(message)
     log_system_usage()
     if progress is not None:
-        # if "progress_bar" not in st.session_state:
-        #     st.session_state.progress_bar = st.progress(0)
         progress = min(1.0, max(0.0, progress))  # Ensure progress is between 0 and 1   
         st.session_state.progress_bar.progress(progress)
-        # If there is a title, update the text
     if title:
         st.session_state.progress_bar.text(title)
 
 def call_crew_ai(case, session_id, streamlit_callback):
-    # Initialize the progress bar before starting tasks
+    """
+    Call Crew AI to generate a report.
+    
+    :param case: Case details.
+    :param session_id: Session ID.
+    :param streamlit_callback: Callback function for progress updates.
+    :return: PDF filename.
+    """
     logger.info("Calling Crew AI with session ID: {}", session_id)
     if "progress_bar" not in st.session_state:
         st.session_state.progress_bar = st.progress(0)
     
     st.toast("Generando el informe. Esto tarda varios minutos. Por favor, espere")
-    # Aquí puedes llamar a la función de Crew.ai y pasar el callback
-    # Ejemplo de uso del callback:
-
-
     streamlit_callback("Iniciando contacto con la ia...", 0.1,"Iniciando contacto con la ia...")
-
-    # Ejecuta el run del modulo gifted_children_helper.main
-    pdf_filename = run(case, streamlit_callback,session_id)
-    log_system_usage
+    pdf_filename = run(case, streamlit_callback, session_id)
+    log_system_usage()
     return pdf_filename
 
-
-
-
 def count_words(*texts):
-    # Count the total number of words in the provided texts
+    """
+    Count the total number of words in the provided texts.
+    
+    :param texts: Texts to count words in.
+    :return: Total word count.
+    """
     logger.info("Counting words in provided texts")
     return sum(len(text.split()) for text in texts)
 
 def load_terms_and_policy():
-    # Load the terms of service and privacy policy from an external file
+    """
+    Load the terms of service and privacy policy from an external file.
+    
+    :return: Terms and policy content.
+    """
     logger.info("Loading terms of service and privacy policy")
     terms_file_path = os.path.join(os.path.dirname(__file__), 'static', 'terms_and_policy.md')
     with open(terms_file_path, 'r', encoding='utf-8') as file:
@@ -134,45 +131,29 @@ def add_navbar():
   <span class="navbar-brand mb-0 h1">Gabinete integral de psicología</span>
 </nav>""", unsafe_allow_html=True)
 
-def log_system_usage():
-    """
-    Log the system's CPU and memory usage.
-    """
-    process = psutil.Process(os.getpid())
-    memory_info = process.memory_info()
-    logger.info("Memory usage: RSS = {} MB, VMS = {} MB", memory_info.rss / (1024 * 1024), memory_info.vms / (1024 * 1024))
-    logger.info("CPU usage: {}%", psutil.cpu_percent(interval=1))
-
 def main():
-    # Add the navigation bar
+    """
+    Main function to run the Streamlit app.
+    """
     add_navbar()
-
-    # Set the title of the Streamlit app
     logger.info("Starting Streamlit app")
-
-    # Log system usage
     log_system_usage()
 
-    # Información de la aplicación y enlace al reporte de ejemplo
     st.info("""Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.
 
 Por favor, completa el formulario para generar un informe psicológico.
 [Descargar reporte de ejemplo ficticio.](https://github.com/jaimevalero/gifted-children-helper/raw/master/src/streamlit/static/example_report.pdf)
-
             """)
     st.info("""            
 No olvides logarte con google y aceptar los términos del servicio.""")
-    
-    # Load the CSS from the static file
+
     css_file_path = os.path.join(os.path.dirname(__file__), 'static', 'style.css')
     with open(css_file_path) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-    # Generate a UUID for the session if not already present
     if "session_id" not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
 
-    # Add text areas for user input with lighter placeholder text
     if "description" not in st.session_state:
         st.session_state.description = ""
     if "family_dynamics" not in st.session_state:
@@ -207,7 +188,7 @@ Juan suele frustrarse cuando no logra alcanzar la perfección en sus proyectos o
 """)
 
     st.session_state.skills_development = st.text_area("4. Habilidades y Desarrollo", value=st.session_state.skills_development, placeholder="""
-Describe las habilidades del niño/a y áreas de desarrollo (académico, físico, creativo, social).
+Describe las habilidades del niño/a y áreas de desarrollo (acad��mico, físico, creativo, social).
 Ejemplo: 
 Juan destaca en matemáticas y ciencias, resolviendo problemas avanzados para su edad. Ha comenzado a escribir cuentos breves y muestra creatividad en su forma de narrar. Sin embargo, en actividades deportivas se siente menos capaz y evita participar en juegos de equipo, lo que afecta su integración social.
 """)
@@ -230,12 +211,7 @@ Ejemplo:
 Juan tiene un gran interés por aprender programación y ha comenzado a explorar plataformas en línea. Sus padres están preocupados por su exceso de tiempo frente a pantallas y buscan formas de equilibrar sus actividades tecnológicas con experiencias al aire libre. También mencionan que Juan muestra interés por participar en programas para niños de altas capacidades.
 """)
 
-    # Mock authentication
-    
-
-    # Count words in all text areas
     total_words = count_words(st.session_state.description, st.session_state.family_dynamics, st.session_state.emotional_behavior, st.session_state.skills_development, st.session_state.school_context, st.session_state.problems_difficulties, st.session_state.additional_observations)
-    #st.sidebar.write(f"Total words: {total_words}")
 
     MINIMUN_WORDS = 200 
     debug_mode = os.getenv("LOCAL") == "1" # Check if LOCAL mode is enabled
@@ -248,26 +224,20 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
     else:
         send_button_disabled = False
 
-    # Load terms of service and privacy policy
     terms_and_policy = load_terms_and_policy()
 
     with st.expander("Términos de Servicio y Política de Privacidad"):
         st.markdown(terms_and_policy)
         data_policy_accepted = st.checkbox("Acepto los términos de servicio y la política de privacidad", value=debug_mode)
 
-
-    # Add footer with link to source code
     footer_html = """<div style='text-align: right;'>
       <p>Desarrollado con ❤️ para <a href="https://www.asociacionamaci.com/" target="_blank">AMACI</a></p>
     </div>"""
 
-    # Si no se han aceptado los terminos del servicio, no permita enviar el formulario, y poner un st.error
-    # Ojo que al principio no debe mostrar el error, solo cuando se intente enviar el formulario
     if not data_policy_accepted:
         st.error("Por favor, acepta los términos de servicio para continuar.")
 
-    # If is LOCAL environent variable is set to 1, mock the google auth
-    if os.getenv("LOCAL","0") == "1" or True :
+    if os.getenv("LOCAL","0") == "1":
         mock_google_auth()    
     else:
         auth()
@@ -281,10 +251,7 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
         authorized = False
                  
     if st.button("Generar informe 📝", disabled=send_button_disabled or not data_policy_accepted or not authorized):
-        # Initialize the case variable
         case = ""
-
-        # Append each section if the associated text is not empty
         if st.session_state.description:
             case += f"**Descripción del Niño/a:** {st.session_state.description}\n"
         if st.session_state.family_dynamics:
@@ -302,16 +269,12 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
         
         report_filename = call_crew_ai(case, st.session_state.session_id, streamlit_callback)
         
-        # Set progress to 100% after completion
         streamlit_callback("Informe generado con éxito.", 1.0)
 
         st.toast("Acabado el informe, descarguelo para verlo")
 
-        # Ensure the file is only accessible to the current user
         if os.path.exists(report_filename):
             log_system_usage()
-            # if report ends with .pdf, the mime = "application/pdf"
-            # else, if reports ends with .md, the mime = "text/markdown"
             mime = "application/pdf" if report_filename.endswith(".pdf") else "text/markdown"
             file_name = "informe_final.pdf" if report_filename.endswith(".pdf") else "informe_final.md"
             with open(report_filename, "rb") as file:
@@ -322,8 +285,6 @@ Juan tiene un gran interés por aprender programación y ha comenzado a explorar
                     mime=mime
                 )
             
-            
-    # Log the current app mode
     logger.info("End of render")
     log_system_usage()
 

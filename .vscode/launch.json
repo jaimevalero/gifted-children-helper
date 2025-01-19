@@ -58,6 +58,32 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             }
+        },
+        {
+            "name": "Run Vue App",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/gifted-children-helper-frontend",
+            "envFile": "${workspaceFolder}/gifted-children-helper-frontend/.env"
+        },
+
+        {
+            "name": "FastAPI",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "gifted_children_helper_backend.backend_fastapi.main:app", // Asegúrate de que esta ruta sea correcta
+                "--reload"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/gifted_children_helper_backend"
+            }
         }
+
     ]
 }

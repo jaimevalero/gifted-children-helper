@@ -13,10 +13,11 @@ pdfkit
 
 
 # Front end
-streamlit 
+## streamlit  Disabled
 fpdf 
 requests
 streamlit-google-auth
 
 pysqlite3-binary
 psutil
+fastapi
