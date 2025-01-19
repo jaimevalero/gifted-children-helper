@@ -13,6 +13,7 @@ on:
 env:
   DOCKER_USERNAME: jaimevalero78
   DOCKER_REPOSITORY: guiding-families-backend
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   docker:
@@ -36,8 +37,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:latest
-            ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:${{ github.sha }}
+            ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:${{ env.IMAGE_TAG }}
           cache-from: type=registry,ref=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:buildcache
           cache-to: type=registry,ref=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:buildcache,mode=max
 
@@ -51,11 +51,10 @@ jobs:
         with:
           project_id: gifted-children-helper
 
-
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy gifted-children-helper \
-            --image=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:latest \
+            --image=${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:${{ env.IMAGE_TAG }} \
             --region=europe-southwest1 \
             --platform=managed \
             --project=gifted-children-helper
