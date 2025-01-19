@@ -1,35 +1,39 @@
+# Standard library imports
+import os
+import sys
+import threading
+from datetime import datetime
+from typing import Dict
+
+# Special sqlite3 hack (must be before other imports)
+__import__('pysqlite3')
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+# Third-party imports
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from loguru import logger
 import uvicorn
 import requests
-from fastapi.middleware.cors import CORSMiddleware
-import os
 from dotenv import load_dotenv
-from typing import Dict
-import asyncio
-from gifted_children_helper.utils.reports import log_system_usage
-from gifted_children_helper.main import get_case, run
-from gifted_children_helper.utils.secrets import load_secrets
-import json
-from concurrent.futures import ThreadPoolExecutor
-import threading  # Import the threading module
-from backend_fastapi.auth_store import AuthStore
-from filelock import FileLock  # Import FileLock
-from datetime import datetime
+from filelock import FileLock
 
-
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-# Add the src directory to PYTHONPATH, because stream cloud expects all paths refered to app file directory
+# Add the src directory to PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
-# Load environment variables from .env file
-load_dotenv()
+
+from gifted_children_helper.utils.secrets import load_secrets
 load_secrets()
+
+# Local application imports
+from backend_fastapi.auth_store import AuthStore
+from gifted_children_helper.utils.reports import log_system_usage
+from gifted_children_helper.main import get_case, run
+
+
 
 # Create an instance of the FastAPI class
 app = FastAPI()

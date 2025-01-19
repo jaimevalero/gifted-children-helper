@@ -1,3 +1,8 @@
+python3.11
+python3.11-venv 
+python3-pip 
+python3-distutils 
+curl 
 pandoc
 texlive-latex-base
 texlive-latex-extra

@@ -25,6 +25,7 @@ class Provider(Enum):
 
  
 
+
 def get_provider(model_type) -> Provider:
     """
     Get the provider from the model name.
@@ -78,7 +79,8 @@ def get_model_name(model_type):
         raise ValueError(f"Provider not recognized for model {model_type}")
     
     if not os.getenv(f"{model_type}_MODEL_NAME"):
-        raise ValueError(f"{model_type}_MODEL_NAME environment variable not set")
+        entornos = str(os.environ.items())
+        raise ValueError(f"{model_type}_MODEL_NAME environment variable not set {entornos}")
     return os.getenv(f"{model_type}_MODEL_NAME")
 
 def get_api_base(model_type):
