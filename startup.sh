@@ -73,3 +73,5 @@ npm run dev
 
 
 docker run -v /home/jaimevalero/git/gifted-children-helper/.streamlit/secrets.toml:/app/.streamlit/secrets.toml guiding-families-backend
+
+vercel --prod
