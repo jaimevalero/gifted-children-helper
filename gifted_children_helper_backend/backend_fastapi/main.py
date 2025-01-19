@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from loguru import logger
 import uvicorn
 import requests
-from dotenv import 
+from dotenv import load_dotenv
 from filelock import FileLock
 
 # Add the src directory to PYTHONPATH
