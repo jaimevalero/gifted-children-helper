@@ -51,10 +51,6 @@ jobs:
         with:
           project_id: gifted-children-helper
 
-      # Verify service account permissions
-      - name: Verify permissions
-        run: |
-          gcloud iam service-accounts get-iam-policy github-actions@gifted-children-helper.iam.gserviceaccount.com
 
       - name: Deploy to Cloud Run
         run: |
