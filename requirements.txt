@@ -13,7 +13,7 @@ pdfkit
 
 
 # Front end
-streamlit 
+## streamlit  Disabled
 fpdf 
 requests
 streamlit-google-auth

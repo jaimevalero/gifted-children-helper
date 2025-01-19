@@ -1,0 +1,17 @@
+.git
+.github
+.gitignore
+.env.local
+.streamlit/secrets.toml
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env.local
+*.log
+logs/*
+tmp/*
+gifted-children-helper-frontend/

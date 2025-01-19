@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 import threading  # Import the threading module
 from backend_fastapi.auth_store import AuthStore
 from filelock import FileLock  # Import FileLock
+from datetime import datetime
 
 
 __import__('pysqlite3')
@@ -85,6 +86,24 @@ def websocket_callback( *args, **kwargs):
         kwargs: Additional keyword arguments to send as part of the update.
     """
     logger.info(f"Sending update to WebSocket for UUID : args={args}, kwargs={kwargs}")
+
+@app.get("/health")
+@app.get("/healthz")
+@app.get("/status")
+async def health_check():
+    """
+    Health check endpoint that responds to multiple paths (/health, /healthz, /status)
+    following common REST API conventions.
+    
+    Returns:
+        dict: Health status information including timestamp and service name
+    """
+    logger.debug("Health check requested")
+    return {
+        "status": "ok",
+        "timestamp": datetime.utcnow().isoformat(),
+        "service": "gifted-children-helper-api"
+    }
 
 # Define a route to handle form submissions
 @app.post("/generate-report")
