@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "gifted-children-helper-frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "cd gifted-children-helper-frontend && npm run build",
+        "outputDirectory": "gifted-children-helper-frontend/.output/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "git": {
+    "ignore": [
+      "gifted_children_helper_backend/**",
+      "logs/**",
+      ".github/**",
+      "embeddings/**",
+      "knowledge/**",
+      "tmp/**",
+      ".vscode/**",
+      ".devcontainer/**"
+    ]
+  },
+  "github": {
+    "enabled": true,
+    "silent": false,
+    "autoAlias": true
+  }
+}
