@@ -106,10 +106,11 @@ def __get_model_embed():
     model_type = "EMBED"
     model_name = get_model_name(model_type)
     provider = get_provider(model_type)
-
+    
     #provider =  Provider.OLLAMA
     if provider ==  Provider.OLLAMA :
-        base_url = get_api_base(model_type)   
+        base_url = get_api_base(model_type) 
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, base_url: {base_url}")  
         embed_model = OllamaEmbedding(
                 model_name=model_name.replace("ollama/", ""),
                 base_url=base_url,
@@ -122,6 +123,7 @@ def __get_model_embed():
             )      
     elif provider == Provider.OPENAI:
         api_key = get_api_key(model_type)
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, api_key: {api_key}")
         # export OPENAI_API_KEY env variable
         os.environ['OPENAI_API_KEY'] = api_key
         logger.debug(f"OPENAI_API_KEY exported")
@@ -147,6 +149,7 @@ def __get_model_aux():
     base_url = get_api_base(model_type)   
     provider = get_provider(model_type) 
     if provider ==  Provider.OLLAMA :
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, base_url: {base_url}")
         llm = Ollama(
             model=model_name.replace("ollama/", ""),
             base_url = base_url,
@@ -157,6 +160,7 @@ def __get_model_aux():
             )
     elif provider == Provider.DEEPSEEK:
         api_key = get_api_key(model_type)
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, api_key: {api_key}")
         # DeepSeek is open ai compatible, so we can use the open ai model
         llm = ChatOpenAI(
                     model="deepseek-chat", 
