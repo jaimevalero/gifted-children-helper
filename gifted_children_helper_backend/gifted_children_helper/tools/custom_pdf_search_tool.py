@@ -129,7 +129,8 @@ def query_file(question, file_path, save_index=True):
             DEFAULT_MODEL = 'gpt-3.5-turbo' 
             has_to_change_default_model = Settings.llm.model == DEFAULT_MODEL
         except :
-            has_to_change_default_model = False
+            has_to_change_default_model = True
+        logger.debug(f"has_to_change_default_model: {has_to_change_default_model}")
 
         # Define model for embeddings and for the answering 
         if has_to_change_default_model : 
