@@ -21,6 +21,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# Patch empty delta bug in llama_index
+RUN sed -i 's@                    response_str += delta@                    if delta: response_str += delta@g' /opt/venv/lib/python3.11/site-packages/llama_index/llms/langchain/base.py
 
 # Copy application code
 COPY . .

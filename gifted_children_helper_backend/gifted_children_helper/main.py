@@ -2,6 +2,7 @@
 import sys
 import warnings
 import os
+from gifted_children_helper_backend.gifted_children_helper.utils.secrets import load_secrets
 from loguru import logger
 from dotenv import load_dotenv
 
@@ -100,7 +101,8 @@ def test():
 if __name__ == "__main__":
     logger.info("Running the main function")
     # Depending on the arguments, run the crew, train the crew, or replay the crew
-    load_dotenv()
+    #load_dotenv()
+    load_secrets()
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "train":
