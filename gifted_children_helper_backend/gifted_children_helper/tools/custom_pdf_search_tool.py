@@ -133,12 +133,19 @@ def query_file(question, file_path, save_index=True):
 
         # Define model for embeddings and for the answering 
         if has_to_change_default_model : 
-
+            logger.info("Changing default model first time")
             # Settings.llm = get_model_main(embed_aux_model_name)
             Settings.llm = get_model("AUX")
             Settings.embed_model = get_model("EMBED")
         
         # Construct the index file path
+        if not Settings.embed_model:
+            logger.critical("Settings.embed_model is not set")
+            Settings.embed_model = get_model("EMBED")
+        if not Settings.llm:
+            logger.critical("Settings.embed_model.model_name is not set")
+            Settings.llm = get_model("AUX")
+
         prefix_model = Settings.embed_model.model_name.replace("/","-").replace("""\"""","-").replace(":","-").replace(".","-").replace("_","-")
         #index_file_name = os.path.basename(file_path).replace(".pdf", "_index.pkl").replace(".txt", "_index.pkl")
         index_file_name = obfuscate_file_path(os.path.basename(file_path))+ "_index.pkl"
