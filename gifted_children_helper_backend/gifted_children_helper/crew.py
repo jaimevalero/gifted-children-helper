@@ -291,6 +291,7 @@ class GiftedChildrenHelper():
             callback=self.callback_function,
         )
 
+    # Aparece
     @task
     def family_therapy_assessment(self) -> Task:
         logger.info("Initializing family therapy assessment task")
@@ -298,7 +299,6 @@ class GiftedChildrenHelper():
             config=self.tasks_config['family_therapy_assessment'],
             callback=self.callback_function,
         )
-
 
     @task
     def activity_planning_assessment(self) -> Task:
@@ -326,7 +326,7 @@ class GiftedChildrenHelper():
 
         # add sepearator en markdown
         # Iterate over the tasks and collect their outputs
-        for i,task in enumerate(self.tasks[1:-1],start=1):
+        for i,task in enumerate(self.tasks,start=1):
             task_name = task.name
             task_output = task.output.raw
             report_content += f"# {i} Informe: {task_name.replace('_', ' ').title()}\n\n{task_output}\n\n"

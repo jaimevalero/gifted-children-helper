@@ -2,7 +2,7 @@
 import sys
 import warnings
 import os
-from gifted_children_helper_backend.gifted_children_helper.utils.secrets import load_secrets
+from gifted_children_helper.utils.secrets import load_secrets
 from loguru import logger
 from dotenv import load_dotenv
 

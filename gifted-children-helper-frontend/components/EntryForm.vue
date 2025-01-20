@@ -189,6 +189,9 @@ export default {
       this.computedIsAuthenticated = true;
       this.idToken = idToken;
     }
+    else {
+      this.computedIsAuthenticated = false;
+    }
   },
   methods: {
     handleSubmit() {
