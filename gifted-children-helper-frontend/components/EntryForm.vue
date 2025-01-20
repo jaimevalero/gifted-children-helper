@@ -116,7 +116,7 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
             Enviar
           </v-btn>
         </v-col>
-        <v-snackbar v-model="snackbar" :timeout="3000" right>
+        <v-snackbar v-model="loginSuccessSnackbar" :timeout="3000" right>
           ¡Usuario logado con éxito!
         </v-snackbar>
       </v-row>
@@ -156,7 +156,7 @@ export default {
       additional_observations: '',
       minWords: 0, // Ensure the default value is set to 200
       idToken: '', // Add a new data property for the ID token
-      snackbar: false // Add a new data property for the snackbar
+      loginSuccessSnackbar: false // Add a new data property for the snackbar
     }
   },
   computed: {
@@ -188,6 +188,7 @@ export default {
     if (isAuthenticated && idToken) {
       this.computedIsAuthenticated = true;
       this.idToken = idToken;
+      this.loginSuccessSnackbar = true; // Show the snackbar if the user is authenticated
     }
     else {
       this.computedIsAuthenticated = false;
@@ -234,7 +235,7 @@ export default {
         this.idToken = googleUser.getAuthResponse().id_token; // Get the ID token
         console.log('ID Token after login:', this.idToken); // Log the ID token
         console.log('Logged in as:', profile.getName());
-        this.snackbar = true; // Show the snackbar on successful login
+        this.loginSuccessSnackbar = true; // Show the snackbar on successful login
         this.$emit('update:isAuthenticated', true); // Emit the authentication status to the parent component
 
         // Save authentication state and ID token in cookies
@@ -246,7 +247,30 @@ export default {
     },
     onAcceptChange(accepted) {
       this.$emit('update:dataPolicyAccepted', accepted);
-    }
+      if (accepted) {
+        this.warmupBackend();
+      }
+    },
+
+    warmupBackend() {
+      try {
+        const apiUrl = process.env.VUE_APP_API_URL;
+        if (!apiUrl) {
+          console.warn('API URL is not defined in environment variables');
+          return;
+        }
+
+        // Fire and forget request to warm up the backend
+        fetch(`${apiUrl}/health`).catch(err => {
+          console.debug('Warmup request sent to backend');
+          // Intentionally not handling the error as this is just a warmup
+        });
+      } catch (error) {
+        // Silently fail as this is just a warmup request
+        console.debug('Failed to send warmup request');
+      }
+    },
+
   }
 }
 </script>

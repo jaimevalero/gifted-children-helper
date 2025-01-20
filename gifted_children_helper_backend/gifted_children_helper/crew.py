@@ -205,7 +205,7 @@ class GiftedChildrenHelper():
             step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
-            tools=[ask_altas_capacidades_en_ninos,
+            tools=[ask_altas_capacidades_en_ninos,ask_integracion_sensorial
                    ] )
 
     @agent
@@ -219,7 +219,7 @@ class GiftedChildrenHelper():
             step_callback=self.step_callback,
             config=config,
             model = get_model("MAIN") ,
-            tools=[ask_integracion_sensorial] )
+            tools=[ask_integracion_sensorial,ask_terapia_cognitivo_conductual] )
             
   
 
@@ -255,7 +255,7 @@ class GiftedChildrenHelper():
             tools=[
                 ask_altas_capacidades_en_ninos,
                 ask_barreras_entorno_escolar_alumnos_altas_capacidades,
-                ask_terapia_cognitivo_conductual
+                
             ]
         )
 

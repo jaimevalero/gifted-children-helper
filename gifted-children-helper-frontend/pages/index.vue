@@ -72,28 +72,7 @@ export default {
       jobId: '' // Add a new data property for the job ID
     };
   },
-  created() {
-    this.warmupBackend();
-  },
   methods: {
-    async warmupBackend() {
-      try {
-        const apiUrl = process.env.VUE_APP_API_URL;
-        if (!apiUrl) {
-          console.warn('API URL is not defined in environment variables');
-          return;
-        }
-
-        // Fire and forget request to warm up the backend
-        fetch(`${apiUrl}/health`).catch(err => {
-          console.debug('Warmup request sent to backend');
-          // Intentionally not handling the error as this is just a warmup
-        });
-      } catch (error) {
-        // Silently fail as this is just a warmup request
-        console.debug('Failed to send warmup request');
-      }
-    },
     async loginWithGoogle() {
       // Log the attempt to sign in
       console.log('Attempting to sign in with Google');

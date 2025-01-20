@@ -32,7 +32,9 @@ from backend_fastapi.auth_store import AuthStore
 from gifted_children_helper.utils.reports import log_system_usage
 from gifted_children_helper.main import get_case, run
 
-
+# if exists file ./db/chroma.sqlite3, delete it
+if os.path.exists("./db/chroma.sqlite3"):
+    os.remove("./db/chroma.sqlite3")
 
 # Create an instance of the FastAPI class
 app = FastAPI()

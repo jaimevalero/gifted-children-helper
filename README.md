@@ -43,10 +43,6 @@ El gabinete cuenta con un equipo multidisciplinar de especialistas, cada uno gen
 
 Cada especialista genera informes profesionales en pdf, proporcionando una visión integral del caso y recomendaciones específicas para implementación tanto en el entorno familiar como educativo.
 
-
-
-
-
 ## Installation
 First, you need to install the packages listed on the packages.txt (debian)
 
@@ -68,8 +64,6 @@ To start the Streamlit application, run the following command:
 streamlit run src/streamlit/frontend.py --server.port=8501 --server.address=0.0.0.0
 ```
 
-
-
 ## Example Report
 
 Puedes descargar un reporte de ejemplo ficticio para ver el tipo de informe que genera la aplicación.
@@ -78,3 +72,7 @@ Puedes descargar un reporte de ejemplo ficticio para ver el tipo de informe que 
 ## Authentication and Terms of Service
 
 Para acceder a la aplicación, los usuarios deben autenticarse utilizando sus credenciales. Además, es importante que los usuarios lean y acepten los términos de servicio antes de utilizar la aplicación.
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia Pública Internacional Creative Commons Atribución-NoComercial 4.0. Para más detalles, consulte el archivo [LICENSE](LICENSE).

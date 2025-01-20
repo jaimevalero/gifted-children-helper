@@ -104,12 +104,12 @@ activity_planning_assessment:
     Analizar recursos disponibles en el entorno.
     Diseñar plan de actividades personalizado.
     Proponer actividades específicas realizables.
+    No hagas cronogramas, porque las familias generalmente tienen muchas actividades despues de clase entre semana, y necesitan gestionarse ellos el tiempo.
   expected_output: >
     Plan de actividades muy profesional en markdown, incluyendo:
     - Análisis de intereses y capacidades
     - Propuesta de actividades específicas
-    - Recursos y materiales necesarios
-    - Cronograma sugerido de implementación
+    - Recursos y materiales necesarios.
     Importante, responde en español.
   agent: activity_coordinator
   output_file: "logs/activity_planning_assessment.md"
