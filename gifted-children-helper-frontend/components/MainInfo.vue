@@ -3,7 +3,7 @@
     <v-alert type="info" class="mb-2 mt-0">
       Esta aplicación de inteligencia artificial simula un gabinete psicológico, especializado en familias con niños de altas capacidades.
       <br><br>
-      Por favor, completa el formulario de entrada para generar un informe psicológico.
+      Por favor, completa el formulario de entrada para generar un informe psicológico. (Tarda unos 10 minutos)
       <v-btn href="https://github.com/jaimevalero/gifted-children-helper/raw/master/examples/example_report.pdf" target="_blank" color="primary" class="mt-2">
         <v-icon left>mdi-download</v-icon> <!-- Añadir icono de descarga -->
         Descargar reporte de ejemplo ficticio
