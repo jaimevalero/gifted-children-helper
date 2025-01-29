@@ -241,6 +241,9 @@ export default {
         // Save authentication state and ID token in cookies
         Cookies.set('isAuthenticated', 'true', { expires: 7 });
         Cookies.set('idToken', this.idToken, { expires: 7 });
+
+        // Call warmupBackend to wake up the backend
+        this.warmupBackend();
       } catch (error) {
         console.error('Error signing in with Google:', error);
       }

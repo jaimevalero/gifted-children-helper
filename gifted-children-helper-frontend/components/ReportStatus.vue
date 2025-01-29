@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>{{ title || 'Generando el informe' }}</v-card-title>
+    <v-card-title>{{ title || 'Generando el informe (tarda unos diez minutos)' }}</v-card-title>
     <v-card-text>
       <v-progress-linear
         v-if="progress !== 1"

@@ -40,6 +40,10 @@ pdftotext -layout 'TerapiaCognitivoConductualAplicadaANinosYAdolescdentes.pdf' '
    ollama create  qwen2.5:14b-8k -f ModelFile
 
 
+   ollama show --modelfile qwen2.5:14b  > ModelFile
+   echo 'PARAMETER num_ctx 8192' >> ModelFile
+   ollama create  qwen2.5:14b-8k -f ModelFile
+
 Informe psicológico detallado muy profesional en markdown,incluyendo:
 Informe neurológico muy profesional en markdown, incluyendo:
 Informe de terapia ocupacional muy profesional en markdown, incluyendo:
