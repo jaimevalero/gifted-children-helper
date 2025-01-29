@@ -255,25 +255,30 @@ export default {
       }
     },
 
-    warmupBackend() {
-      try {
-        const apiUrl = process.env.VUE_APP_API_URL;
-        if (!apiUrl) {
-          console.warn('API URL is not defined in environment variables');
-          return;
-        }
-
-        // Fire and forget request to warm up the backend
-        fetch(`${apiUrl}/health`).catch(err => {
-          console.debug('Warmup request sent to backend');
-          // Intentionally not handling the error as this is just a warmup
-        });
-      } catch (error) {
-        // Silently fail as this is just a warmup request
-        console.debug('Failed to send warmup request');
+    async warmupBackend() {
+      const apiUrl = process.env.VUE_APP_API_URL;
+      if (!apiUrl) {
+        console.warn('API URL is not defined in environment variables');
+        return;
       }
-    },
 
+      const checkHealth = async () => {
+        try {
+          const response = await fetch(`${apiUrl}/health`);
+          if (response.ok) {
+            console.debug('Backend is awake');
+          } else {
+            throw new Error('Backend is not ready');
+          }
+        } catch (error) {
+          console.debug('Retrying warmup request in 3 seconds');
+          setTimeout(checkHealth, 3000); // Retry after 3 seconds
+        }
+      };
+
+      // Start the initial health check
+      checkHealth();
+    },
   }
 }
 </script>
