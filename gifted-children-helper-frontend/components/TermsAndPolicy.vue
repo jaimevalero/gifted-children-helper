@@ -30,6 +30,14 @@ export default {
       expanded: [0] // Initially expanded
     }
   },
+  watch: {
+    // Add watcher to ensure panel closes when terms are accepted
+    accepted(newValue) {
+      if (newValue === true) {
+        this.closePanel();
+      }
+    }
+  },
   mounted() {
     this.loadTermsAndPolicy();
   },
@@ -37,17 +45,21 @@ export default {
     async loadTermsAndPolicy() {
       try {
         const response = await fetch('/terms_and_policy.html');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const text = await response.text();
-        this.termsAndPolicyHtml = text; // Load HTML content directly
+        this.termsAndPolicyHtml = text;
       } catch (error) {
         console.error('Error loading terms and policy:', error);
+        this.termsAndPolicyHtml = 'Error loading terms and conditions. Please try again later.';
       }
     },
     onAcceptChange() {
       this.$emit('accept-change', this.accepted);
-      if (this.accepted) {
-        this.expanded = []; // Close the expansion panel
-      }
+    },
+    closePanel() {
+      this.expanded = [];
     }
   }
 }
