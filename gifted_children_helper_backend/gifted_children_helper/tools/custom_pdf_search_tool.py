@@ -131,7 +131,7 @@ def query_file(question, file_path, save_index=True):
         except :
             has_to_change_default_model = True
         logger.debug(f"has_to_change_default_model: {has_to_change_default_model}")
-
+        llm =  get_model("AUX")
         # Define model for embeddings and for the answering 
         if has_to_change_default_model : 
             logger.info("Changing default model first time")
@@ -143,7 +143,8 @@ def query_file(question, file_path, save_index=True):
         if not Settings.embed_model:
             logger.critical("Settings.embed_model is not set")
             Settings.embed_model = get_model("EMBED")
-        if not Settings.llm:
+        is_settings_llm_incorrect_class = str(type(Settings.llm))== "<class 'llama_index.llms.langchain.base.LangChainLLM'>"            
+        if not Settings.llm or is_settings_llm_incorrect_class :
             logger.critical("Settings.embed_model.model_name is not set")
             Settings.llm = get_model("AUX")
 
@@ -172,7 +173,7 @@ def query_file(question, file_path, save_index=True):
                 logger.debug(f"Saving index to {index_path=}") 
                 save_index_file(index, index_path)
         
-        query_engine = index.as_query_engine(streaming=True, similarity_top_k=3)
+        query_engine = index.as_query_engine(streaming=True, similarity_top_k=3, llm=llm)
 
         logger.info(f"Querying {file_path=} with question: {question=}")
 

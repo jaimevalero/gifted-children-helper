@@ -79,3 +79,24 @@ npm run dev
 docker run -v /home/jaimevalero/git/gifted-children-helper/.streamlit/secrets.toml:/app/.streamlit/secrets.toml guiding-families-backend
 
 vercel --prod
+
+
+curl https://api.deepseek.com/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-1481066294ee4f1ab5eff9bb85fc9c71" \
+  -d '{
+        "model": "deepseek-chat",
+        "messages": [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {"role": "user", "content": "Me cuentas un chiste de informaticos que se pasan el finde trabajando ?"}
+        ],
+        "stream": false
+      }'
+
+
+TOKEN DEEPSEEK
+MAIN_TOKEN = "sk-1481066294ee4f1ab5eff9bb85fc9c71"
+AUX_TOKEN = "sk-1481066294ee4f1ab5eff9bb85fc9c71"
+TOKEN OPENROUTER
+open-router = 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
+

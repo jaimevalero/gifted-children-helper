@@ -1,9 +1,15 @@
 import os
+from typing import Optional
 
 from crewai import LLM
 from loguru import logger
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
+# If DEBUG is set to 1, the LLM will print the request and response to the console.
+
+if os.getenv("DEBUG",0) == "1":
+    import litellm
+    litellm.set_verbose=True # 👈 this is the 1-line change you need to make
 
 from langchain_openai import ChatOpenAI
 
@@ -22,8 +28,8 @@ class Provider(Enum):
     OLLAMA = "ollama"
     OPENAI = "openai"
     DEEPSEEK = "deepseek"
+    OPENROUTER = "openrouter"
 
- 
 
 
 def get_provider(model_type) -> Provider:
@@ -47,6 +53,8 @@ def get_provider(model_type) -> Provider:
         provider = Provider.OPENAI
     elif "deepseek" in provider_string:
         provider = Provider.DEEPSEEK
+    elif "openrouter" in provider_string:
+        provider = Provider.OPENROUTER
     else:
         raise ValueError(f"Provider not recognized for model {provider_string}")
     
@@ -133,8 +141,20 @@ def __get_model_embed():
                 #api_base=base_url,
                 num_ctx=8192,
                 request_timeout=3600,
-                keep_alive="25m",
-            )
+                keep_alive="25m")
+    elif provider == Provider.OPENROUTER:
+        api_key = get_api_key(model_type)
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, api_key: {api_key}")
+        # export OPENAI_API_KEY env variable
+        os.environ['OPENAI_API_KEY'] = api_key
+        logger.debug(f"OPENAI_API_KEY exported")
+        embed_model =OpenAIEmbedding(
+                model_name=model_name.replace("openai/", ""),
+                api_key=api_key,
+                base_url=base_url,
+                num_ctx=16384,
+                request_timeout=3600,
+                keep_alive="25m")        
     else:
         raise ValueError(f"Provider not recognized for model")
 
@@ -167,6 +187,19 @@ def __get_model_aux():
                     openai_api_key=api_key, 
                     openai_api_base='https://api.deepseek.com',
                     max_tokens=8192        )  
+    elif provider == Provider.OPENROUTER:
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, base_url: {base_url}")
+        api_key = get_api_key(model_type)
+        os.environ["OPENROUTER_API_KEY"] = api_key
+        from llama_index.llms.openrouter import OpenRouter
+        llm = OpenRouter(
+            api_key=api_key,
+            max_tokens=8192       ,
+            context_window=4096*8,
+            model=model_name,
+        )
+
+
     else:
         raise ValueError(f"Provider not recognized for model {provider}")
     return llm 
@@ -208,6 +241,19 @@ def get_model(model_type):
                   max_tokens=8192,
                   timeout=25*60,
                   )
+
+    elif provider == Provider.OPENROUTER:
+        logger.debug(f"Provider: {provider}, model_name: {model_name}, base_url: {base_url}")
+        api_key = get_api_key(model_type)
+        os.environ["OR_SITE_URL"] = "" # optional
+        os.environ["OR_APP_NAME"] = "" # optional
+        os.environ["OPENROUTER_API_KEY"] = api_key
+        llm = LLM(model=model_name,
+                  timeout=25*60,
+                  api_key=api_key,
+                  base_url=base_url
+                  )
+
     else:
         raise ValueError(f"Provider not recognized for model {provider}")
 
