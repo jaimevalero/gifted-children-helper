@@ -95,8 +95,8 @@ curl https://api.deepseek.com/chat/completions \
 
 
 TOKEN DEEPSEEK
-MAIN_TOKEN = "sk-1481066294ee4f1ab5eff9bb85fc9c71"
-AUX_TOKEN = "sk-1481066294ee4f1ab5eff9bb85fc9c71"
+MAIN_TOKEN = "REPL"
+AUX_TOKEN = "REPL"
 TOKEN OPENROUTER
-open-router = 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
+open-router = REPL
 
