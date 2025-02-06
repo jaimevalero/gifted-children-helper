@@ -12,3 +12,5 @@ times.lst
 client_secret.json
 logs/*
 .vercel
+startup.sh
+case.lst

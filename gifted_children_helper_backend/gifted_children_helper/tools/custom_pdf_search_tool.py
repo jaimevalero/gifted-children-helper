@@ -1,7 +1,7 @@
 from loguru import logger
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from llama_index.core.schema import Document  # Importamos Document correctamente desde llama_index.schema # Importamos Document correctamente desde llama_index.schema
-from gifted_children_helper.utils.models import get_api_key, get_model
+from gifted_children_helper.utils.models import Provider, get_api_key, get_model, get_provider
 import os
 import pickle
 from crewai.tools import tool
@@ -173,7 +173,10 @@ def query_file(question, file_path, save_index=True):
                 logger.debug(f"Saving index to {index_path=}") 
                 save_index_file(index, index_path)
         
-        query_engine = index.as_query_engine(streaming=True, similarity_top_k=3, llm=llm)
+        if get_provider("AUX") == Provider.DEEPSEEK:
+            query_engine = index.as_query_engine(streaming=True, similarity_top_k=3)
+        else:    
+            query_engine = index.as_query_engine(streaming=True, similarity_top_k=3, llm=llm)
 
         logger.info(f"Querying {file_path=} with question: {question=}")
 

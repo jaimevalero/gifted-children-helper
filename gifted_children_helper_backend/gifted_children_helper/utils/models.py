@@ -178,15 +178,16 @@ def __get_model_aux():
             request_timeout=3600,
             keep_alive="25m"
             )
+        
     elif provider == Provider.DEEPSEEK:
         api_key = get_api_key(model_type)
-        logger.debug(f"Provider: {provider}, model_name: {model_name}, api_key: {api_key}")
         # DeepSeek is open ai compatible, so we can use the open ai model
         llm = ChatOpenAI(
                     model="deepseek-chat", 
                     openai_api_key=api_key, 
                     openai_api_base='https://api.deepseek.com',
                     max_tokens=8192        )  
+                
     elif provider == Provider.OPENROUTER:
         logger.debug(f"Provider: {provider}, model_name: {model_name}, base_url: {base_url}")
         api_key = get_api_key(model_type)
@@ -238,7 +239,7 @@ def get_model(model_type):
         api_key = get_api_key(model_type)
         os.environ['DEEPSEEK_API_KEY'] = api_key
         llm = LLM(model=model_name,
-                  max_tokens=8192,
+                  max_tokens=16384,
                   timeout=25*60,
                   )
 
