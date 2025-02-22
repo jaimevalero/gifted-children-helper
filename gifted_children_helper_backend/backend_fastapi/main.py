@@ -133,7 +133,7 @@ async def submit_form(request: Request, form_data: FormData):
     user_id = token_info['sub']
     user_email = token_info['email']
     user_name = token_info['name']
-
+    logger.info(f"User ID: {user_id}, Email: {user_email}, Name: {user_name}")
     # Store the authorization
     auth_store.add_auth(form_data.uuid, user_id)
     
