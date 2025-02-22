@@ -38,8 +38,18 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
     try:
         logger.info(f"Converting {markdown_file} to {pdf_file}")
         # Execute the pandoc command to convert Markdown to PDF
-        command = ['pandoc', markdown_file, '-o', pdf_file, '-V', 'geometry:margin=1in']
-        
+        #command = ['pandoc', markdown_file, '-o', pdf_file, '-V', 'geometry:margin=1in']
+        command = [
+            'pandoc',
+            markdown_file,
+            '-o', pdf_file,
+            '--pdf-engine=pdflatex',  # Más ligero que el motor por defecto
+            '-V', 'geometry:margin=1in',
+            '--standalone',  # Procesa más rápido documentos independientes
+            '-f', 'markdown-raw_html',  # Deshabilita parsing innecesario
+            '--variable=papersize:a4',  # Especifica tamaño papel explícitamente
+            '+RTS', '-N2', '-RTS'  # Usar 2 threads para procesamiento
+        ]        
         # Capture stdout and stderr
         result = subprocess.run(command, check=True, capture_output=True, text=True)
         
