@@ -35,9 +35,7 @@
 </template>
 
 <script>
-import markdownIt from 'markdown-it'; // Import markdown-it
-
-const md = new markdownIt();
+import { convertMarkdownToHtml } from '../utils/markdown.js'; // Import the function
 
 export default {
   name: 'ReportStatus',
@@ -69,8 +67,8 @@ export default {
   },
   computed: {
     renderedLog() {
-      // Convert the Markdown log to HTML using markdown-it
-      return md.render(this.log);
+      // Convert the Markdown log to HTML using the imported function
+      return convertMarkdownToHtml(this.log);
     }
   },
   watch: {

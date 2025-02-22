@@ -108,9 +108,11 @@ Juan es un niño muy cariñoso y siempre está dispuesto a ayudar a los demás. 
         </v-col>
         <v-col cols="12" class="text-right">
           <v-btn
+            ref="submitButton"
             :disabled="!computedIsAuthenticated || totalWordCount < minWords || !dataPolicyAccepted"
             color="green"
             type="submit"
+            @click="scrollToBottom"
           >
             <v-icon left>mdi-send</v-icon> <!-- Añadir icono de envío -->
             Enviar
@@ -307,13 +309,18 @@ export default {
           totalWordCount: this.totalWordCount,
           idToken: this.idToken // Include the ID token in the emitted data
         });
+
+        // Scroll to the bottom of the page after form submission
+        this.scrollToBottom();
       } catch (error) {
         console.error('Submit failed:', error);
         this.$emit('error', 'Error al enviar el formulario. Por favor, inicia sesión de nuevo.');
         return;
       }
     },
-
+    scrollToBottom() {
+      this.$refs.submitButton.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    },
     async loginWithGoogle() {
       // Log the attempt to sign in
       console.log('Attempting to sign in with Google');
