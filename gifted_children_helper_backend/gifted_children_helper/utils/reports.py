@@ -38,14 +38,16 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
         pdf_file (str): The path to the output PDF file.
     """
     try:
-        logger.info(f"Converting {markdown_file} to {pdf_file}")
 
         # Read the Markdown file
         with open(markdown_file, 'r') as f:
             markdown_content = f.read()
 
+        logger.info(f"Converting1 {markdown_file} to {pdf_file}")
+
         # Convert Markdown to HTML
         html_content = markdown2.markdown(markdown_content)
+        logger.info(f"Converting2 {markdown_file} to {pdf_file}")
 
         # Convert HTML to PDF
         pdfkit.from_string(html_content, pdf_file)
