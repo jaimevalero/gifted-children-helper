@@ -131,7 +131,9 @@ async def submit_form(request: Request, form_data: FormData):
     token = auth_header.split(" ")[1]
     token_info = verify_google_token(token)
     user_id = token_info['sub']
-    
+    user_email = token_info['email']
+    user_name = token_info['name']
+
     # Store the authorization
     auth_store.add_auth(form_data.uuid, user_id)
     
@@ -159,7 +161,7 @@ async def submit_form(request: Request, form_data: FormData):
     #case = get_case()
 
     # Run the report generation in a separate thread
-    thread = threading.Thread(target=run, args=(case, websocket_callback, uuid))
+    thread = threading.Thread(target=run, args=(case, websocket_callback, uuid,user_email,user_name))
     thread.start()
 
     log_system_usage()

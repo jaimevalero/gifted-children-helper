@@ -7,6 +7,7 @@ from loguru import logger
 from dotenv import load_dotenv
 
 from gifted_children_helper.crew import GiftedChildrenHelper
+from gifted_children_helper.utils.mail_sender import send_mail_sendgrid
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -26,7 +27,7 @@ def get_case():
     return case
 
 
-def run(case: str = None, callback: callable = None,session_id: str = None):
+def run(case: str = None, callback: callable = None,session_id: str = None, user_email: str = None,user_name: str = None):
     """
     Run the crew.
     """
@@ -47,6 +48,13 @@ def run(case: str = None, callback: callable = None,session_id: str = None):
         pdf_filename = helper.generate_consolidated_report(session_id)
         # Print token usage
         logger.info(f"Token usage: {crew.usage_metrics}")
+        try:
+            if user_email:
+                # Send the email with the PDF attachment
+                send_mail_sendgrid(pdf_filename, user_email, user_name)
+        except Exception as e:
+            logger.exception(f"Failed to send email: {e}")
+            
         return pdf_filename
         
     except Exception as e:
