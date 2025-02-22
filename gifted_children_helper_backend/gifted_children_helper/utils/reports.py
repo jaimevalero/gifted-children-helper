@@ -27,7 +27,37 @@ def copy_report(*args, **kwargs):
         # Log the exception
         logger.error("An error occurred while copying the report: {}", e)
 
+import markdown2
+import pdfkit
+from loguru import logger
 def convert_markdown_to_pdf(markdown_file, pdf_file):
+    """
+    Convert a Markdown file to PDF using markdown2 and pdfkit.
+
+    Args:
+        markdown_file (str): The path to the Markdown file.
+        pdf_file (str): The path to the output PDF file.
+    """
+    try:
+        logger.info(f"Converting {markdown_file} to {pdf_file}")
+
+        # Read the Markdown file
+        with open(markdown_file, 'r') as f:
+            markdown_content = f.read()
+
+        # Convert Markdown to HTML
+        html_content = markdown2.markdown(markdown_content)
+
+        # Convert HTML to PDF
+        pdfkit.from_string(html_content, pdf_file)
+
+        logger.info(f"Converted {markdown_file} to {pdf_file} successfully")
+    except Exception as e:
+        logger.error(f"An error occurred during conversion: {e}")
+        raise
+
+
+def convert_markdown_to_pdf_old(markdown_file, pdf_file):
     """
     Convert a Markdown file to PDF using pandoc.
 
