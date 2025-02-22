@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from gifted_children_helper.crew import GiftedChildrenHelper
 from gifted_children_helper.utils.mail_sender import send_mail_sendgrid
+from gifted_children_helper.utils.reports import log_system_usage
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -45,7 +46,12 @@ def run(case: str = None, callback: callable = None,session_id: str = None, user
         crew.kickoff(inputs=inputs)
         # por cada una de las crew.tasks, añadirlo todo a un solo string.
         # Despues , formatearlo para darle uniformidad
-        pdf_filename = helper.generate_consolidated_report(session_id)
+        log_system_usage()
+        helper.generate_consolidated_report(session_id)
+        log_system_usage()
+        pdf_filename = helper.convert_consolidated_report(session_id)
+        log_system_usage()
+        
         # Print token usage
         logger.info(f"Token usage: {crew.usage_metrics}")
         try:

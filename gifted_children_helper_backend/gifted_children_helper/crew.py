@@ -3,7 +3,6 @@ import os
 from loguru import logger
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capacidades_en_ninos, ask_barreras_entorno_escolar_alumnos_altas_capacidades, ask_integracion_sensorial, ask_manual_necesidades_especificas, ask_terapia_cognitivo_conductual
 from gifted_children_helper.utils.models import Provider,  get_model,  get_model_name, get_provider
 import inspect
@@ -341,15 +340,25 @@ class GiftedChildrenHelper():
 
         contenido_final = report_content
         
-        markdown_filename = "logs/last_report.md"
+        
+        if session_id:
+            markdown_filename = f"logs/{session_id}_report.md"
+        else :
+            markdown_filename = "logs/last_report.md"
+
         if os.path.exists(markdown_filename):
             os.remove(markdown_filename)
         with open(markdown_filename, "w") as report_file:
             report_file.write(contenido_final)
+
+    def convert_consolidated_report(self,session_id):
+
         # Generate un temp file with a unique name the content in pdf format. Return it
         if session_id:
+            markdown_filename = f"logs/{session_id}_report.md"
             pdf_filename = f"logs/{session_id}.pdf" 
         else :
+            markdown_filename = "logs/last_report.md"
             pdf_filename = f"logs/last_report.pdf"
         
         if os.path.exists(pdf_filename):

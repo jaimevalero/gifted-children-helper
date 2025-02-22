@@ -29,8 +29,7 @@ def copy_report(*args, **kwargs):
 
 import markdown2
 import pdfkit
-from loguru import logger
-def convert_markdown_to_pdf(markdown_file, pdf_file):
+def convert_markdown_to_pdf_new(markdown_file, pdf_file):
     """
     Convert a Markdown file to PDF using markdown2 and pdfkit.
 
@@ -57,7 +56,7 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
         raise
 
 
-def convert_markdown_to_pdf_old(markdown_file, pdf_file):
+def convert_markdown_to_pdf(markdown_file, pdf_file):
     """
     Convert a Markdown file to PDF using pandoc.
 
@@ -66,6 +65,7 @@ def convert_markdown_to_pdf_old(markdown_file, pdf_file):
         pdf_file (str): The path to the output PDF file.
     """
     try:
+        log_system_usage()
         logger.info(f"Converting {markdown_file} to {pdf_file}")
         # Execute the pandoc command to convert Markdown to PDF
         #command = ['pandoc', markdown_file, '-o', pdf_file, '-V', 'geometry:margin=1in']
@@ -82,7 +82,7 @@ def convert_markdown_to_pdf_old(markdown_file, pdf_file):
         ]        
         # Capture stdout and stderr
         result = subprocess.run(command, check=True, capture_output=True, text=True)
-        
+        log_system_usage()
         # Log the successful conversion
         logger.info(f"Converted {markdown_file} to {pdf_file} with output: {result.stdout}")
     except subprocess.CalledProcessError as e:
@@ -100,8 +100,11 @@ def log_system_usage():
     """
     process = psutil.Process(os.getpid())
     memory_info = process.memory_info()
-    logger.info("Memory usage: RSS = {} MB, VMS = {} MB", memory_info.rss / (1024 * 1024), memory_info.vms / (1024 * 1024))
+    rss_mb = memory_info.rss / (1024 * 1024)
+    vms_mb = memory_info.vms / (1024 * 1024)
+    logger.info("Memory usage: RSS = {:.1f} MB, VMS = {:.1f} MB", rss_mb, vms_mb)
     logger.info("CPU usage: {}%", psutil.cpu_percent(interval=1))
 
 # Example usage
-# convert_markdown_to_pdf('logs/last_report.md', 'logs/last_report.pdf')
+if __name__ == "__main__":
+    convert_markdown_to_pdf('/tmp/last_report.md', '/tmp/last_report.pdf')
