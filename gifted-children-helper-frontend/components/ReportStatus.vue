@@ -4,7 +4,7 @@
       {{ title || 'Generando el informe (tarda unos diez minutos)' }}
       <v-spacer></v-spacer>
       <v-btn icon @click="toggleLogVisibility">
-        <v-icon>{{ showLog ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+        <v-icon>{{ showLog ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
       </v-btn>
     </v-card-title>
     <v-card-text>
@@ -35,7 +35,9 @@
 </template>
 
 <script>
-import { convertMarkdownToHtml } from '~/utils/markdown.js'; // Import the function
+import markdownIt from 'markdown-it'; // Import markdown-it
+
+const md = new markdownIt();
 
 export default {
   name: 'ReportStatus',
@@ -67,8 +69,8 @@ export default {
   },
   computed: {
     renderedLog() {
-      // Convert the Markdown log to HTML using the imported function
-      return convertMarkdownToHtml(this.log);
+      // Convert the Markdown log to HTML using markdown-it
+      return md.render(this.log);
     }
   },
   watch: {
