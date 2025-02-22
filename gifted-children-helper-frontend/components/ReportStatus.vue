@@ -1,13 +1,19 @@
 <template>
   <v-card>
-    <v-card-title>{{ title || 'Generando el informe (tarda unos diez minutos)' }}</v-card-title>
+    <v-card-title>
+      {{ title || 'Generando el informe (tarda unos diez minutos)' }}
+      <v-spacer></v-spacer>
+      <v-btn icon @click="toggleLogVisibility">
+        <v-icon>{{ showLog ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+      </v-btn>
+    </v-card-title>
     <v-card-text>
       <v-progress-linear
         v-if="progress !== 1"
         indeterminate
         height="10"
       ></v-progress-linear>
-      <div v-html="renderedLog"></div> <!-- Render the Markdown as HTML -->
+      <div v-if="showLog" v-html="renderedLog"></div> <!-- Render the Markdown as HTML -->
     </v-card-text>
     <v-snackbar v-model="reportGeneratedSnackbar" :timeout="3000" color="success">
       ¡Informe generado con éxito!
@@ -55,7 +61,8 @@ export default {
       intervalId: null, // Add an interval ID to manage the polling
       error: null, // Add an error property to handle errors
       lastStatus: null, // Add a property to store the last status
-      reportGeneratedSnackbar: false // Add a property for the snackbar
+      reportGeneratedSnackbar: false, // Add a property for the snackbar
+      showLog: true // Add a property to control log visibility
     };
   },
   computed: {
@@ -78,6 +85,9 @@ export default {
     }
   },
   methods: {
+    toggleLogVisibility() {
+      this.showLog = !this.showLog;
+    },
     updateStatus(newStatus) {
       console.log('Updating status:', newStatus);
       // Update the progress, title, and log based on the new status
@@ -91,6 +101,7 @@ export default {
           if (newStatus.progress === 1) {
             this.reportGeneratedSnackbar = true;
             console.log('Report generation complete - showing snackbar');
+            this.showLog = false; // Hide the log when progress reaches 1
           }
         }
         this.title = newStatus.title || '';
@@ -98,7 +109,7 @@ export default {
         if (!logEntry.endsWith('\n')) {
           logEntry += '\n'; // Ensure the log entry ends with a newline
         }
-        this.log += logEntry;
+        this.log += logEntry; // Add the new log entry
         this.lastStatus = newStatus; // Update the last status
       }
       console.log('Status updated:', newStatus);
