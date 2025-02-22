@@ -29,7 +29,7 @@ def copy_report(*args, **kwargs):
 
 import markdown2
 import pdfkit
-def convert_markdown_to_pdf(markdown_file, pdf_file):
+def convert_markdown_to_pdf_old(markdown_file, pdf_file):
     """
     Convert a Markdown file to PDF using markdown2 and pdfkit.
 
@@ -58,7 +58,7 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
         raise
 
 
-def convert_markdown_to_pdf_old(markdown_file, pdf_file):
+def convert_markdown_to_pdf(markdown_file, pdf_file):
     """
     Convert a Markdown file to PDF using pandoc.
 
