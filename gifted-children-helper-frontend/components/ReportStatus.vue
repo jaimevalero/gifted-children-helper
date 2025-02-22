@@ -193,14 +193,24 @@ export default {
             'Authorization': `Bearer ${this.idToken}` // Send the ID token in the Authorization header
           }
         });
+
         if (!response.ok) {
           throw new Error('Failed to download report');
         }
+
+        const contentType = response.headers.get('Content-Type');
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'final_report.pdf';
+
+        // Determine the filename based on the content type
+        if (contentType === 'text/markdown') {
+          a.download = 'final_report.md';
+        } else {
+          a.download = 'final_report.pdf';
+        }
+
         document.body.appendChild(a);
         a.click();
         a.remove();
