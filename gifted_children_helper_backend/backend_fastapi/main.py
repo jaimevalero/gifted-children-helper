@@ -186,12 +186,18 @@ async def report_download(uuid: str):
     """
     # Check if the report file exists
     pdf_file = f"logs/{uuid}.pdf"
-      
+    markdown_file = f"logs/{uuid}_report.md"
     if os.path.exists(pdf_file):
         return FileResponse(
             path=pdf_file, 
             media_type="application/pdf", 
             filename="final_report.pdf"  # Nombre fijo para el archivo descargado
+        )
+    elif os.path.exists(markdown_file):
+        return FileResponse(
+            path=markdown_file, 
+            media_type="text/markdown", 
+            filename="final_report.md"  # Nombre fijo para el archivo descargado
         )
     raise HTTPException(status_code=404, detail="Report file not found")
 
