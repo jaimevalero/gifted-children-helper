@@ -36,6 +36,7 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
         pdf_file (str): The path to the output PDF file.
     """
     try:
+        logger.info(f"Converting {markdown_file} to {pdf_file}")
         # Execute the pandoc command to convert Markdown to PDF
         command = ['pandoc', markdown_file, '-o', pdf_file, '-V', 'geometry:margin=1in']
         
@@ -43,10 +44,10 @@ def convert_markdown_to_pdf(markdown_file, pdf_file):
         result = subprocess.run(command, check=True, capture_output=True, text=True)
         
         # Log the successful conversion
-        logger.info("Converted {} to {}", markdown_file, pdf_file)
+        logger.info(f"Converted {markdown_file} to {pdf_file} with output: {result.stdout}")
     except subprocess.CalledProcessError as e:
         # Log the error with stdout and stderr
-        logger.error("Failed to convert {} to PDF: {}\nstdout: {}\nstderr: {}", markdown_file, e, e.stdout, e.stderr)
+        logger.error(f"Failed to convert {markdown_file} to {pdf_file}: {e}")
         raise e
     except Exception as e:
         # Log any unexpected errors
