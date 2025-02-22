@@ -7,7 +7,6 @@ from loguru import logger
 from dotenv import load_dotenv
 
 from gifted_children_helper.crew import GiftedChildrenHelper
-from gifted_children_helper.utils.mail_sender import send_mail_sendgrid
 from gifted_children_helper.utils.reports import log_system_usage
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
@@ -47,19 +46,15 @@ def run(case: str = None, callback: callable = None,session_id: str = None, user
         # por cada una de las crew.tasks, añadirlo todo a un solo string.
         # Despues , formatearlo para darle uniformidad
         log_system_usage()
+        # Generate report
         helper.generate_consolidated_report(session_id)
-        log_system_usage()
+        # Conver to pdf
         pdf_filename = helper.convert_consolidated_report(session_id)
-        log_system_usage()
-        
+        # Send email
+        helper.send_consolidated_report(pdf_filename, user_email, user_name)
+
         # Print token usage
         logger.info(f"Token usage: {crew.usage_metrics}")
-        try:
-            if user_email:
-                # Send the email with the PDF attachment
-                send_mail_sendgrid(pdf_filename, user_email, user_name)
-        except Exception as e:
-            logger.exception(f"Failed to send email: {e}")
             
         return pdf_filename
         

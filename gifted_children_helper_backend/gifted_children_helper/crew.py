@@ -7,6 +7,7 @@ from gifted_children_helper.tools.custom_pdf_search_tool import ask_altas_capaci
 from gifted_children_helper.utils.models import Provider,  get_model,  get_model_name, get_provider
 import inspect
 from gifted_children_helper.utils.reports import convert_markdown_to_pdf
+from gifted_children_helper.utils.mail_sender import send_mail_sendgrid
 
 import json
 from filelock import FileLock  # Import FileLock
@@ -110,7 +111,7 @@ class GiftedChildrenHelper():
     def callback_function(self,output):
         try :
             self.tasks_done += 1
-            total_tasks = len(self.tasks)
+            total_tasks = len(self.tasks)+1
             percentage_progress = self.tasks_done / total_tasks
 
             progress_message = f"""{output.raw}""".replace("```markdown","").replace("```","")
@@ -314,6 +315,7 @@ class GiftedChildrenHelper():
             callback=self.callback_function,
         )
 
+
     def generate_consolidated_report(self,session_id):
         """
         Generate a consolidated report from all task outputs and save it to last_report.md.
@@ -366,13 +368,49 @@ class GiftedChildrenHelper():
                               
         try :
             convert_markdown_to_pdf(markdown_filename, pdf_filename)
-
             logger.info(f"Consolidated report generated and saved to {pdf_filename}")
+  
+
             return pdf_filename
         except Exception as e:
             logger.error(f"Error generating pdf: {e}")
             return markdown_filename
-    
+
+    def send_consolidated_report(self, pdf_filename, user_email, user_name):
+        """
+        Send the consolidated report via email and update the progress file.
+
+        Args:
+            pdf_filename (str): The filename of the PDF report.
+            user_email (str): The email address of the user.
+            user_name (str): The name of the user.
+        """
+        try:
+            # Check if user_email is provided
+            if user_email:
+                # Send the email using SendGrid
+                send_mail_sendgrid(pdf_filename, user_email, user_name)
+        except Exception as e:
+            # Log any errors that occur during email sending
+            logger.error(f"Error sending email: {e}")
+
+        # Calculate the total number of tasks
+        total_tasks = len(self.tasks) + 1
+        # Set the progress to 100%
+        percentage_progress = 1.0
+        # Create the title for the progress update
+        title = f"({total_tasks}/{total_tasks}) Informe generado. Por favor descargue al final de la página"
+
+        # Create the progress data dictionary
+        progress_data = {
+            "log": title,
+            "progress": percentage_progress,
+            "title": title
+        }
+
+        # Write the progress data to the progress file
+        self.write_progress_file(self.session_id, progress_data)
+            
     @crew
     def crew(self) -> Crew:
         """Creates the GiftedChildrenHelper crew"""
