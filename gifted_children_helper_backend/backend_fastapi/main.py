@@ -18,6 +18,7 @@ from loguru import logger
 import uvicorn
 import requests
 from filelock import FileLock
+from multiprocessing import Process
 
 # Add the src directory to PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -161,8 +162,10 @@ async def submit_form(request: Request, form_data: FormData):
     #case = get_case()
 
     # Run the report generation in a separate thread
-    thread = threading.Thread(target=run, args=(case, websocket_callback, uuid,user_email,user_name))
-    thread.start()
+    # thread = threading.Thread(target=run, args=(case, websocket_callback, uuid,user_email,user_name))
+    # thread.start()
+    process = Process(target=run, args=(case, websocket_callback, uuid, user_email, user_name))
+    process.start()
 
     log_system_usage()
 
